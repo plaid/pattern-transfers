@@ -24,12 +24,36 @@ router.post(
   '/',
   asyncWrapper(async (req, res) => {
     try {
-      const { userId, itemId, isIdentity } = req.body;
+      const { userId, itemId, subscriptionAmount } = req.body;
       let accessToken = null;
-      let products = ['auth']; // must include transactions in order to receive transactions webhooks
-      if (isIdentity) {
-        products.push('identity');
-      }
+      let products = ['transfer'];
+      const transIntentCreateRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET,
+        mode: 'PAYMENT',
+        amount: '12.34',
+        ach_class: 'ppd',
+        description: 'foobar',
+        user: {
+          legal_name: 'Linda Woo',
+        },
+      };
+      console.log(transIntentCreateRequest);
+      let transferIntentId;
+
+      const transferIntentResponse = await axios.post(
+        `https://sandbox.plaid.com/transfer/intent/create`,
+        transIntentCreateRequest,
+        {
+          headers: {
+            'content-type': 'application/json',
+          },
+        },
+      );
+
+      transferIntentId = transferIntentResponse.data.transfer_intent.id;
+      console.log('intent response!!!!!!!!!!!!!', transferIntentId);
+
       if (itemId != null) {
         // for the link update mode, include access token and an empty products array
         const itemIdResponse = await retrieveItemById(itemId);

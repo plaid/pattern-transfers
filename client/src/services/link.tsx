@@ -41,7 +41,7 @@ interface LinkContextShape extends LinkState {
   generateLinkToken: (
     userId: number,
     itemId: number | null | undefined,
-    isIdentity: boolean
+    subscriptionAmount: number
   ) => void;
   deleteLinkToken: (userId: number) => void;
   linkTokens: LinkState;
@@ -60,27 +60,34 @@ export function LinkProvider(props: any) {
    * @desc Creates a new link token for a given User or Item.
    */
 
-  const generateLinkToken = useCallback(async (userId, itemId, isIdentity) => {
-    // if itemId is not null, update mode is triggered
-    const linkTokenResponse = await getLinkToken(userId, itemId, isIdentity);
-    if (linkTokenResponse.data.link_token) {
-      const token = await linkTokenResponse.data.link_token;
-      console.log('success', linkTokenResponse.data);
+  const generateLinkToken = useCallback(
+    async (userId, itemId, subscriptionAmount) => {
+      // if itemId is not null, update mode is triggered
+      const linkTokenResponse = await getLinkToken(
+        userId,
+        itemId,
+        subscriptionAmount
+      );
+      if (linkTokenResponse.data.link_token) {
+        const token = await linkTokenResponse.data.link_token;
+        console.log('success', linkTokenResponse.data);
 
-      if (itemId != null) {
-        dispatch({
-          type: 'LINK_TOKEN_UPDATE_MODE_CREATED',
-          id: itemId,
-          token: token,
-        });
+        if (itemId != null) {
+          dispatch({
+            type: 'LINK_TOKEN_UPDATE_MODE_CREATED',
+            id: itemId,
+            token: token,
+          });
+        } else {
+          dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
+        }
       } else {
-        dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
+        dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
+        console.log('error', linkTokenResponse.data);
       }
-    } else {
-      dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
-      console.log('error', linkTokenResponse.data);
-    }
-  }, []);
+    },
+    []
+  );
 
   const deleteLinkToken = useCallback(async userId => {
     dispatch({

@@ -161,12 +161,11 @@ const Item: React.FC<Props> = (props: Props) => {
         )}
         {numOfItems === 0 && (
           <Button
-            large
-            inline
+            centered
             className="add-account__button"
             onClick={initiateLink}
           >
-            Add a bank account
+            Pay first month with bank account
           </Button>
         )}
         {(props.removeButton || (props.linkButton && numOfItems === 0)) && (

@@ -114,13 +114,6 @@ const Transfers: React.FC<Props> = (props: Props) => {
 
   return (
     <div className="transfers">
-      {showInput && (
-        <TransferForm
-          setShowTransfer={props.setShowTransfer}
-          checkAmountAndInitiate={checkAmountAndInitiate}
-          setShowInput={setShowInput}
-        />
-      )}
       {isTransferConfirmed && (
         <>
           <div>

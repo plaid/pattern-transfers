@@ -11,7 +11,7 @@ const Banner: React.FC<Props> = (props: Props) => {
     'This is an example account funding app that outlines an end-to-end integration with Plaid.';
 
   const successText =
-    "This page shows a user's Plaid Pattern account funding balance and allows them to transfer funds from their financial institution to their Plaid Pattern account.";
+    "This page shows a user's payment settings page and allows them to link a bank account with Plaid to complete their subscription payments";
   const subheadingText = props.initialSubheading ? initialText : successText;
 
   return (

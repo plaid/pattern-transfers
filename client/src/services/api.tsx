@@ -64,12 +64,12 @@ export const setItemToBadState = (itemId: number) =>
 export const getLinkToken = (
   userId: number,
   itemId: number,
-  isIdentity: boolean
+  subscriptionAmount: boolean
 ) =>
   api.post(`/link-token`, {
     userId,
     itemId,
-    isIdentity,
+    subscriptionAmount,
   });
 export const makeTransfer = (
   fundingSourceUrl: string,

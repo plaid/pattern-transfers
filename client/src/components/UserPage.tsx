@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
-import Callout from 'plaid-threads/Callout';
+import Button from 'plaid-threads/Button';
 import { Institution } from 'plaid/dist/api';
 
 import {
@@ -11,7 +11,13 @@ import {
   AppFundType,
   UserType,
 } from './types';
-import { useItems, useAccounts, useUsers, useInstitutions } from '../services';
+import {
+  useItems,
+  useAccounts,
+  useUsers,
+  useInstitutions,
+  useLink,
+} from '../services';
 import {
   updateIdentityCheckById,
   getBalanceByItem,
@@ -25,6 +31,7 @@ import {
   ConfirmIdentityForm,
   PatternAccount,
   Transfers,
+  TransferForm,
 } from '.';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
@@ -38,6 +45,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     created_at: '',
     updated_at: '',
   });
+  const { generateLinkToken, linkTokens, deleteLinkToken } = useLink();
   const [appFund, setAppFund] = useState<AppFundType | null>(null);
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
@@ -46,6 +54,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [isIdentityChecked, setIsIdentityChecked] = useState(
     user.identity_check
   );
+  const [subscriptionAmount, setSubscriptionAmount] = useState('0');
   const [showTransfer, setShowTransfer] = useState(false);
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { usersById, getUserById } = useUsers();
@@ -202,6 +211,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   }, [account, checkUserEmail, checkFullName, userId, isIdentityChecked, user]);
 
   const accountName = account != null ? `${account.name}` : '';
+  const initiateLink = async () => {
+    // only generate a link token upon a click from enduser to add a bank;
+    // if done earlier, it may expire before enuser actually activates Link to add a bank.
+    await generateLinkToken(userId, null, false);
+  };
 
   document.getElementsByTagName('body')[0].style.overflow = 'auto'; // to override overflow:hidden from link pane
 
@@ -212,49 +226,34 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       </NavigationLink>
 
       <Banner username={user.username} />
-      {appFund != null && !showTransfer && isIdentityChecked && (
-        <PatternAccount
-          userTransfer={userTransfer}
-          user={user}
-          appFund={appFund}
-          numOfItems={numOfItems}
-        />
-      )}
-      {isIdentityChecked && (
-        <>
-          {showTransfer && account != null && institution != null && (
-            <Transfers
-              institutionName={institution.name}
-              userId={userId}
-              setAppFund={setAppFund}
-              setShowTransfer={setShowTransfer}
-              account={account}
-              setAccount={setAccount}
-            />
-          )}
-        </>
-      )}
-      <Item
-        user={user}
-        userId={userId}
-        removeButton={false}
-        linkButton={numOfItems === 0}
-        numOfItems={numOfItems}
-        accountName={accountName}
-        item={item}
-        isIdentityChecked={isIdentityChecked}
-      />
-      <ErrorMessage />
-      {numOfItems > 0 && !isIdentityChecked && (
-        <>
-          <Callout warning>
-            {' '}
-            We were not able to verify your identity. Please update your name
-            and email address below.{' '}
-          </Callout>
-          <ConfirmIdentityForm userId={userId} setUser={setUser} />
-        </>
-      )}
+      <div className="user-page-container">
+        <div className="user-page-left">
+          <h4>MyAccount: Manage Payments</h4>
+          <p>
+            Add a bank account to pay for your{' '}
+            <span className="subscription-amount">
+              {' '}
+              ${subscriptionAmount} / month{' '}
+            </span>
+            PlatyFlix subscription using Plaid.
+          </p>
+          <Button
+            centered
+            className="add-account__button"
+            onClick={initiateLink}
+          >
+            Pay first month with bank account
+          </Button>
+          <p>
+            IMPORTANT NOTE: You will need to include appropraite legal
+            authorization language here to capture NACHA-compliant authorzation
+            prior to initiating a transfer.
+          </p>
+        </div>
+        <div className="user-page-right">
+          <TransferForm setSubscriptionAmount={setSubscriptionAmount} />
+        </div>
+      </div>
     </div>
   );
 };
