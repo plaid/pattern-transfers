@@ -1,0 +1,312 @@
+$threads-font-path: '~plaid-threads/fonts';
+@import '~plaid-threads/scss/typography';
+@import '~plaid-threads/scss/variables';
+
+$border: 1px solid $black200;
+/*
+
+
+Base
+
+*/
+
+body {
+  background: $white;
+}
+
+.App {
+  max-width: 131 * $unit;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 10 * $unit 5 * $unit;
+}
+
+/*
+
+shared styles
+
+*/
+.bottom-border-content {
+  overflow: hidden;
+  border-bottom: 1px solid $black1000;
+  margin-bottom: 4 * $unit;
+  padding-bottom: 4 * $unit;
+}
+
+.box {
+  border: $border;
+  border-radius: $border-radius;
+  margin-bottom: 3 * $unit;
+  box-shadow: $shadow-xsmall;
+}
+
+.card {
+  display: flex;
+  padding: 2rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.heading {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 2 * $unit;
+  margin-bottom: 0;
+  color: $black800;
+  font-family: 'Inconsolata';
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2 * $unit;
+}
+
+.value {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+.toast__background {
+  background: $white;
+}
+
+.toast__link {
+  color: $white;
+  text-decoration: underline;
+}
+
+.Toastify__toast--error.toast__background {
+  background: $red800;
+}
+
+.toast__body {
+  color: $black1000;
+  font-size: 2 * $unit;
+  white-space: pre-line;
+  padding-left: $unit;
+}
+
+.Toastify__toast--error > .toast__body {
+  color: $white;
+}
+
+h3 {
+  color: $black1000;
+  letter-spacing: -0.28px;
+  font-weight: bold;
+
+  &.account-dollars {
+    margin-top: 3 * $unit;
+    margin-bottom: 1px;
+    font-weight: 100;
+  }
+
+  &.subheading {
+    margin: 0;
+  }
+}
+
+/*
+
+Content at the top of the view
+
+*/
+
+.everpresent-content__heading {
+  margin-bottom: 2 * $unit;
+}
+
+.everpresent-content__subheading {
+  font-size: 3 * $unit;
+  font-weight: 300;
+  line-height: 4 * $unit;
+  margin-bottom: 0;
+}
+
+/*
+
+Landing overview
+
+*/
+
+.btns-container {
+  display: flex;
+  margin: 2 * $unit 0;
+}
+
+.btn-with-margin {
+  margin-left: 2 * $unit;
+  margin-right: 0;
+}
+
+/*
+
+Item
+
+*/
+
+.item__button {
+  padding-left: 3 * $unit;
+  flex: 1;
+}
+
+.add-account__button {
+  font-size: 2 * $unit;
+}
+
+.item__callouts {
+  margin-bottom: 3 * $unit;
+}
+
+.item-info {
+  display: grid;
+  grid-template-columns: 5fr 6fr 7fr 5fr;
+}
+
+.update-mode__note {
+  margin-top: $unit;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.action__button {
+  margin-top: $unit;
+  padding-left: 0;
+}
+
+.remove-bank {
+  margin-top: 0;
+}
+
+/*
+
+Add User Form
+
+*/
+
+.add-user__form {
+  margin-top: 3 * $unit;
+}
+
+.add-user__column-1 {
+  width: 25%;
+  padding-right: 3 * $unit;
+}
+
+.add-user__heading {
+  font-size: 2 * $unit;
+  margin: 2 * $unit;
+}
+
+.add-user__value {
+  font-size: 1.4rem;
+}
+
+.add-user__column-2 {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+
+  .input_field {
+    margin-bottom: 2 * $unit;
+  }
+}
+
+.add-user__column-3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 35%;
+}
+
+.add-user__button {
+  margin: 0 2 * $unit;
+  min-width: 10 * $unit;
+}
+
+/*
+
+ErrorMessage
+
+*/
+
+.error-msg__callout {
+  position: relative;
+  margin-bottom: 3 * $unit;
+
+  .close-error__button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+/*
+
+Pattern account
+
+*/
+
+.pattern-account {
+  margin-bottom: 8 * $unit;
+}
+.pattern-account__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.transfer-funds__button-container {
+  display: flex;
+  align-items: center;
+}
+
+/*
+
+Transfers
+
+*/
+
+.transfers {
+  margin-bottom: 8 * $unit;
+}
+.transfer__title {
+  margin-top: 3 * $unit;
+}
+.transfer-funds__input {
+  margin: 2 * $unit 0;
+  width: 40 * $unit;
+}
+
+.callout {
+  margin: 3 * $unit 0;
+}
+
+/*
+
+user list
+
+*/
+
+.user-list {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2 * $unit;
+  border: $border;
+  border-radius: $border-radius;
+  margin-bottom: 3 * $unit;
+  box-shadow: $shadow-xsmall;
+  padding: 2 * $unit;
+  width: 50 * $unit;
+
+  .user-list__touchable {
+    width: 30 * $unit;
+  }
+  &:hover {
+    cursor: pointer;
+  }
+}
