@@ -41,7 +41,7 @@ interface LinkContextShape extends LinkState {
   generateLinkToken: (
     userId: number,
     itemId: number | null | undefined,
-    subscriptionAmount: number
+    transferIntentId: string
   ) => void;
   deleteLinkToken: (userId: number) => void;
   linkTokens: LinkState;
@@ -61,12 +61,12 @@ export function LinkProvider(props: any) {
    */
 
   const generateLinkToken = useCallback(
-    async (userId, itemId, subscriptionAmount) => {
+    async (userId, itemId, transferIntentId) => {
       // if itemId is not null, update mode is triggered
       const linkTokenResponse = await getLinkToken(
         userId,
         itemId,
-        subscriptionAmount
+        transferIntentId
       );
       if (linkTokenResponse.data.link_token) {
         const token = await linkTokenResponse.data.link_token;

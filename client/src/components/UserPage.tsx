@@ -3,6 +3,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
 import { Institution } from 'plaid/dist/api';
+import { LinkButton } from '.';
 
 import {
   RouteInfo,
@@ -17,6 +18,7 @@ import {
   useUsers,
   useInstitutions,
   useLink,
+  useTransfer,
 } from '../services';
 import {
   updateIdentityCheckById,
@@ -28,7 +30,6 @@ import {
   Banner,
   Item,
   ErrorMessage,
-  ConfirmIdentityForm,
   PatternAccount,
   Transfers,
   TransferForm,
@@ -46,102 +47,27 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     updated_at: '',
   });
   const { generateLinkToken, linkTokens, deleteLinkToken } = useLink();
-  const [appFund, setAppFund] = useState<AppFundType | null>(null);
+  const { generateTransferIntentId, transferIds } = useTransfer();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
   const [institution, setInstitution] = useState<Institution | null>(null);
-  const [isIdentityChecked, setIsIdentityChecked] = useState(
-    user.identity_check
-  );
+
+  const [token, setToken] = useState<string | null>('');
   const [subscriptionAmount, setSubscriptionAmount] = useState('0');
-  const [showTransfer, setShowTransfer] = useState(false);
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
   const { institutionsById, getInstitutionById } = useInstitutions();
   const userId = Number(match.params.userId);
 
-  const getAppFund = useCallback(async userId => {
-    const { data: appFunds } = await getAppFundsByUser(userId);
-    setAppFund(appFunds);
-  }, []);
-
-  const getBalance = useCallback(async () => {
-    // This is triggered when user clicks "transfer funds."
-    // Only call balance/get if this is not the initial transfer and it's been less than an hour since the item was linked (because the balance data already exists
-    // from the auth/get or identity/get make upon creating the item).
-    // However, if neither auth nor identity have not been called on item creation (i.e. account.available_balance=null),
-    // make the balance/get call
-    let timeSinceCreation = 0; // time in milliseconds
-    if (account != null) {
-      timeSinceCreation =
-        new Date().getTime() - new Date(account.created_at).getTime();
-    }
-
-    if (
-      account != null &&
-      item != null &&
-      (account.number_of_transfers !== 0 ||
-      timeSinceCreation > 60 * 60 * 1000 || // if it's been more than one hour
-        account.available_balance == null)
-    ) {
-      const { data: newAccount } = await getBalanceByItem(
-        item.id,
-        account.plaid_account_id
-      );
-      setAccount(newAccount || {});
-    }
-  }, [account, item]);
-
-  const userTransfer = () => {
-    getBalance();
-    setShowTransfer(true);
-  };
-
-  // functions to check username and email against data from identity/get
-  const checkFullName = useCallback(
-    // ownerNames is the ownernames array returned from identity/get
-    (ownerNames: string[], fullname: string | null) => {
-      // in case user enters "Last name, First name"
-      if (fullname != null) {
-        fullname = fullname.replace(',', ' ');
-        const fullnameArray = fullname.split(' ');
-
-        // if both the first name and last name of the username in this app are included somewhere in the
-        // financial institution's onwerNames array, return true (anything entered by the user (except a comma)
-        // must be included in the FI's ownerNames array).
-        return fullnameArray.every(name => {
-          return ownerNames.some(identName => {
-            return identName.toUpperCase().indexOf(name.toUpperCase()) > -1;
-          });
-        });
-      }
-      return false;
-    },
-    []
-  );
-
-  const checkUserEmail = useCallback((emails: string[], user_email: string) => {
-    return emails.includes(user_email);
-  }, []);
-  // update data store with user
   useEffect(() => {
     getUserById(userId, false);
   }, [getUserById, userId]);
 
-  // set state user and isIdentityChecked from data store
   useEffect(() => {
     setUser(usersById[userId] || {});
-    if (usersById[userId] != null) {
-      if (usersById[userId].should_verify_identity) {
-        setIsIdentityChecked(usersById[userId].identity_check);
-      } else {
-        setIsIdentityChecked(true);
-      }
-    }
   }, [usersById, userId]);
-
   // update data store with the user's item
   useEffect(() => {
     if (userId != null) {
@@ -190,32 +116,38 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [institutionsById, item]);
 
-  // update state with the user's app fund
   useEffect(() => {
-    getAppFund(userId);
-  }, [userId, getAppFund]);
-
-  useEffect(() => {
-    // checks identity of user against identity/get data stored in accounts database
-    // only checks if identity has not already been verified.
-    if (
-      account != null &&
-      isIdentityChecked === false &&
-      user.should_verify_identity
-    ) {
-      const fullnameCheck = checkFullName(account.owner_names, user.fullname);
-      const emailCheck = checkUserEmail(account!.emails, user.email!);
-      updateIdentityCheckById(userId, fullnameCheck && emailCheck); // update user_table in db
-      setIsIdentityChecked(fullnameCheck && emailCheck); // set state
+    if (numOfItems === 0) {
+      setToken(linkTokens.byUser[userId]);
+    } else {
+      setToken(null);
     }
-  }, [account, checkUserEmail, checkFullName, userId, isIdentityChecked, user]);
+  }, [linkTokens, userId, numOfItems]);
 
-  const accountName = account != null ? `${account.name}` : '';
   const initiateLink = async () => {
+    const transfer_intent_id = await generateTransferIntentId(
+      Number(subscriptionAmount)
+    );
     // only generate a link token upon a click from enduser to add a bank;
     // if done earlier, it may expire before enuser actually activates Link to add a bank.
-    await generateLinkToken(userId, null, false);
+    await generateLinkToken(userId, null, transfer_intent_id);
   };
+  console.log('THE ID from context:', transferIds.transfer_intent_id);
+  const accountName = account != null ? `${account.name}` : '';
+  const myAccountMessage =
+    numOfItems === 0
+      ? [
+          <span>Add a bank account to pay for your</span>,
+          <span className="subscription-amount">
+            {' '}
+            $
+            {`${Number(subscriptionAmount)
+              .toFixed(2)
+              .toString()}`}{' '}
+          </span>,
+          <span>PlatyFlix subscription using Plaid!!</span>,
+        ]
+      : `Thank you for making your monthly payments!`;
 
   document.getElementsByTagName('body')[0].style.overflow = 'auto'; // to override overflow:hidden from link pane
 
@@ -228,27 +160,42 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       <Banner username={user.username} />
       <div className="user-page-container">
         <div className="user-page-left">
-          <h4>MyAccount: Manage Payments</h4>
-          <p>
-            Add a bank account to pay for your{' '}
-            <span className="subscription-amount">
-              {' '}
-              ${subscriptionAmount} / month{' '}
-            </span>
-            PlatyFlix subscription using Plaid.
-          </p>
-          <Button
-            centered
-            className="add-account__button"
-            onClick={initiateLink}
-          >
-            Pay first month with bank account
-          </Button>
-          <p>
-            IMPORTANT NOTE: You will need to include appropraite legal
-            authorization language here to capture NACHA-compliant authorzation
-            prior to initiating a transfer.
-          </p>
+          <h4>My Account: Manage Payments</h4>
+          <p>{myAccountMessage}</p>
+          {numOfItems === 0 && (
+            <div>
+              <Button
+                centered
+                className="add-account__button"
+                onClick={initiateLink}
+              >
+                Pay first month with bank account
+              </Button>
+              {/* // Plaid React Link cannot be rendered without a link token */}
+              <div className="item__button">
+                {token != null && (
+                  <LinkButton userId={userId} token={token} itemId={null} />
+                )}
+              </div>
+              <p className="nacha-compliant-note">
+                IMPORTANT NOTE: You will need to include appropraite legal
+                authorization language here to capture NACHA-compliant
+                authorzation prior to initiating a transfer.
+              </p>
+            </div>
+          )}
+          {numOfItems > 0 && (
+            <Item
+              user={user}
+              userId={userId}
+              removeButton={false}
+              linkButton={numOfItems === 0}
+              numOfItems={numOfItems}
+              accountName={accountName}
+              item={item}
+              subscriptionAmount={subscriptionAmount}
+            />
+          )}
         </div>
         <div className="user-page-right">
           <TransferForm setSubscriptionAmount={setSubscriptionAmount} />

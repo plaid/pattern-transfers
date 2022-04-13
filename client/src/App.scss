@@ -29,7 +29,7 @@ shared styles
 .bottom-border-content {
   overflow: hidden;
   border-bottom: 1px solid $black1000;
-  margin-bottom: 4 * $unit;
+  margin-bottom: 2 * $unit;
   padding-bottom: 4 * $unit;
 }
 
@@ -341,7 +341,14 @@ user list
 .developer-configs {
   padding: 0 3 * $unit 3 * $unit 3 * $unit;
 
-  p {
+  .admin-note {
     margin-bottom: 0;
+    font-style: italic;
+    font-size: 1.2rem;
   }
+}
+
+.nacha-compliant-note {
+  font-style: italic;
+  font-weight: 400;
 }

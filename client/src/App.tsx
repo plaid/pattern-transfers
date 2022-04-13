@@ -8,6 +8,7 @@ import { AccountsProvider } from './services/accounts';
 import { InstitutionsProvider } from './services/institutions';
 import { ItemsProvider } from './services/items';
 import { LinkProvider } from './services/link';
+import { TransferProvider } from './services/transfer';
 
 import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
@@ -28,23 +29,25 @@ function App() {
     <div className="App">
       <InstitutionsProvider>
         <ItemsProvider>
-          <LinkProvider>
-            <AccountsProvider>
-              <ErrorsProvider>
-                <UsersProvider>
-                  <CurrentUserProvider>
-                    <Sockets />
-                    <Switch>
-                      <Route exact path="/" component={Landing} />
-                      <Route path="/user/:userId" component={UserPage} />
-                      <Route path="/oauth-link" component={OAuthLink} />
-                      <Route path="/admin" component={UserList} />
-                    </Switch>
-                  </CurrentUserProvider>
-                </UsersProvider>
-              </ErrorsProvider>
-            </AccountsProvider>
-          </LinkProvider>
+          <TransferProvider>
+            <LinkProvider>
+              <AccountsProvider>
+                <ErrorsProvider>
+                  <UsersProvider>
+                    <CurrentUserProvider>
+                      <Sockets />
+                      <Switch>
+                        <Route exact path="/" component={Landing} />
+                        <Route path="/user/:userId" component={UserPage} />
+                        <Route path="/oauth-link" component={OAuthLink} />
+                        <Route path="/admin" component={UserList} />
+                      </Switch>
+                    </CurrentUserProvider>
+                  </UsersProvider>
+                </ErrorsProvider>
+              </AccountsProvider>
+            </LinkProvider>
+          </TransferProvider>
         </ItemsProvider>
       </InstitutionsProvider>
     </div>

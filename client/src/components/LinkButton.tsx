@@ -12,7 +12,7 @@ import { useHistory } from 'react-router-dom';
 
 import { logEvent, logSuccess, logExit } from '../util'; // functions to log and save errors and metadata from Link events.
 import { exchangeToken, setItemState } from '../services/api';
-import { useItems, useLink, useErrors } from '../services';
+import { useItems, useLink, useErrors, useTransfer } from '../services';
 
 interface Props {
   isOauth?: boolean;
@@ -20,8 +20,8 @@ interface Props {
   userId: number;
   itemId?: number | null;
   children?: React.ReactNode;
-  isProcessor: boolean;
-  isIdentity: boolean;
+  isProcessor?: boolean;
+  isIdentity?: boolean;
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
@@ -31,6 +31,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
+  const { transferIntentId } = useTransfer();
   const { setError, resetError } = useErrors();
 
   // define onSuccess, onExit and onEvent functions as configs for Plaid Link creation
@@ -38,6 +39,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     publicToken: string,
     metadata: PlaidLinkOnSuccessMetadata
   ) => {
+    console.log('metadata', metadata);
     // log and save metatdata
     logSuccess(metadata, props.userId);
     if (props.itemId != null) {
@@ -52,9 +54,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           publicToken,
           metadata.institution,
           metadata.accounts,
-          props.userId,
-          props.isProcessor,
-          props.isIdentity
+          props.userId
         );
         getItemsByUser(props.userId, true);
       } catch (e) {
@@ -63,6 +63,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
         }
       }
     }
+    console.log(transferIntentId);
     resetError();
     history.push(`/user/${props.userId}`);
   };
@@ -75,7 +76,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     logExit(error, metadata, props.userId);
     if (error != null) {
       if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, props.isIdentity);
+        await generateLinkToken(props.userId, props.itemId, 'akdlf;ljkd');
       } else {
         setError(
           error.error_code,
@@ -115,6 +116,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     if (props.isOauth && ready) {
       open();
     } else if (ready) {
+      console.log('inside link button');
       localStorage.setItem(
         'oauthConfig',
         JSON.stringify({

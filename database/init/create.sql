@@ -127,20 +127,6 @@ CREATE TABLE accounts_table
   plaid_item_id text UNIQUE NOT NULL,
   plaid_account_id text UNIQUE NOT NULL,
   name text NOT NULL,
-  mask text NOT NULL,
-  official_name text,
-  current_balance numeric(28,10),
-  available_balance numeric(28,10),
-  iso_currency_code text,
-  unofficial_currency_code text,
-  ach_account text,
-  ach_routing text,
-  ach_wire_routing text,
-  owner_names text[],
-  emails text[],
-  processor_token text,
-  number_of_transfers integer,
-  type text NOT NULL,
   subtype text NOT NULL,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -160,25 +146,56 @@ AS
     plaid_item_id,
     user_id,
     name,
-    mask,
-    official_name,
-    current_balance,
-    available_balance,
-    iso_currency_code,
-    unofficial_currency_code,
-    ach_account,
-    ach_routing,
-    ach_wire_routing,
-    owner_names,
-    emails,
-    processor_token,
-    number_of_transfers,
-    type,
     subtype,
     created_at,
     updated_at
   FROM
     accounts_table;
+
+
+-- TRANSFERS
+-- This table is used to store the transfers associated with each item. The view returns all the
+-- data from the transfers table and some data from the items view. For more info on the Plaid
+-- Accounts schema, see the docs page:  https://plaid.com/docs/#account-schema
+
+    CREATE TABLE transfers_table
+(
+  id SERIAL PRIMARY KEY,
+  item_id integer REFERENCES items_table(id) ON DELETE CASCADE,
+  user_id integer,
+  plaid_account_id text,
+  destination_account_id text,
+  transfer_intent_id text,
+  authorization_id text ,
+  transfer_id text,
+  amount numeric,
+  status text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+CREATE TRIGGER transfers_updated_at_timestamp
+BEFORE UPDATE ON transfers_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE VIEW transfers
+AS
+  SELECT
+    id,
+    plaid_account_id,
+    item_id,
+    user_id,
+    destination_account_id,
+    transfer_intent_id,
+    authorization_id,
+    transfer_id,
+    amount,
+    status,
+    created_at,
+    updated_at
+  FROM
+    transfers_table;
 
 
 

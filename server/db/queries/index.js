@@ -7,9 +7,12 @@ const {
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
   retrieveAccountsByUserId,
-  updateBalances,
-  updateTransfers,
 } = require('./accounts');
+const {
+  createTransferWithTransferUI,
+  retrieveTransfersByItemId,
+  retrieveTransfersByUserId,
+} = require('./transfers');
 const {
   createItem,
   deleteItem,
@@ -45,8 +48,10 @@ module.exports = {
   retrieveAccountByPlaidAccountId,
   retrieveAccountsByItemId,
   retrieveAccountsByUserId,
-  updateBalances,
-  updateTransfers,
+  // transfers
+  createTransferWithTransferUI,
+  retrieveTransfersByItemId,
+  retrieveTransfersByUserId,
   // items
   createItem,
   deleteItem,

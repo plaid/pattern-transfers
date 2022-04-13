@@ -5,6 +5,7 @@
 const { asyncWrapper } = require('../middleware');
 
 const express = require('express');
+const axios = require('axios');
 const plaid = require('../plaid');
 const fetch = require('node-fetch');
 const { retrieveItemById } = require('../db/queries');
@@ -12,6 +13,8 @@ const {
   PLAID_SANDBOX_REDIRECT_URI,
   PLAID_DEVELOPMENT_REDIRECT_URI,
   PLAID_ENV,
+  PLAID_CLIENT_ID,
+  PLAID_SECRET_SANDBOX,
 } = process.env;
 
 const redirect_uri =
@@ -24,35 +27,9 @@ router.post(
   '/',
   asyncWrapper(async (req, res) => {
     try {
-      const { userId, itemId, subscriptionAmount } = req.body;
+      const { userId, itemId, transferIntentId } = req.body;
       let accessToken = null;
       let products = ['transfer'];
-      const transIntentCreateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET,
-        mode: 'PAYMENT',
-        amount: '12.34',
-        ach_class: 'ppd',
-        description: 'foobar',
-        user: {
-          legal_name: 'Linda Woo',
-        },
-      };
-      console.log(transIntentCreateRequest);
-      let transferIntentId;
-
-      const transferIntentResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/intent/create`,
-        transIntentCreateRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        },
-      );
-
-      transferIntentId = transferIntentResponse.data.transfer_intent.id;
-      console.log('intent response!!!!!!!!!!!!!', transferIntentId);
 
       if (itemId != null) {
         // for the link update mode, include access token and an empty products array
@@ -64,6 +41,8 @@ router.post(
       const { tunnels } = await response.json();
       const httpTunnel = tunnels.find(t => t.proto === 'http');
       const linkTokenParams = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
         user: {
           // This should correspond to a unique id for the current user.
           client_user_id: 'uniqueId' + userId,
@@ -74,13 +53,27 @@ router.post(
         language: 'en',
         webhook: httpTunnel.public_url + '/services/webhook',
         access_token: accessToken,
+        transfer: {
+          intent_id: transferIntentId,
+        },
+        link_customization_name: 'transfer_ui_woo',
       };
 
+      console.log(linkTokenParams);
       // If user has entered a redirect uri in the .env file
       if (redirect_uri.indexOf('http') === 0) {
         linkTokenParams.redirect_uri = redirect_uri;
       }
-      const createResponse = await plaid.linkTokenCreate(linkTokenParams);
+      const createResponse = await axios.post(
+        `https://sandbox.plaid.com/link/token/create`,
+        linkTokenParams,
+        {
+          headers: {
+            'content-type': 'application/json',
+          },
+        }
+      );
+      console.log(createResponse.data);
       res.json(createResponse.data);
     } catch (err) {
       console.log('error while fetching client token', err.response.data);

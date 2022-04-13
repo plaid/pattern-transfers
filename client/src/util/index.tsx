@@ -35,14 +35,11 @@ export const logEvent = (
 };
 
 export const logSuccess = async (
-  { institution, accounts, link_session_id }: PlaidLinkOnSuccessMetadata,
+  metadata: PlaidLinkOnSuccessMetadata,
   userId: number
 ) => {
-  logEvent('onSuccess', {
-    institution,
-    accounts,
-    link_session_id,
-  });
+  const link_session_id = metadata.link_session_id;
+  logEvent('onSuccess', metadata);
   await apiPostLinkEvent({
     userId,
     link_session_id,

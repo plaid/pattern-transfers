@@ -12,7 +12,7 @@ const {
   deleteItem,
   updateItemStatus,
   createAccount,
-  updateBalances,
+  createTransferWithTransferUI,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -40,14 +40,7 @@ const router = express.Router();
 router.post(
   '/',
   asyncWrapper(async (req, res) => {
-    const {
-      publicToken,
-      institutionId,
-      userId,
-      accounts,
-      isAuth,
-      isIdentity,
-    } = req.body;
+    const { publicToken, institutionId, userId, accounts } = req.body;
 
     // exchange the public token for a private access token and store with the item.
     const response = await plaid.itemPublicTokenExchange({
@@ -77,73 +70,9 @@ router.post(
         ? checkingAccount[0]
         : savingsAccount[0];
 
-    // the request is the same for both auth and identity calls
-    const authAndIdRequest = {
-      access_token: accessToken,
-      options: {
-        account_ids: [account.id],
-      },
-    };
-    // identity info will remain null if not identity
-    let emails = null;
-    let ownerNames = null;
-
-    // auth numbers will remain null if not auth
-    let authNumbers = {
-      account: null,
-      routing: null,
-      wire_routing: null,
-    };
-
-    // balances will be null if not auth or identity, only until the first transfer is made
-    // and accounts/balance/get is called
-    let balances = {
-      available: null,
-      current: null,
-      iso_currency_code: null,
-      unofficial_currency_code: null,
-    };
-    if (isIdentity) {
-      const identityResponse = await plaid.identityGet(authAndIdRequest);
-      emails = identityResponse.data.accounts[0].owners[0].emails.map(email => {
-        return email.data;
-      });
-
-      ownerNames = identityResponse.data.accounts[0].owners[0].names;
-      if (!isAuth) {
-        balances = identityResponse.data.accounts[0].balances;
-      }
-    }
-    // processorToken is only set if IS_PROCESSOR is true in .env file and
-    // therefore isAuth is false
-    let processorToken = null;
-
-    if (isAuth) {
-      authResponse = await plaid.authGet(authAndIdRequest);
-      authNumbers = authResponse.data.numbers.ach[0];
-      balances = authResponse.data.accounts[0].balances;
-    } else {
-      const processorRequest = {
-        access_token: accessToken,
-        account_id: account.id,
-        processor: 'dwolla',
-      };
-      const processorTokenResponse = await plaid.processorTokenCreate(
-        processorRequest
-      );
-      processorToken = processorTokenResponse.data.processor_token;
-    }
-
-    const newAccount = await createAccount(
-      itemId,
-      userId,
-      account,
-      balances,
-      authNumbers,
-      ownerNames,
-      emails,
-      processorToken
-    );
+    console.log(userId, itemId, account);
+    const newAccount = await createAccount(itemId, userId, account);
+    const newTransfer = await createTransferWithTransferUI;
 
     res.json({
       items: sanitizeItems(newItem),

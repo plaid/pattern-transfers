@@ -9,10 +9,15 @@ interface Props {
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
+  const [value, setValue] = useState('');
   const handleSubmit = (e: any) => {
     e.preventDefault();
     props.setSubscriptionAmount(transferAmount);
-    setTransferAmount('');
+    setValue(
+      `$${Number(value)
+        .toFixed(2)
+        .toString()}`
+    );
   };
 
   const amt =
@@ -27,11 +32,14 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           <NumberInput
             id="transferAmount"
             name="transfer amount"
-            value={transferAmount}
+            value={value}
             required
-            placeholder="$0.00"
+            placeholder={value}
             label="Subscription price"
-            onChange={e => setTransferAmount(e.currentTarget.value)}
+            onChange={e => {
+              setTransferAmount(e.currentTarget.value);
+              setValue(e.currentTarget.value);
+            }}
             className="transfer-funds__input"
           />
           <Button className="update-price_button" centered type="submit">
@@ -46,7 +54,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         >
           View Admin Ledger
         </Button>
-        <p> Note: visit the admin page to simulate Transfer events.</p>
+        <p className="admin-note">
+          {' '}
+          Note: visit the admin page to simulate Transfer events.
+        </p>
       </div>
     </>
   );
