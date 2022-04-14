@@ -166,10 +166,11 @@ AS
   plaid_account_id text,
   destination_account_id text,
   transfer_intent_id text,
-  authorization_id text ,
+  authorization_id text,
   transfer_id text,
   amount numeric,
   status text,
+  sweep_status text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -192,6 +193,7 @@ AS
     transfer_id,
     amount,
     status,
+    sweep_status,
     created_at,
     updated_at
   FROM

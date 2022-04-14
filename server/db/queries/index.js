@@ -9,9 +9,10 @@ const {
   retrieveAccountsByUserId,
 } = require('./accounts');
 const {
-  createTransferWithTransferUI,
+  createTransfer,
   retrieveTransfersByItemId,
   retrieveTransfersByUserId,
+  addTransferInfo,
 } = require('./transfers');
 const {
   createItem,
@@ -49,9 +50,10 @@ module.exports = {
   retrieveAccountsByItemId,
   retrieveAccountsByUserId,
   // transfers
-  createTransferWithTransferUI,
+  createTransfer,
   retrieveTransfersByItemId,
   retrieveTransfersByUserId,
+  addTransferInfo,
   // items
   createItem,
   deleteItem,

@@ -8,7 +8,7 @@ import { AccountsProvider } from './services/accounts';
 import { InstitutionsProvider } from './services/institutions';
 import { ItemsProvider } from './services/items';
 import { LinkProvider } from './services/link';
-import { TransferProvider } from './services/transfer';
+import { TransfersProvider } from './services/transfers';
 
 import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
@@ -29,7 +29,7 @@ function App() {
     <div className="App">
       <InstitutionsProvider>
         <ItemsProvider>
-          <TransferProvider>
+          <TransfersProvider>
             <LinkProvider>
               <AccountsProvider>
                 <ErrorsProvider>
@@ -47,7 +47,7 @@ function App() {
                 </ErrorsProvider>
               </AccountsProvider>
             </LinkProvider>
-          </TransferProvider>
+          </TransfersProvider>
         </ItemsProvider>
       </InstitutionsProvider>
     </div>

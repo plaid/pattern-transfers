@@ -11,9 +11,15 @@ import {
 import { useHistory } from 'react-router-dom';
 
 import { logEvent, logSuccess, logExit } from '../util'; // functions to log and save errors and metadata from Link events.
-import { exchangeToken, setItemState } from '../services/api';
-import { useItems, useLink, useErrors, useTransfer } from '../services';
-
+import {
+  exchangeToken,
+  setItemState,
+  getTransferUIStatus,
+  getTransferStatus,
+  addTransferInfo,
+} from '../services/api';
+import { useItems, useLink, useErrors, useTransfers } from '../services';
+import { TransferSuccessMetadata } from './types';
 interface Props {
   isOauth?: boolean;
   token: string;
@@ -29,23 +35,23 @@ interface Props {
 // is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
-  const { getItemsByUser, getItemById } = useItems();
+  const { getItemsByUser, getItemById, itemsByUser } = useItems();
   const { generateLinkToken } = useLink();
-  const { transferIntentId } = useTransfer();
+  const { transfersData, getTransfersByUser } = useTransfers();
   const { setError, resetError } = useErrors();
 
   // define onSuccess, onExit and onEvent functions as configs for Plaid Link creation
   const onSuccess = async (
     publicToken: string,
-    metadata: PlaidLinkOnSuccessMetadata
+    metadata: TransferSuccessMetadata
   ) => {
-    console.log('metadata', metadata);
     // log and save metatdata
     logSuccess(metadata, props.userId);
     if (props.itemId != null) {
       // update mode: no need to exchange public token
       await setItemState(props.itemId, 'good');
       getItemById(props.itemId, true);
+
       // regular link mode: exchange public token for access token
     } else {
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
@@ -57,13 +63,48 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           props.userId
         );
         getItemsByUser(props.userId, true);
+        let transferUIDataResponse, transferDataResponse;
+        if (transfersData.transfer_intent_id != null) {
+          transferUIDataResponse = await getTransferUIStatus(
+            transfersData.transfer_intent_id
+          );
+        }
+        if (transferUIDataResponse != null) {
+          transferDataResponse = await getTransferStatus(
+            transferUIDataResponse.data.transfer_intent.transfer_id
+          );
+        }
+        if (transferDataResponse != null) {
+          const {
+            account_id,
+            id,
+            origination_account_id,
+            status,
+            sweep_status,
+          } = transferDataResponse.data.transfer;
+
+          await addTransferInfo(
+            transfersData.transfer_intent_id,
+            account_id,
+            id,
+            origination_account_id,
+            status,
+            sweep_status,
+            data.items[0].id
+          );
+        }
+
+        await getTransfersByUser(props.userId);
+
+        // const transferData = await getTransferStatus(
+        //   transferUIData.data.transfer_intent
+        // );
       } catch (e) {
         if (e instanceof Error) {
           console.error('error', e.message);
         }
       }
     }
-    console.log(transferIntentId);
     resetError();
     history.push(`/user/${props.userId}`);
   };
@@ -99,6 +140,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   };
 
   const config: PlaidLinkOptionsWithLinkToken = {
+    //@ts-ignore
     onSuccess,
     onExit,
     onEvent,

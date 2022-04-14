@@ -18,22 +18,10 @@ import {
   useUsers,
   useInstitutions,
   useLink,
-  useTransfer,
+  useTransfers,
 } from '../services';
-import {
-  updateIdentityCheckById,
-  getBalanceByItem,
-  getAppFundsByUser,
-} from '../services/api';
 
-import {
-  Banner,
-  Item,
-  ErrorMessage,
-  PatternAccount,
-  Transfers,
-  TransferForm,
-} from '.';
+import { Banner, Item, ErrorMessage, TransferForm } from '.';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [user, setUser] = useState<UserType>({
@@ -47,7 +35,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     updated_at: '',
   });
   const { generateLinkToken, linkTokens, deleteLinkToken } = useLink();
-  const { generateTransferIntentId, transferIds } = useTransfer();
+  const {
+    generateTransferIntentId,
+    transfersData,
+    getTransfersByUser,
+  } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
@@ -126,13 +118,13 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   const initiateLink = async () => {
     const transfer_intent_id = await generateTransferIntentId(
+      userId,
       Number(subscriptionAmount)
     );
     // only generate a link token upon a click from enduser to add a bank;
     // if done earlier, it may expire before enuser actually activates Link to add a bank.
     await generateLinkToken(userId, null, transfer_intent_id);
   };
-  console.log('THE ID from context:', transferIds.transfer_intent_id);
   const accountName = account != null ? `${account.name}` : '';
   const myAccountMessage =
     numOfItems === 0

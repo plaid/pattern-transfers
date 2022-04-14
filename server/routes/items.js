@@ -12,7 +12,7 @@ const {
   deleteItem,
   updateItemStatus,
   createAccount,
-  createTransferWithTransferUI,
+  updateBalances,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -70,13 +70,11 @@ router.post(
         ? checkingAccount[0]
         : savingsAccount[0];
 
-    console.log(userId, itemId, account);
     const newAccount = await createAccount(itemId, userId, account);
-    const newTransfer = await createTransferWithTransferUI;
 
     res.json({
       items: sanitizeItems(newItem),
-      accounts: sanitizeAccounts(newAccount),
+      accounts: sanitizeItems(newAccount),
     });
   })
 );

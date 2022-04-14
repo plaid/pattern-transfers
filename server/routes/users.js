@@ -14,7 +14,7 @@ const {
   updateIdentityCheck,
   retrieveUserById,
   updateUserInfo,
-  updateAppFundsBalance,
+  retrieveTransfersByUserId,
   createAppFund,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
@@ -106,6 +106,22 @@ router.get(
     const { userId } = req.params;
     const accounts = await retrieveAccountsByUserId(userId);
     res.json(sanitizeAccounts(accounts));
+  })
+);
+
+/**
+ * Retrieves all transfers associated with a single user.
+ *
+ * @param {string} userId the ID of the user.
+ * @returns {Object[]} an array of accounts.
+ */
+router.get(
+  '/:userId/transfers',
+  asyncWrapper(async (req, res) => {
+    const { userId } = req.params;
+    const transfers = await retrieveTransfersByUserId(userId);
+    console.log('transfers:', transfers);
+    res.json(transfers);
   })
 );
 

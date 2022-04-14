@@ -53,7 +53,34 @@ export const updateAppFundsBalance = (
 export const getTransferIntentId = (
   userId: number,
   subscriptionAmount: number
-) => api.post(`/transfers`, { userId, subscriptionAmount });
+) => api.post(`/transfers/transfer_ui`, { userId, subscriptionAmount });
+
+export const getTransfersByUser = (userId: number) =>
+  api.get(`/users/${userId}/transfers`);
+
+export const getTransferUIStatus = (intentId: string) =>
+  api.post(`/transfers/transfer_ui/status`, { intentId });
+
+export const getTransferStatus = (transferId: string) =>
+  api.post(`/transfers/transfer/status`, { transferId });
+
+export const addTransferInfo = (
+  transferIntentId: string,
+  destinationId: string,
+  transferId: string,
+  originationId: string,
+  status: string,
+  sweepStatus: string,
+  itemId: number
+) =>
+  api.put(`/transfers/${transferIntentId}/add_info`, {
+    destinationId,
+    transferId,
+    originationId,
+    status,
+    sweepStatus,
+    itemId,
+  });
 
 // items
 export const getItemById = (id: number) => api.get(`/items/${id}`);
