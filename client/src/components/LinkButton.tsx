@@ -81,7 +81,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             status,
             sweep_status,
           } = transferDataResponse.data.transfer;
-
+          // update database with information regarding the transfer
           await addTransferInfo(
             transfersData.transfer_intent_id,
             account_id,
