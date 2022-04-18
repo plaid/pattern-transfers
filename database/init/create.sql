@@ -156,7 +156,7 @@ AS
 -- TRANSFERS
 -- This table is used to store the transfers associated with each item. The view returns all the
 -- data from the transfers table and some data from the items view. For more info on the Plaid
--- Accounts schema, see the docs page:  https://plaid.com/docs/#account-schema
+-- Transfers schema, see the docs page:  https://plaid.com/docs/products/transfer/#transfercreate
 
     CREATE TABLE transfers_table
 (

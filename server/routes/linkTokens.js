@@ -33,6 +33,8 @@ router.post(
 
       if (itemId != null) {
         // for the link update mode, include access token and an empty products array
+        // ask Greg Manley what to do with TransferUI and update mode...do i remove the transfer
+        // intent id and link customization name if we are in update mode?
         const itemIdResponse = await retrieveItemById(itemId);
         accessToken = itemIdResponse.plaid_access_token;
         products = [];
@@ -59,7 +61,6 @@ router.post(
         link_customization_name: 'transfer_ui_woo',
       };
 
-      console.log(linkTokenParams);
       // If user has entered a redirect uri in the .env file
       if (redirect_uri.indexOf('http') === 0) {
         linkTokenParams.redirect_uri = redirect_uri;
@@ -73,7 +74,6 @@ router.post(
           },
         }
       );
-      console.log(createResponse.data);
       res.json(createResponse.data);
     } catch (err) {
       console.log('error while fetching client token', err.response.data);

@@ -37,11 +37,20 @@ export const logEvent = (
 };
 
 export const logSuccess = async (
-  metadata: TransferSuccessMetadata,
+  {
+    institution,
+    accounts,
+    link_session_id,
+    transfer_status,
+  }: TransferSuccessMetadata,
   userId: number
 ) => {
-  const link_session_id = metadata.link_session_id;
-  logEvent('onSuccess', metadata);
+  logEvent('onSuccess', {
+    institution,
+    accounts,
+    link_session_id,
+    transfer_status,
+  });
   await apiPostLinkEvent({
     userId,
     link_session_id,

@@ -74,7 +74,7 @@ router.post(
 
     res.json({
       items: sanitizeItems(newItem),
-      accounts: sanitizeItems(newAccount),
+      accounts: newAccount,
     });
   })
 );

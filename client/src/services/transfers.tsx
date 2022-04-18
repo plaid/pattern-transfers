@@ -45,18 +45,17 @@ interface TransfersContextShape extends TransfersState {
   ) => string;
 }
 const TransfersContext = createContext<TransfersContextShape>(
-  //@ts-ignore
   initialState as TransfersContextShape
 );
 
 /**
- * @desc Maintains the Link context state and fetches link tokens to update that state.
+ * @desc Maintains the Transfers context state.
  */
 export function TransfersProvider(props: any) {
   const [transfersData, dispatch] = useReducer(reducer, initialState);
 
   /**
-   * @desc sets a new transferIntentId
+   * @desc generates a new transferIntentId to use in link token creation for Transfer UI
    */
 
   const generateTransferIntentId = useCallback(

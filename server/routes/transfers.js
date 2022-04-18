@@ -73,9 +73,9 @@ router.post(
 );
 
 /**
- * gets the status of the transfer_ui intent
+ * gets the status of the transfer_ui intent and obtains the transfer_id from the TransferUI process.
  *
- * @param {string} intentId the transfer id of the transfer.
+ * @param {string} intentId the transfer intent id of the transfer.
  * @returns {Object} status response
  */
 
@@ -109,7 +109,7 @@ router.post(
 );
 
 /**
- * gets the status of a paricular transfer
+ * gets the status of a particular transfer
  *
  * @param {string} transferId the transfer id of the transfer.
  * @returns {Object} status response
@@ -145,7 +145,8 @@ router.post(
 );
 
 /**
- * adds information to a transfer after getting status
+ * adds information to a transfer after getting status (because the inital creation of the transfer
+ * with TransferUI does not provide this information)
  *
  * @param {string} transferIntentId the transfer_intent_id of the transfer.
  * @param {string} destinationId the destination account id for the transfer.
