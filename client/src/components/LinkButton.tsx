@@ -35,7 +35,7 @@ interface Props {
 // is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
-  const { getItemsByUser, getItemById, itemsByUser } = useItems();
+  const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
   const { transfersData, getTransfersByUser } = useTransfers();
   const { setError, resetError } = useErrors();
