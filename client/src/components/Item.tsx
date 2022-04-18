@@ -10,7 +10,6 @@ import { UserType, ItemType } from './types';
 import { setItemToBadState } from '../services/api';
 
 const PLAID_ENV = process.env.REACT_APP_PLAID_ENV || 'sandbox';
-const IS_PROCESSOR = process.env.REACT_APP_IS_PROCESSOR;
 
 interface Props {
   user: UserType;
@@ -35,8 +34,6 @@ const Item: React.FC<Props> = (props: Props) => {
   const status = props.item != null ? props.item.status : 'good';
   const isSandbox = PLAID_ENV === 'sandbox';
   const isGoodState = status === 'good';
-  const isProcessor = IS_PROCESSOR === 'true' ? true : false;
-  const isIdentity = props.user.should_verify_identity;
   const id = props.item != null ? props.item.id : 0;
   const plaid_institution_id =
     props.item != null ? props.item.plaid_institution_id : null;
@@ -177,13 +174,7 @@ const Item: React.FC<Props> = (props: Props) => {
           // Plaid React Link cannot be rendered without a link token
           <div className="item__button">
             {token != null && props.linkButton && (
-              <LinkButton
-                userId={props.userId}
-                token={token}
-                itemId={null}
-                isProcessor={isProcessor}
-                isIdentity={isIdentity}
-              />
+              <LinkButton userId={props.userId} token={token} itemId={null} />
             )}
           </div>
         )}

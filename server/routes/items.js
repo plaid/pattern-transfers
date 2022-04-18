@@ -34,8 +34,6 @@ const router = express.Router();
  * @param {string} institutionId the Plaid institution ID of the new item.
  * @param {string} userId the Plaid user ID of the active user.
  * @param {object} accounts the accounts chosen by the user from the onSuccess metadata.
- * @param {boolean} isAuth false if developer is using a Plaid partner (processor)
- * @param {boolean} isIdentity true if in identity mode.
  */
 router.post(
   '/',
