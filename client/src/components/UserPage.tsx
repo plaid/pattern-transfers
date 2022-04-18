@@ -5,18 +5,11 @@ import Button from 'plaid-threads/Button';
 import { Institution } from 'plaid/dist/api';
 import { LinkButton } from '.';
 
-import {
-  RouteInfo,
-  ItemType,
-  AccountType,
-  AppFundType,
-  UserType,
-} from './types';
+import { RouteInfo, ItemType, AccountType, UserType } from './types';
 import {
   useItems,
   useAccounts,
   useUsers,
-  useInstitutions,
   useLink,
   useTransfers,
 } from '../services';
@@ -35,22 +28,16 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     updated_at: '',
   });
   const { generateLinkToken, linkTokens, deleteLinkToken } = useLink();
-  const {
-    generateTransferIntentId,
-    transfersData,
-    getTransfersByUser,
-  } = useTransfers();
+  const { generateTransferIntentId } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
-  const [institution, setInstitution] = useState<Institution | null>(null);
 
   const [token, setToken] = useState<string | null>('');
   const [subscriptionAmount, setSubscriptionAmount] = useState('0');
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
-  const { institutionsById, getInstitutionById } = useInstitutions();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -93,20 +80,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setAccount(accountsByUser[userId][0]);
     }
   }, [accountsByUser, userId, numOfItems]);
-
-  // update data store with institutions
-  useEffect(() => {
-    if (item != null) {
-      getInstitutionById(item.plaid_institution_id);
-    }
-  }, [getInstitutionById, item]);
-
-  // update state institution from data store
-  useEffect(() => {
-    if (item != null) {
-      setInstitution(institutionsById[item.plaid_institution_id] || {});
-    }
-  }, [institutionsById, item]);
 
   useEffect(() => {
     if (numOfItems === 0) {

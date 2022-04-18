@@ -38,7 +38,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             label="Subscription price"
             onChange={e => {
               setTransferAmount(e.currentTarget.value);
-              // setValue(e.currentTarget.value);
             }}
             className="transfer-funds__input"
           />

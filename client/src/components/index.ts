@@ -1,4 +1,3 @@
-export { default as Transfers } from './Transfers';
 export { default as AddUserForm } from './AddUserForm';
 export { default as Banner } from './Banner';
 export { default as UserPage } from './UserPage';
