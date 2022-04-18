@@ -4,7 +4,13 @@ import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
 import { LinkButton } from '.';
 
-import { RouteInfo, ItemType, AccountType, UserType } from './types';
+import {
+  RouteInfo,
+  ItemType,
+  AccountType,
+  UserType,
+  TransferType,
+} from './types';
 import {
   useItems,
   useAccounts,
@@ -13,7 +19,7 @@ import {
   useTransfers,
 } from '../services';
 
-import { Banner, Item, ErrorMessage, TransferForm } from '.';
+import { Banner, Item, ErrorMessage, TransferForm, UserTransfers } from '.';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [user, setUser] = useState<UserType>({
@@ -22,8 +28,15 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     created_at: '',
     updated_at: '',
   });
+
+  const [transfers, setTransfers] = useState<null | TransferType[]>(null);
+
   const { generateLinkToken, linkTokens } = useLink();
-  const { generateTransferIntentId } = useTransfers();
+  const {
+    generateTransferIntentId,
+    getTransfersByUser,
+    transfersByUser,
+  } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
@@ -84,6 +97,20 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [linkTokens, userId, numOfItems]);
 
+  // update data store with the user's transfers
+  useEffect(() => {
+    getTransfersByUser(userId);
+  }, [getTransfersByUser, userId]);
+
+  // update no of items from data store
+  useEffect(() => {
+    if (transfersByUser[userId] != null) {
+      setTransfers(transfersByUser[userId]);
+    } else {
+      setTransfers(null);
+    }
+  }, [transfersByUser, userId]);
+
   const initiateLink = async () => {
     // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
     const transfer_intent_id = await generateTransferIntentId(
@@ -95,6 +122,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     await generateLinkToken(userId, null, transfer_intent_id);
   };
   const accountName = account != null ? `${account.name}` : '';
+  const numOfTransfers = transfers == null ? 0 : transfers.length;
   const myAccountMessage =
     numOfItems === 0
       ? [
@@ -146,21 +174,28 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             </div>
           )}
           {numOfItems > 0 && (
-            <Item
-              user={user}
-              userId={userId}
-              removeButton={false}
-              linkButton={numOfItems === 0}
-              numOfItems={numOfItems}
-              accountName={accountName}
-              item={item}
-              subscriptionAmount={subscriptionAmount}
-            />
+            <>
+              <Item
+                user={user}
+                userId={userId}
+                removeButton={false}
+                linkButton={numOfItems === 0}
+                numOfItems={numOfItems}
+                accountName={accountName}
+                item={item}
+                subscriptionAmount={subscriptionAmount}
+              />
+              <UserTransfers transfers={transfers} />
+            </>
           )}
           <ErrorMessage />
         </div>
         <div className="user-page-right">
-          <TransferForm setSubscriptionAmount={setSubscriptionAmount} />
+          <TransferForm
+            setSubscriptionAmount={setSubscriptionAmount}
+            numOfItems={numOfItems}
+            numOfTransfers={numOfTransfers}
+          />
         </div>
       </div>
     </div>

@@ -38,6 +38,9 @@ type TransfersAction =
 interface TransfersContextShape extends TransfersState {
   dispatch: Dispatch<TransfersAction>;
   transfersData: TransfersState;
+  transfersByUser: {
+    [userId: number]: TransferType[];
+  };
   getTransfersByUser: (userId: number) => void;
   generateTransferIntentId: (
     userId: number,
