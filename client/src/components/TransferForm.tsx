@@ -9,12 +9,12 @@ interface Props {
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
-  const [value, setValue] = useState('');
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     props.setSubscriptionAmount(transferAmount);
-    setValue(
-      `$${Number(value)
+    setTransferAmount(
+      `$${Number(transferAmount)
         .toFixed(2)
         .toString()}`
     );
@@ -32,13 +32,13 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           <NumberInput
             id="transferAmount"
             name="transfer amount"
-            value={value}
+            value={transferAmount}
             required
-            placeholder={value}
+            placeholder={transferAmount}
             label="Subscription price"
             onChange={e => {
               setTransferAmount(e.currentTarget.value);
-              setValue(e.currentTarget.value);
+              // setValue(e.currentTarget.value);
             }}
             className="transfer-funds__input"
           />

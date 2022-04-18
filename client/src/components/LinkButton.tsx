@@ -26,8 +26,8 @@ interface Props {
   userId: number;
   itemId?: number | null;
   children?: React.ReactNode;
-  isProcessor?: boolean;
-  isIdentity?: boolean;
+  isProcessor?: boolean; // will remove later
+  isIdentity?: boolean; // will remove later
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
@@ -63,18 +63,17 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           props.userId
         );
         getItemsByUser(props.userId, true);
-        let transferUIDataResponse, transferDataResponse;
+
+        // use transfer_intent_id to obtain transfer_id from transferUI status
         if (transfersData.transfer_intent_id != null) {
-          transferUIDataResponse = await getTransferUIStatus(
+          const transferUIDataResponse = await getTransferUIStatus(
             transfersData.transfer_intent_id
           );
-        }
-        if (transferUIDataResponse != null) {
-          transferDataResponse = await getTransferStatus(
+
+          // use transfer_id to obtain information about the transfer and add info to existing transfer in database
+          const transferDataResponse = await getTransferStatus(
             transferUIDataResponse.data.transfer_intent.transfer_id
           );
-        }
-        if (transferDataResponse != null) {
           const {
             account_id,
             id,
@@ -117,7 +116,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     logExit(error, metadata, props.userId);
     if (error != null) {
       if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, 'akdlf;ljkd');
+        await generateLinkToken(props.userId, props.itemId, 'akdlf;ljkd'); // will fix later
       } else {
         setError(
           error.error_code,
@@ -140,7 +139,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   };
 
   const config: PlaidLinkOptionsWithLinkToken = {
-    //@ts-ignore
+    //@ts-ignore  (will fix this later)
     onSuccess,
     onExit,
     onEvent,
@@ -158,7 +157,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     if (props.isOauth && ready) {
       open();
     } else if (ready) {
-      console.log('inside link button');
       localStorage.setItem(
         'oauthConfig',
         JSON.stringify({

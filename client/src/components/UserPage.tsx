@@ -117,6 +117,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   }, [linkTokens, userId, numOfItems]);
 
   const initiateLink = async () => {
+    // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
     const transfer_intent_id = await generateTransferIntentId(
       userId,
       Number(subscriptionAmount)
