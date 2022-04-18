@@ -174,6 +174,7 @@ const Item: React.FC<Props> = (props: Props) => {
           </Button>
         )}
         {(props.removeButton || (props.linkButton && numOfItems === 0)) && (
+          // Plaid React Link cannot be rendered without a link token
           <div className="item__button">
             {token != null && props.linkButton && (
               <LinkButton
