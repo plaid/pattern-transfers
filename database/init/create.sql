@@ -146,11 +146,11 @@ AS
 
 
 -- TRANSFERS
--- This table is used to store the transfers associated with each item. The view returns all the
--- data from the transfers table and some data from the items view. For more info on the Plaid
+-- This table is used to store the transfers associated with each item.  The view returns the same data
+-- as the table, we're just using both to maintain consistency with our other tables. For more info on the Plaid
 -- Transfers schema, see the docs page:  https://plaid.com/docs/products/transfer/#transfercreate
 
-    CREATE TABLE transfers_table
+CREATE TABLE transfers_table
 (
   id SERIAL PRIMARY KEY,
   item_id integer REFERENCES items_table(id) ON DELETE CASCADE,
@@ -190,6 +190,39 @@ AS
     updated_at
   FROM
     transfers_table;
+
+-- Payments
+-- This table is used to store the payments associated with each user.  The view returns the same data
+-- as the table; we're just using both to maintain consistency with our other tables.
+
+CREATE TABLE payments_table
+(
+  id SERIAL PRIMARY KEY,
+  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
+  payments_total numeric,
+  monthly_payment numeric,
+  number_of_payments numeric,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+CREATE TRIGGER payments_updated_at_timestamp
+BEFORE UPDATE ON payments_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE VIEW payments
+AS
+  SELECT
+    id,
+    user_id,
+    payments_total,
+    monthly_payment,
+    number_of_payments,
+    created_at,
+    updated_at
+  FROM
+    payments_table;
 
 
 

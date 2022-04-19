@@ -68,6 +68,14 @@ export const addTransferInfo = (
     sweepStatus,
     itemId,
   });
+// payments
+
+export const getPaymentsByUser = (userId: number) =>
+  api.get(`/users/${userId}/payments`);
+export const addPayment = (userId: number, paymentAmount: number) =>
+  api.put(`/payments/${userId}/add_payment`, { paymentAmount });
+export const setMonthlyPayment = (userId: number, monthlyPayment: number) =>
+  api.put(`/payments/${userId}/set_monthly_payment`, { monthlyPayment });
 
 // items
 export const getItemById = (id: number) => api.get(`/items/${id}`);

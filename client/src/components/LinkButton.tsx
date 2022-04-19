@@ -17,6 +17,8 @@ import {
   getTransferUIStatus,
   getTransferStatus,
   addTransferInfo,
+  addPayment,
+  getPaymentsByUser,
 } from '../services/api';
 import { useItems, useLink, useErrors, useTransfers } from '../services';
 import { TransferSuccessMetadata } from './types';
@@ -78,6 +80,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             origination_account_id,
             status,
             sweep_status,
+            amount,
           } = transferDataResponse.data.transfer;
           // update database with information regarding the transfer
           await addTransferInfo(
@@ -89,9 +92,11 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             sweep_status,
             data.items[0].id
           );
+          await addPayment(props.userId, Number(amount));
         }
 
         await getTransfersByUser(props.userId);
+        await getPaymentsByUser(props.userId);
 
         // const transferData = await getTransferStatus(
         //   transferUIData.data.transfer_intent

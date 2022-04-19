@@ -17,6 +17,7 @@ import {
   useUsers,
   useLink,
   useTransfers,
+  usePayments,
 } from '../services';
 
 import { Banner, Item, ErrorMessage, TransferForm, UserTransfers } from '.';
@@ -43,7 +44,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   const [token, setToken] = useState<string | null>('');
   const [subscriptionAmount, setSubscriptionAmount] = useState('0');
+  const [numberOfPayments, setNumberOfPayments] = useState(0);
+  const [monthlyPayment, setMonthlyPayment] = useState(0);
   const { getAccountsByUser, accountsByUser } = useAccounts();
+  const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
   const userId = Number(match.params.userId);
@@ -59,8 +63,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   useEffect(() => {
     if (userId != null) {
       getItemsByUser(userId, true);
+      getPaymentsByUser(userId);
     }
-  }, [getItemsByUser, userId]);
+  }, [getItemsByUser, getPaymentsByUser, userId]);
 
   // update state item from data store
   useEffect(() => {
@@ -88,6 +93,19 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setAccount(accountsByUser[userId][0]);
     }
   }, [accountsByUser, userId, numOfItems]);
+
+  // // update data store with the user's payments
+  useEffect(() => {
+    getPaymentsByUser(userId);
+  }, [getPaymentsByUser, userId, itemsByUser]);
+
+  // update state payment data from data store
+  useEffect(() => {
+    if (paymentsByUser[userId] != null && paymentsByUser[userId].length > 0) {
+      setNumberOfPayments(paymentsByUser[userId][0].number_of_payments);
+      setMonthlyPayment(paymentsByUser[userId][0].monthly_payment);
+    }
+  }, [paymentsByUser, userId, itemsByUser, numOfItems]);
 
   useEffect(() => {
     if (numOfItems === 0) {
@@ -122,7 +140,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     await generateLinkToken(userId, null, transfer_intent_id);
   };
   const accountName = account != null ? `${account.name}` : '';
-  const numOfTransfers = transfers == null ? 0 : transfers.length;
   const myAccountMessage =
     numOfItems === 0
       ? [
@@ -183,7 +200,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 numOfItems={numOfItems}
                 accountName={accountName}
                 item={item}
-                subscriptionAmount={subscriptionAmount}
+                subscriptionAmount={monthlyPayment.toString()}
               />
               <UserTransfers transfers={transfers} />
             </>
@@ -194,7 +211,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           <TransferForm
             setSubscriptionAmount={setSubscriptionAmount}
             numOfItems={numOfItems}
-            numOfTransfers={numOfTransfers}
+            numberOfPayments={numberOfPayments}
+            userId={userId}
+            monthlyPayment={monthlyPayment}
           />
         </div>
       </div>

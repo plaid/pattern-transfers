@@ -13,6 +13,7 @@ import { TransfersProvider } from './services/transfers';
 import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
 import { ErrorsProvider } from './services/errors';
+import { PaymentsProvider } from './services/payments';
 
 import './App.scss';
 
@@ -30,23 +31,25 @@ function App() {
       <InstitutionsProvider>
         <ItemsProvider>
           <TransfersProvider>
-            <LinkProvider>
-              <AccountsProvider>
-                <ErrorsProvider>
-                  <UsersProvider>
-                    <CurrentUserProvider>
-                      <Sockets />
-                      <Switch>
-                        <Route exact path="/" component={Landing} />
-                        <Route path="/user/:userId" component={UserPage} />
-                        <Route path="/oauth-link" component={OAuthLink} />
-                        <Route path="/admin" component={UserList} />
-                      </Switch>
-                    </CurrentUserProvider>
-                  </UsersProvider>
-                </ErrorsProvider>
-              </AccountsProvider>
-            </LinkProvider>
+            <PaymentsProvider>
+              <LinkProvider>
+                <AccountsProvider>
+                  <ErrorsProvider>
+                    <UsersProvider>
+                      <CurrentUserProvider>
+                        <Sockets />
+                        <Switch>
+                          <Route exact path="/" component={Landing} />
+                          <Route path="/user/:userId" component={UserPage} />
+                          <Route path="/oauth-link" component={OAuthLink} />
+                          <Route path="/admin" component={UserList} />
+                        </Switch>
+                      </CurrentUserProvider>
+                    </UsersProvider>
+                  </ErrorsProvider>
+                </AccountsProvider>
+              </LinkProvider>
+            </PaymentsProvider>
           </TransfersProvider>
         </ItemsProvider>
       </InstitutionsProvider>

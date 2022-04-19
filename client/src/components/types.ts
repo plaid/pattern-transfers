@@ -53,10 +53,12 @@ export interface UserType {
   updated_at: string;
 }
 
-export interface AppFundType {
+export interface PaymentType {
   id: number;
   user_id: number;
-  balance: number;
+  payments_total: number;
+  monthly_payment: number;
+  number_of_payments: number;
   created_at: string;
   updated_at: string;
 }

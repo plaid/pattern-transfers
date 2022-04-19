@@ -187,34 +187,5 @@ router.put(
     }
   })
 );
-/**
- * Retrieves transfers for a single user
- *
- * @param {string} userId the ID of the user.
- * @returns {Object[]} an array of transfers
- */
-router.get(
-  '/:userId',
-  asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const transfers = await retrieveTransfersByUserId(userId);
-    res.json(transfers);
-  })
-);
-
-/**
- * Retrieves transfers for a single item
- *
- * @param {string} itemId the ID of the item.
- * @returns {Object[]} an array of transfers
- */
-router.get(
-  '/:itemId',
-  asyncWrapper(async (req, res) => {
-    const { itemId } = req.params;
-    const transfers = await retrieveTransfersByItemId(utemId);
-    res.json(transfers);
-  })
-);
 
 module.exports = router;
