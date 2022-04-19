@@ -11,17 +11,23 @@ import {
 import { useHistory } from 'react-router-dom';
 
 import { logEvent, logSuccess, logExit } from '../util'; // functions to log and save errors and metadata from Link events.
-import { exchangeToken, setItemState } from '../services/api';
-import { useItems, useLink, useErrors } from '../services';
-
+import {
+  exchangeToken,
+  setItemState,
+  getTransferUIStatus,
+  getTransferStatus,
+  addTransferInfo,
+} from '../services/api';
+import { useItems, useLink, useErrors, useTransfers } from '../services';
+import { TransferSuccessMetadata } from './types';
 interface Props {
   isOauth?: boolean;
   token: string;
   userId: number;
   itemId?: number | null;
   children?: React.ReactNode;
-  isProcessor: boolean;
-  isIdentity: boolean;
+  isProcessor?: boolean; // will remove later
+  isIdentity?: boolean; // will remove later
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
@@ -29,14 +35,15 @@ interface Props {
 // is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
-  const { getItemsByUser, getItemById } = useItems();
+  const { getItemsByUser, getItemById, itemsByUser } = useItems();
   const { generateLinkToken } = useLink();
+  const { transfersData, getTransfersByUser } = useTransfers();
   const { setError, resetError } = useErrors();
 
   // define onSuccess, onExit and onEvent functions as configs for Plaid Link creation
   const onSuccess = async (
     publicToken: string,
-    metadata: PlaidLinkOnSuccessMetadata
+    metadata: TransferSuccessMetadata
   ) => {
     // log and save metatdata
     logSuccess(metadata, props.userId);
@@ -44,6 +51,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       // update mode: no need to exchange public token
       await setItemState(props.itemId, 'good');
       getItemById(props.itemId, true);
+
       // regular link mode: exchange public token for access token
     } else {
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
@@ -52,11 +60,40 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           publicToken,
           metadata.institution,
           metadata.accounts,
-          props.userId,
-          props.isProcessor,
-          props.isIdentity
+          props.userId
         );
         getItemsByUser(props.userId, true);
+
+        // use transfer_intent_id to obtain transfer_id from transferUI status
+        if (transfersData.transfer_intent_id != null) {
+          const transferUIDataResponse = await getTransferUIStatus(
+            transfersData.transfer_intent_id
+          );
+
+          // use transfer_id to obtain information about the transfer and add info to existing transfer in database
+          const transferDataResponse = await getTransferStatus(
+            transferUIDataResponse.data.transfer_intent.transfer_id
+          );
+          const {
+            account_id,
+            id,
+            origination_account_id,
+            status,
+            sweep_status,
+          } = transferDataResponse.data.transfer;
+          // update database with information regarding the transfer
+          await addTransferInfo(
+            transfersData.transfer_intent_id,
+            account_id,
+            id,
+            origination_account_id,
+            status,
+            sweep_status,
+            data.items[0].id
+          );
+        }
+
+        await getTransfersByUser(props.userId);
       } catch (e) {
         if (e instanceof Error) {
           console.error('error', e.message);
@@ -75,7 +112,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     logExit(error, metadata, props.userId);
     if (error != null) {
       if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, props.isIdentity);
+        await generateLinkToken(props.userId, props.itemId, 'akdlf;ljkd'); // will fix later
       } else {
         setError(
           error.error_code,
@@ -98,6 +135,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   };
 
   const config: PlaidLinkOptionsWithLinkToken = {
+    //@ts-ignore  (will fix this later)
     onSuccess,
     onExit,
     onEvent,

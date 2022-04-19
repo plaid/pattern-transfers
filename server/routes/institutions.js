@@ -80,7 +80,7 @@ router.get(
           url,
         },
       };
-      prettyPrintResponse(responseData);
+      // prettyPrintResponse(responseData);
       res.json(toArray(institution));
     } catch (error) {}
   })

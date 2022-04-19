@@ -19,7 +19,11 @@ const UpdateLink: React.FC<Props> = (props: Props) => {
   const { generateLinkToken, linkTokens } = useLink();
 
   const initiateLinkUpdate = async () => {
-    generateLinkToken(props.userId, props.itemId, false); // itemId is set because link is in update mode; isProcessor is true and isIdentity is false in update mode;
+    generateLinkToken(
+      props.userId,
+      props.itemId,
+      'string that i will fix later'
+    ); // itemId is set because link is in update mode; isProcessor is true and isIdentity is false in update mode;
     setShowLink(true);
   };
 

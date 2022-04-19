@@ -5,17 +5,19 @@ import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
 
 interface Props {
-  checkAmountAndInitiate: (amount: number) => void;
-  setShowTransfer: (arg: boolean) => void;
-  setShowInput: (arg: boolean) => void;
+  setSubscriptionAmount: (arg: string) => void;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    props.checkAmountAndInitiate(parseFloat(transferAmount));
-    setTransferAmount('');
-    props.setShowInput(false);
+    props.setSubscriptionAmount(transferAmount);
+    setTransferAmount(
+      `$${Number(transferAmount)
+        .toFixed(2)
+        .toString()}`
+    );
   };
 
   const amt =
@@ -24,35 +26,37 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       : '';
   return (
     <>
-      <div>
-        <div>
-          <h3 className="subheading">Transfer Funds</h3>{' '}
-        </div>
-        <h4 className="transfer__title">Enter amount</h4>
+      <div className="box developer-configs">
+        <h4 className="subheading">Developer Configs</h4>{' '}
         <form onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"
             name="transfer amount"
             value={transferAmount}
             required
-            placeholder="$0.00"
-            label="Transfer amount"
-            onChange={e => setTransferAmount(e.currentTarget.value)}
+            placeholder={transferAmount}
+            label="Subscription price"
+            onChange={e => {
+              setTransferAmount(e.currentTarget.value);
+            }}
             className="transfer-funds__input"
           />
-          <Button
-            small
-            centered
-            secondary
-            inline
-            onClick={() => props.setShowTransfer(false)}
-          >
-            Back
-          </Button>
-          <Button small centered inline type="submit">
-            Submit {amt}
+          <Button className="update-price_button" centered type="submit">
+            Update price {amt}
           </Button>
         </form>
+        <Button
+          className="admin-ledger_button"
+          secondary
+          centered
+          type="submit"
+        >
+          View Admin Ledger
+        </Button>
+        <p className="admin-note">
+          {' '}
+          Note: visit the admin page to simulate Transfer events.
+        </p>
       </div>
     </>
   );

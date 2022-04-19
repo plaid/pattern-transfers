@@ -20,7 +20,7 @@ interface Props {
   numOfItems: number;
   accountName: string;
   item: ItemType | null;
-  isIdentityChecked: boolean;
+  subscriptionAmount: string;
 }
 
 const Item: React.FC<Props> = (props: Props) => {
@@ -44,7 +44,7 @@ const Item: React.FC<Props> = (props: Props) => {
   const initiateLink = async () => {
     // only generate a link token upon a click from enduser to add a bank;
     // if done earlier, it may expire before enuser actually activates Link to add a bank.
-    await generateLinkToken(props.userId, null, isIdentity);
+    await generateLinkToken(props.userId, null, 'lkjlj'); // will fix this later
   };
 
   const handleSetBadState = () => {
@@ -94,7 +94,6 @@ const Item: React.FC<Props> = (props: Props) => {
       <div>
         {numOfItems !== 0 && (
           <>
-            <h3 className="subheading">Linked Bank</h3>
             <div className="item-info">
               <div>
                 <h3 className="heading">bank</h3>
@@ -105,6 +104,12 @@ const Item: React.FC<Props> = (props: Props) => {
               <div>
                 <h3 className="heading">account</h3>
                 <p className="value">{props.accountName}</p>
+                <p className="subscription-amount">
+                  $
+                  {Number(props.subscriptionAmount)
+                    .toFixed(2)
+                    .toString()}
+                </p>
               </div>
               <div>
                 <h3 className="heading"> login status</h3>
@@ -161,12 +166,11 @@ const Item: React.FC<Props> = (props: Props) => {
         )}
         {numOfItems === 0 && (
           <Button
-            large
-            inline
+            centered
             className="add-account__button"
             onClick={initiateLink}
           >
-            Add a bank account
+            Pay first month with bank account
           </Button>
         )}
         {(props.removeButton || (props.linkButton && numOfItems === 0)) && (

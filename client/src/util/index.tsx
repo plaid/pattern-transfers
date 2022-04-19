@@ -7,6 +7,7 @@ import {
 } from 'react-plaid-link';
 
 import { postLinkEvent as apiPostLinkEvent } from '../services/api';
+import { TransferSuccessMetadata } from '../components/types';
 
 /**
  * @desc converts number values into $ currency strings
@@ -28,20 +29,27 @@ export const logEvent = (
   metadata:
     | PlaidLinkOnEventMetadata
     | PlaidLinkOnSuccessMetadata
-    | PlaidLinkOnExitMetadata,
+    | PlaidLinkOnExitMetadata
+    | TransferSuccessMetadata,
   error?: PlaidLinkError | null
 ) => {
   console.log(`Link Event: ${eventName}`, metadata, error);
 };
 
 export const logSuccess = async (
-  { institution, accounts, link_session_id }: PlaidLinkOnSuccessMetadata,
+  {
+    institution,
+    accounts,
+    link_session_id,
+    transfer_status,
+  }: TransferSuccessMetadata,
   userId: number
 ) => {
   logEvent('onSuccess', {
     institution,
     accounts,
     link_session_id,
+    transfer_status,
   });
   await apiPostLinkEvent({
     userId,

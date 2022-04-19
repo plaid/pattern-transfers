@@ -49,6 +49,38 @@ export const updateAppFundsBalance = (
   accountId: string
 ) =>
   api.put(`/appFunds/${userId}/bank_transfer`, { transferAmount, accountId });
+// transfers
+export const getTransferIntentId = (
+  userId: number,
+  subscriptionAmount: number
+) => api.post(`/transfers/transfer_ui`, { userId, subscriptionAmount });
+
+export const getTransfersByUser = (userId: number) =>
+  api.get(`/users/${userId}/transfers`);
+
+export const getTransferUIStatus = (intentId: string) =>
+  api.post(`/transfers/transfer_ui/status`, { intentId });
+
+export const getTransferStatus = (transferId: string) =>
+  api.post(`/transfers/transfer/status`, { transferId });
+
+export const addTransferInfo = (
+  transferIntentId: string,
+  destinationId: string,
+  transferId: string,
+  originationId: string,
+  status: string,
+  sweepStatus: string,
+  itemId: number
+) =>
+  api.put(`/transfers/${transferIntentId}/add_info`, {
+    destinationId,
+    transferId,
+    originationId,
+    status,
+    sweepStatus,
+    itemId,
+  });
 
 // items
 export const getItemById = (id: number) => api.get(`/items/${id}`);
@@ -64,12 +96,12 @@ export const setItemToBadState = (itemId: number) =>
 export const getLinkToken = (
   userId: number,
   itemId: number,
-  isIdentity: boolean
+  transferIntentId: string
 ) =>
   api.post(`/link-token`, {
     userId,
     itemId,
-    isIdentity,
+    transferIntentId,
   });
 export const makeTransfer = (
   fundingSourceUrl: string,
@@ -96,9 +128,7 @@ export const exchangeToken = async (
   publicToken: string,
   institution: any,
   accounts: PlaidLinkOnSuccessMetadata['accounts'],
-  userId: number,
-  isProcessor: boolean,
-  isIdentity: boolean
+  userId: number
 ) => {
   try {
     const { data } = await api.post('/items', {
@@ -106,8 +136,6 @@ export const exchangeToken = async (
       institutionId: institution.institution_id,
       userId,
       accounts,
-      isProcessor,
-      isIdentity,
     });
     return data;
   } catch (err) {

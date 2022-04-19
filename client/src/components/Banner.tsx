@@ -11,16 +11,14 @@ const Banner: React.FC<Props> = (props: Props) => {
     'This is an example account funding app that outlines an end-to-end integration with Plaid.';
 
   const successText =
-    "This page shows a user's Plaid Pattern account funding balance and allows them to transfer funds from their financial institution to their Plaid Pattern account.";
+    "This page shows a user's payment settings page and allows them to link a bank account with Plaid to complete their subscription payments";
   const subheadingText = props.initialSubheading ? initialText : successText;
 
   return (
     <div id="banner" className="bottom-border-content">
       {!props.initialSubheading && <h4>username: {props.username} </h4>}
       <div className="header">
-        <h1 className="everpresent-content__heading">
-          Plaid Pattern Account Funding
-        </h1>
+        <h1 className="everpresent-content__heading">PlatyFlix</h1>
         <Button
           href="https://docs.google.com/forms/d/e/1FAIpQLSfF4Xev5w9RPGr7fNkSHjmtE_dj0ELuHRbDexQ7Tg2xoo6tQg/viewform"
           target="_blank"

@@ -29,7 +29,7 @@ shared styles
 .bottom-border-content {
   overflow: hidden;
   border-bottom: 1px solid $black1000;
-  margin-bottom: 4 * $unit;
+  margin-bottom: 2 * $unit;
   padding-bottom: 4 * $unit;
 }
 
@@ -153,6 +153,7 @@ Item
 
 .add-account__button {
   font-size: 2 * $unit;
+  width: 100%;
 }
 
 .item__callouts {
@@ -282,6 +283,15 @@ Transfers
   width: 40 * $unit;
 }
 
+.update-price_button {
+  width: 40 * $unit;
+  margin-bottom: 2 * $unit;
+}
+
+.admin-ledger_button {
+  width: 40 * $unit;
+}
+
 .callout {
   margin: 3 * $unit 0;
 }
@@ -309,4 +319,36 @@ user list
   &:hover {
     cursor: pointer;
   }
+}
+
+.subscription-amount {
+  font-weight: bold;
+}
+
+.user-page-container {
+  display: flex;
+}
+
+.user-page-left {
+  margin-right: 6 * $unit;
+  flex: 2;
+}
+
+.user-page-right {
+  flex: 1;
+}
+
+.developer-configs {
+  padding: 0 3 * $unit 3 * $unit 3 * $unit;
+
+  .admin-note {
+    margin-bottom: 0;
+    font-style: italic;
+    font-size: 1.2rem;
+  }
+}
+
+.nacha-compliant-note {
+  font-style: italic;
+  font-weight: 400;
 }

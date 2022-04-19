@@ -1,4 +1,3 @@
-export { default as Transfers } from './Transfers';
 export { default as AddUserForm } from './AddUserForm';
 export { default as Banner } from './Banner';
 export { default as UserPage } from './UserPage';
@@ -12,5 +11,4 @@ export { default as OAuthLink } from './OAuthLink';
 export { default as Login } from './Login';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as TransferForm } from './TransferForm';
-export { default as ConfirmIdentityForm } from './ConfirmIdentityForm';
 export { default as PatternAccount } from './PatternAccount';
