@@ -94,10 +94,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
         }
 
         await getTransfersByUser(props.userId);
-
-        // const transferData = await getTransferStatus(
-        //   transferUIData.data.transfer_intent
-        // );
       } catch (e) {
         if (e instanceof Error) {
           console.error('error', e.message);
