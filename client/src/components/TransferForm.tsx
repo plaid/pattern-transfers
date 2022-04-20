@@ -35,8 +35,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
   };
 
-  const initiateTransfer = () => {};
-
   const numberOfPayments =
     props.payments != null ? props.payments.number_of_payments : 0;
 
@@ -79,12 +77,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         </p>
         {props.numOfItems > 0 && (
           <div className="dev-configs-bottom-buttons-container">
-            <Button
-              className="initiate-payment_button"
-              centered
-              type="button"
-              onClick={initiateTransfer}
-            >
+            <Button className="initiate-payment_button" centered type="button">
               Initiate month {numberOfPayments + 1} payment
             </Button>
             <Button

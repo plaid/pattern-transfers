@@ -136,7 +136,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       monthlyPayment
     );
     // only generate a link token upon a click from enduser to add a bank;
-    // if done earlier, it may expire before enuser actually activates Link to add a bank.
+    // if done earlier, it may expire before enduser actually activates Link to add a bank.
     await generateLinkToken(userId, null, transfer_intent_id);
   };
   const accountName = account != null ? `${account.name}` : '';
