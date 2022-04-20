@@ -57,6 +57,9 @@ router.post(
         }
       );
 
+      // const transferIntentCreateResponse = await transferIntentCreate(
+      //   transIntentCreateRequest
+      // );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
       createTransfer(
@@ -101,8 +104,6 @@ router.post(
       const accountId = accounts[0]['plaid_account_id'];
 
       const transferAuthorizationCreateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         access_token: accessToken,
         account_id: accountId,
         type: 'debit',
@@ -113,22 +114,15 @@ router.post(
           legal_name: username,
         },
       };
-      const transferAuthorizationCreateResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/authorization/create`,
-        transferAuthorizationCreateRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
+
+      const transferAuthorizationCreateResponse = await plaid.transferAuthorizationCreate(
+        transferAuthorizationCreateRequest
       );
 
       const authorizationId =
         transferAuthorizationCreateResponse.data.authorization.id;
 
       const transferCreateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         authorization_id: authorizationId,
         access_token: accessToken,
         account_id: accountId,
@@ -142,14 +136,8 @@ router.post(
         },
       };
 
-      const transferCreateResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/create`,
-        transferCreateRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
+      const transferCreateResponse = await plaid.transferCreate(
+        transferCreateRequest
       );
 
       const {
@@ -198,14 +186,18 @@ router.post(
         transfer_intent_id: intentId,
       };
 
-      const transferIntentGetResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/intent/get`,
-        transIntentGetRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
+      // const transferIntentGetResponse = await axios.post(
+      //   `https://sandbox.plaid.com/transfer/intent/get`,
+      //   transIntentGetRequest,
+      //   {
+      //     headers: {
+      //       'content-type': 'application/json',
+      //     },
+      //   }
+      // );
+      console.log(transIntentGetRequest);
+      const transferIntentGetResponse = await plaid.transferIntentGet(
+        transIntentGetRequest
       );
 
       res.json(transferIntentGetResponse.data);
@@ -229,21 +221,11 @@ router.post(
     try {
       const { transferId, isTransferUI } = req.body;
       const transferGetRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         transfer_id: transferId,
       };
       console.log(transferId, isTransferUI);
 
-      const transferGetResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/get`,
-        transferGetRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
-      );
+      const transferGetResponse = await plaid.transferGet(transferGetRequest);
       if (isTransferUI) {
         return res.json(transferGetResponse.data);
       }
