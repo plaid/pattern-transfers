@@ -6,7 +6,7 @@ import { Institution } from 'plaid/dist/api';
 
 import { LinkButton, UpdateLink } from '.';
 import { useItems, useLink, useInstitutions, useAccounts } from '../services';
-import { UserType, ItemType } from './types';
+import { UserType, ItemType, PaymentType } from './types';
 import { setItemToBadState } from '../services/api';
 
 const PLAID_ENV = process.env.REACT_APP_PLAID_ENV || 'sandbox';
@@ -19,7 +19,7 @@ interface Props {
   numOfItems: number;
   accountName: string;
   item: ItemType | null;
-  subscriptionAmount: string;
+  payments: PaymentType | null;
 }
 
 const Item: React.FC<Props> = (props: Props) => {
@@ -37,6 +37,8 @@ const Item: React.FC<Props> = (props: Props) => {
   const id = props.item != null ? props.item.id : 0;
   const plaid_institution_id =
     props.item != null ? props.item.plaid_institution_id : null;
+  const monthlyPayment =
+    props.payments != null ? props.payments.monthly_payment : 0;
 
   const initiateLink = async () => {
     // only generate a link token upon a click from enduser to add a bank;
@@ -102,10 +104,7 @@ const Item: React.FC<Props> = (props: Props) => {
                 <h3 className="heading">account</h3>
                 <p className="value">{props.accountName}</p>
                 <p className="subscription-amount">
-                  $
-                  {Number(props.subscriptionAmount)
-                    .toFixed(2)
-                    .toString()}
+                  ${monthlyPayment.toFixed(2).toString()}
                 </p>
               </div>
               <div>
@@ -146,16 +145,6 @@ const Item: React.FC<Props> = (props: Props) => {
                       itemId={id}
                     />
                   )}
-                  <Button
-                    small
-                    inline
-                    tertiary
-                    className="action__button remove-bank"
-                    centered
-                    onClick={handleDeleteItem}
-                  >
-                    Remove Bank
-                  </Button>
                 </div>
               </div>
             </div>
@@ -170,14 +159,14 @@ const Item: React.FC<Props> = (props: Props) => {
             Pay first month with bank account
           </Button>
         )}
-        {(props.removeButton || (props.linkButton && numOfItems === 0)) && (
+        {/* {(props.removeButton || (props.linkButton && numOfItems === 0)) && (
           // Plaid React Link cannot be rendered without a link token
           <div className="item__button">
             {token != null && props.linkButton && (
               <LinkButton userId={props.userId} token={token} itemId={null} />
             )}
           </div>
-        )}
+        )} */}
       </div>
       <div className="item__callouts">
         {isSandbox && !isGoodState && (

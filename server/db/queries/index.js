@@ -36,7 +36,7 @@ const {
 
 const {
   createPayments,
-  updatePaymentsTotal,
+  addPayment,
   setMonthlyPayment,
   retrievePaymentsByUser,
 } = require('./payments');
@@ -73,7 +73,7 @@ module.exports = {
   retrieveUsers,
   // payments
   createPayments,
-  updatePaymentsTotal,
+  addPayment,
   setMonthlyPayment,
   retrievePaymentsByUser,
   // link events

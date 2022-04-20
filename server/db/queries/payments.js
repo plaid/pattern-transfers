@@ -17,8 +17,8 @@ const createPayments = async userId => {
       'INSERT INTO payments_table (user_id, payments_total, monthly_payment, number_of_payments) VALUES ($1, $2, $3, $4) RETURNING *;',
     values: [userId, 0, 0, 0],
   };
-  const { rows } = await db.query(query);
-  return rows[0];
+  const { rows: payments } = await db.query(query);
+  return payments[0];
 };
 
 /**
@@ -28,13 +28,14 @@ const createPayments = async userId => {
  * @param {number} paymentsTotal the updated total payments for a user.
  */
 
-const updatePaymentsTotal = async (userId, paymentsTotal, numberOfPayments) => {
+const addPayment = async (userId, paymentsTotal, numberOfPayments) => {
   const query = {
     text:
       'UPDATE payments SET payments_total = $1, number_of_payments = $2 WHERE user_id = $3',
     values: [paymentsTotal, numberOfPayments, userId],
   };
-  await db.query(query);
+  const { rows: payments } = await db.query(query);
+  return payments;
 };
 
 /**
@@ -49,8 +50,8 @@ const setMonthlyPayment = async (userId, monthlyPayment) => {
     text: 'UPDATE payments SET monthly_payment = $1 WHERE user_id = $2',
     values: [monthlyPayment, userId],
   };
-  const { rows } = await db.query(query);
-  return rows;
+  const { rows: payments } = await db.query(query);
+  return payments;
 };
 
 /**
@@ -70,7 +71,7 @@ const retrievePaymentsByUser = async userId => {
 
 module.exports = {
   createPayments,
-  updatePaymentsTotal,
+  addPayment,
   setMonthlyPayment,
   retrievePaymentsByUser,
 };

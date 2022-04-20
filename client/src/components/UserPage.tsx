@@ -10,6 +10,7 @@ import {
   AccountType,
   UserType,
   TransferType,
+  PaymentType,
 } from './types';
 import {
   useItems,
@@ -43,9 +44,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [account, setAccount] = useState<AccountType | null>(null);
 
   const [token, setToken] = useState<string | null>('');
-  const [subscriptionAmount, setSubscriptionAmount] = useState('0');
-  const [numberOfPayments, setNumberOfPayments] = useState(0);
-  const [monthlyPayment, setMonthlyPayment] = useState(0);
+  const [payments, setPayments] = useState<null | PaymentType>(null);
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
@@ -63,9 +62,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   useEffect(() => {
     if (userId != null) {
       getItemsByUser(userId, true);
-      getPaymentsByUser(userId);
     }
-  }, [getItemsByUser, getPaymentsByUser, userId]);
+  }, [getItemsByUser, userId]);
 
   // update state item from data store
   useEffect(() => {
@@ -97,15 +95,14 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   // // update data store with the user's payments
   useEffect(() => {
     getPaymentsByUser(userId);
-  }, [getPaymentsByUser, userId, itemsByUser]);
+  }, [getPaymentsByUser, userId]);
 
   // update state payment data from data store
   useEffect(() => {
     if (paymentsByUser[userId] != null && paymentsByUser[userId].length > 0) {
-      setNumberOfPayments(paymentsByUser[userId][0].number_of_payments);
-      setMonthlyPayment(paymentsByUser[userId][0].monthly_payment);
+      setPayments(paymentsByUser[userId][0]);
     }
-  }, [paymentsByUser, userId, itemsByUser, numOfItems]);
+  }, [paymentsByUser, userId]);
 
   useEffect(() => {
     if (numOfItems === 0) {
@@ -129,11 +126,14 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [transfersByUser, userId]);
 
+  const monthlyPayment = payments != null ? payments.monthly_payment : 0;
+
   const initiateLink = async () => {
     // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
+
     const transfer_intent_id = await generateTransferIntentId(
       userId,
-      Number(subscriptionAmount)
+      monthlyPayment
     );
     // only generate a link token upon a click from enduser to add a bank;
     // if done earlier, it may expire before enuser actually activates Link to add a bank.
@@ -146,10 +146,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           <span>Add a bank account to pay for your</span>,
           <span className="subscription-amount">
             {' '}
-            $
-            {`${Number(subscriptionAmount)
-              .toFixed(2)
-              .toString()}`}{' '}
+            ${`${monthlyPayment.toFixed(2).toString()}`}{' '}
           </span>,
           <span>PlatyFlix subscription using Plaid!!</span>,
         ]
@@ -180,7 +177,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
               {/* // Plaid React Link cannot be rendered without a link token */}
               <div className="item__button">
                 {token != null && (
-                  <LinkButton userId={userId} token={token} itemId={null} />
+                  <LinkButton
+                    userId={userId}
+                    token={token}
+                    itemId={null}
+                    setPayments={setPayments}
+                  />
                 )}
               </div>
               <p className="nacha-compliant-note">
@@ -199,8 +201,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 linkButton={numOfItems === 0}
                 numOfItems={numOfItems}
                 accountName={accountName}
+                payments={payments}
                 item={item}
-                subscriptionAmount={monthlyPayment.toString()}
               />
               <UserTransfers transfers={transfers} />
             </>
@@ -209,11 +211,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         </div>
         <div className="user-page-right">
           <TransferForm
-            setSubscriptionAmount={setSubscriptionAmount}
             numOfItems={numOfItems}
-            numberOfPayments={numberOfPayments}
+            payments={payments}
             userId={userId}
-            monthlyPayment={monthlyPayment}
+            setPayments={setPayments}
           />
         </div>
       </div>

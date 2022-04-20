@@ -5,7 +5,7 @@
 const express = require('express');
 const axios = require('axios');
 const {
-  updatePaymentsTotal,
+  addPayment,
   setMonthlyPayment,
   retrievePaymentsByUser,
 } = require('../db/queries');
@@ -26,18 +26,14 @@ router.put(
     const { userId } = req.params;
     const { paymentAmount } = req.body;
     const payments = await retrievePaymentsByUser(userId);
-    console.log(payments);
     const oldTotal = payments[0].payments_total;
     const oldNumberOfPayments = payments[0].number_of_payments;
     const newTotal = oldTotal + paymentAmount;
     const newNumberOfPayments = oldNumberOfPayments + 1;
-    console.log(newTotal, newNumberOfPayments);
-    const updatedPayments = await updatePaymentsTotal(
-      userId,
-      newTotal,
-      newNumberOfPayments
-    );
-    res.json(updatedPayments);
+    await addPayment(userId, newTotal, newNumberOfPayments);
+    const updatedPayments = await retrievePaymentsByUser(userId);
+    const response = { updatedPayments };
+    res.json(response);
   })
 );
 
@@ -56,9 +52,10 @@ router.put(
     const { userId } = req.params;
     const { monthlyPayment } = req.body;
     console.log(userId, monthlyPayment);
-    const payments = await setMonthlyPayment(userId, monthlyPayment);
-    console.log(payments);
-    res.json(payments);
+    await setMonthlyPayment(userId, monthlyPayment);
+    const updatedPayments = await retrievePaymentsByUser(userId);
+    const response = { updatedPayments };
+    res.json(response);
   })
 );
 
