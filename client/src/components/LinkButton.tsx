@@ -79,7 +79,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           const {
             account_id,
             id,
-            origination_account_id,
             status,
             sweep_status,
             amount,
@@ -89,7 +88,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             transfersData.transfer_intent_id,
             account_id,
             id,
-            origination_account_id,
             status,
             sweep_status,
             data.items[0].id

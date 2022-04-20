@@ -215,6 +215,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             payments={payments}
             userId={userId}
             setPayments={setPayments}
+            setTransfers={setTransfers}
+            item={item}
           />
         </div>
       </div>

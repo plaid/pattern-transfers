@@ -3,14 +3,16 @@ import React, { useState } from 'react';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
-import { setMonthlyPayment } from '../services/api';
-import { PaymentType } from './types';
+import { setMonthlyPayment, createTransfer, addPayment } from '../services/api';
+import { PaymentType, ItemType, TransferType } from './types';
 
 interface Props {
-  setPayments?: (payment: PaymentType) => void;
+  setPayments: (payment: PaymentType) => void;
+  setTransfers: (transfers: TransferType[]) => void;
   numOfItems: number;
   userId: number;
   payments: null | PaymentType;
+  item: null | ItemType;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
@@ -21,18 +23,28 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.userId,
       Number(transferAmount)
     );
-    // props.setSubscriptionAmount(
-    //   response.data.updatedPayments[0].monthly_payment.toString()
-    // );
-    if (props.setPayments != null) {
-      props.setPayments(response.data.updatedPayments[0]);
-    }
+
+    props.setPayments(response.data.updatedPayments[0]);
 
     await setTransferAmount(
       `$${Number(transferAmount)
         .toFixed(2)
         .toString()}`
     );
+  };
+  const itemId = props.item != null ? props.item.id : 0;
+  const monthlyPayment =
+    props.payments != null ? props.payments.monthly_payment : 0;
+
+  const initiateTransfer = async () => {
+    const transfersResponse = await createTransfer(
+      props.userId,
+      itemId,
+      monthlyPayment
+    );
+    props.setTransfers(transfersResponse.data.transfers);
+    const paymentsResponse = await addPayment(props.userId, monthlyPayment);
+    props.setPayments(paymentsResponse.data.updatedPayments[0]);
   };
 
   const numberOfPayments =
@@ -77,7 +89,12 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         </p>
         {props.numOfItems > 0 && (
           <div className="dev-configs-bottom-buttons-container">
-            <Button className="initiate-payment_button" centered type="button">
+            <Button
+              className="initiate-payment_button"
+              centered
+              type="button"
+              onClick={initiateTransfer}
+            >
               Initiate month {numberOfPayments + 1} payment
             </Button>
             <Button

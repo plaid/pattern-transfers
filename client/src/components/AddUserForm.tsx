@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 import TextInput from 'plaid-threads/TextInput';
-import Checkbox from 'plaid-threads/Checkbox';
 
 import { useUsers, useCurrentUser } from '../services';
-
-const PLAID_ENV = process.env.REACT_APP_PLAID_ENV;
 
 interface Props {
   hideForm: () => void;
 }
 const AddUserForm: React.FC<Props> = (props: Props) => {
-  const [username, setUsername] = useState('');
-  const [fullname, setFullname] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   const { addNewUser, getUsers } = useUsers();
   const { setNewUser } = useCurrentUser();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    await addNewUser(username, fullname);
-    setNewUser(username);
+    await addNewUser(`${firstName} ${lastName}`);
+    setNewUser(`${firstName} ${lastName}`);
     props.hideForm();
   };
 
@@ -27,6 +24,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     getUsers(true);
   }, [addNewUser, getUsers]);
 
+  // all users must have first and last name for ach transfers
   return (
     <div className="box add-user__form">
       <form onSubmit={handleSubmit}>
@@ -35,15 +33,26 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
           <div className="card">
             <div className="add-user__column-1">
               <TextInput
-                id="username"
-                name="username"
+                id="firstName"
+                name="firstName"
                 required
                 autoComplete="off"
                 className="input_field"
-                value={username}
-                placeholder="username"
-                label="Username"
-                onChange={e => setUsername(e.target.value)}
+                value={firstName}
+                placeholder="First name"
+                label="FirstName"
+                onChange={e => setFirstName(e.target.value)}
+              />
+              <TextInput
+                id="lastName"
+                name="lastName"
+                required
+                autoComplete="off"
+                className="input_field"
+                value={lastName}
+                placeholder="Last name"
+                label="LastName"
+                onChange={e => setLastName(e.target.value)}
               />
             </div>
             <div className="add-user__column-2">
