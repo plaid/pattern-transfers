@@ -24,7 +24,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       Number(transferAmount)
     );
 
-    props.setPayments(response.data.updatedPayments[0]);
+    props.setPayments(response.data[0]);
 
     await setTransferAmount(
       `$${Number(transferAmount)
@@ -42,9 +42,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       itemId,
       monthlyPayment
     );
-    props.setTransfers(transfersResponse.data.transfers);
+    props.setTransfers(transfersResponse.data);
     const paymentsResponse = await addPayment(props.userId, monthlyPayment);
-    props.setPayments(paymentsResponse.data.updatedPayments[0]);
+    console.log(paymentsResponse.data);
+    props.setPayments(paymentsResponse.data[0]);
   };
 
   const numberOfPayments =

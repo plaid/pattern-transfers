@@ -11,8 +11,11 @@ const {
   retrieveItemById,
   retrieveAccountsByUserId,
   retrieveTransfersByUserId,
+  updateTransferStatus,
+  retrieveTransferByPlaidTransferId,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
+const plaid = require('../plaid');
 
 const router = express.Router();
 
@@ -76,10 +79,13 @@ router.post(
 );
 
 /**
- * creates a transfer authorization for Transfer and retrieves an authorization_id
+ * creates a transfer authorization for Transfer, retrieves an authorization_id to use to
+ * create a transfer.
  *
  * @param {string} subscriptionAmount the amount of the transfer.
- * @returns {Object}  transfer intent response
+ * @param {number} userId the user id of the user.
+ * @param {number} itemId the item id of the item.
+ * @returns {Object}  transfers by user.
  */
 
 router.post(
@@ -145,7 +151,7 @@ router.post(
           },
         }
       );
-      console.log('create response', transferAuthorizationCreateResponse.data);
+
       const {
         id,
         account_id,
@@ -166,8 +172,7 @@ router.post(
       );
 
       const transfers = await retrieveTransfersByUserId(userId);
-      const response = { transfers };
-      res.json(response);
+      res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
       return res.json(err.response.data);
@@ -222,12 +227,13 @@ router.post(
   '/transfer/status',
   asyncWrapper(async (req, res) => {
     try {
-      const { transferId } = req.body;
+      const { transferId, isTransferUI } = req.body;
       const transferGetRequest = {
         client_id: PLAID_CLIENT_ID,
         secret: PLAID_SECRET_SANDBOX,
         transfer_id: transferId,
       };
+      console.log(transferId, isTransferUI);
 
       const transferGetResponse = await axios.post(
         `https://sandbox.plaid.com/transfer/get`,
@@ -238,8 +244,18 @@ router.post(
           },
         }
       );
-
-      res.json(transferGetResponse.data);
+      if (isTransferUI) {
+        return res.json(transferGetResponse.data);
+      }
+      await updateTransferStatus(
+        transferGetResponse.data.transfer.status,
+        transferGetResponse.data.transfer.sweep_status,
+        transferId
+      );
+      const updatedTransfer = await retrieveTransferByPlaidTransferId(
+        transferId
+      );
+      res.json(updatedTransfer);
     } catch (err) {
       console.log('error while getting status', err.response.data);
       return res.json(err.response.data);

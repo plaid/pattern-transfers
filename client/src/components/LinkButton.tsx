@@ -22,7 +22,6 @@ import {
 } from '../services/api';
 import { useItems, useLink, useErrors, useTransfers } from '../services';
 import { TransferSuccessMetadata, PaymentType } from './types';
-import { PaymentStatusUpdateWebhookNewPaymentStatusEnum } from 'plaid/dist/api';
 interface Props {
   isOauth?: boolean;
   token: string;
@@ -74,7 +73,8 @@ const LinkButton: React.FC<Props> = (props: Props) => {
 
           // use transfer_id to obtain information about the transfer and add info to existing transfer in database
           const transferDataResponse = await getTransferStatus(
-            transferUIDataResponse.data.transfer_intent.transfer_id
+            transferUIDataResponse.data.transfer_intent.transfer_id,
+            true
           );
           const {
             account_id,
@@ -95,10 +95,8 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           const response = await addPayment(props.userId, Number(amount));
 
           if (props.setPayments != null) {
-            props.setPayments(response.data.updatedPayments[0]);
+            props.setPayments(response.data[0]);
           }
-
-          console.log('payment response', response.data);
         }
         await getTransfersByUser(props.userId);
         await getPaymentsByUser(props.userId);
