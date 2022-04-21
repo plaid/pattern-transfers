@@ -8,7 +8,7 @@ interface Props {
 
 const Banner: React.FC<Props> = (props: Props) => {
   const initialText =
-    'This is an example account funding app that outlines an end-to-end integration with Plaid.';
+    'This is an example transfers app that outlines an end-to-end integration with Plaid.';
 
   const successText =
     "This page shows a user's payment settings page and allows them to link a bank account with Plaid to complete their subscription payments";

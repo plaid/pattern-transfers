@@ -18,13 +18,10 @@ const {
 } = require('./transfers');
 const {
   createItem,
-  deleteItem,
   retrieveItemById,
   retrieveItemByPlaidAccessToken,
-  retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
   retrieveItemsByUser,
-  updateItemStatus,
 } = require('./items');
 const { createPlaidApiEvent } = require('./plaidApiEvents');
 
@@ -60,13 +57,10 @@ module.exports = {
   retrieveTransferByPlaidTransferId,
   // items
   createItem,
-  deleteItem,
   retrieveItemById,
   retrieveItemByPlaidAccessToken,
-  retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
   retrieveItemsByUser,
-  updateItemStatus,
   // plaid api events
   createPlaidApiEvent,
   // users

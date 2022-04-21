@@ -74,23 +74,6 @@ const retrieveItemByPlaidAccessToken = async accessToken => {
 /**
  * Retrieves a single item.
  *
- * @param {string} plaidInstitutionId the Plaid institution ID of the item.
- * @param {number} userId the ID of the user.
- * @returns {Object} an item.
- */
-const retrieveItemByPlaidInstitutionId = async (plaidInstitutionId, userId) => {
-  const query = {
-    text:
-      'SELECT * FROM items WHERE plaid_institution_id = $1 AND user_id = $2',
-    values: [plaidInstitutionId, userId],
-  };
-  const { rows: existingItems } = await db.query(query);
-  return existingItems[0];
-};
-
-/**
- * Retrieves a single item.
- *
  * @param {string} plaidItemId the Plaid ID of the item.
  * @returns {Object} an item.
  */
@@ -119,40 +102,10 @@ const retrieveItemsByUser = async userId => {
   return items;
 };
 
-/**
- * Updates the status for a single item.
- *
- * @param {string} itemId the Plaid item ID of the item.
- * @param {string} status the status of the item.
- */
-const updateItemStatus = async (itemId, status) => {
-  const query = {
-    text: 'UPDATE items SET status = $1 WHERE id = $2',
-    values: [status, itemId],
-  };
-  await db.query(query);
-};
-
-/**
- * Removes a single item. The database will also remove related accounts and transactions.
- *
- * @param {string} itemId the id of the item.
- */
-const deleteItem = async itemId => {
-  const query = {
-    text: `DELETE FROM items_table WHERE id = $1`,
-    values: [itemId],
-  };
-  await db.query(query);
-};
-
 module.exports = {
   createItem,
-  deleteItem,
   retrieveItemById,
   retrieveItemByPlaidAccessToken,
-  retrieveItemByPlaidInstitutionId,
   retrieveItemByPlaidItemId,
   retrieveItemsByUser,
-  updateItemStatus,
 };

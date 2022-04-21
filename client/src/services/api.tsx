@@ -85,7 +85,6 @@ export const setMonthlyPayment = (userId: number, monthlyPayment: number) =>
 export const getItemById = (id: number) => api.get(`/items/${id}`);
 export const getItemsByUser = (userId: number) =>
   api.get(`/users/${userId}/items`);
-export const deleteItemById = (id: number) => api.delete(`/items/${id}`);
 export const setItemState = (itemId: number, status: string) =>
   api.put(`items/${itemId}`, { status });
 // This endpoint is only availble in the sandbox enviornment
