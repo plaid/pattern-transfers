@@ -47,19 +47,10 @@ router.post(
       };
       let transferIntentId;
 
-      const transferIntentCreateResponse = await axios.post(
-        `https://sandbox.plaid.com/transfer/intent/create`,
-        transIntentCreateRequest,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
+      console.log(transIntentCreateRequest);
+      const transferIntentCreateResponse = await plaid.transferIntentCreate(
+        transIntentCreateRequest
       );
-
-      // const transferIntentCreateResponse = await transferIntentCreate(
-      //   transIntentCreateRequest
-      // );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
       createTransfer(
@@ -186,16 +177,6 @@ router.post(
         transfer_intent_id: intentId,
       };
 
-      // const transferIntentGetResponse = await axios.post(
-      //   `https://sandbox.plaid.com/transfer/intent/get`,
-      //   transIntentGetRequest,
-      //   {
-      //     headers: {
-      //       'content-type': 'application/json',
-      //     },
-      //   }
-      // );
-      console.log(transIntentGetRequest);
       const transferIntentGetResponse = await plaid.transferIntentGet(
         transIntentGetRequest
       );

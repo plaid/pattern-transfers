@@ -49,7 +49,6 @@ router.put(
   asyncWrapper(async (req, res) => {
     const { userId } = req.params;
     const { monthlyPayment } = req.body;
-    console.log(userId, monthlyPayment);
     await setMonthlyPayment(userId, monthlyPayment);
     const updatedPayments = await retrievePaymentsByUser(userId);
     res.json(updatedPayments);
