@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Callout from 'plaid-threads/Callout';
 import { Institution } from 'plaid/dist/api';
 
-import { useItems, useLink, useInstitutions } from '../services';
+import { useInstitutions } from '../services';
 import { UserType, ItemType, PaymentType } from './types';
 
 interface Props {
