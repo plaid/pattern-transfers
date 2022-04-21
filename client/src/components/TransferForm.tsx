@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
@@ -16,7 +15,6 @@ interface Props {
   item: null | ItemType;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
-  const history = useHistory();
   const [transferAmount, setTransferAmount] = useState('');
 
   const handleSubmit = async (e: any) => {
@@ -25,7 +23,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.userId,
       Number(transferAmount)
     );
-
     props.setPayments(response.data[0]);
 
     await setTransferAmount(
@@ -34,7 +31,9 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         .toString()}`
     );
   };
+
   const itemId = props.item != null ? props.item.id : 0;
+
   const monthlyPayment =
     props.payments != null ? props.payments.monthly_payment : 0;
 
@@ -46,7 +45,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
     props.setTransfers(transfersResponse.data);
     const paymentsResponse = await addPayment(props.userId, monthlyPayment);
-    console.log(paymentsResponse.data);
     props.setPayments(paymentsResponse.data[0]);
   };
 
@@ -57,6 +55,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     parseFloat(transferAmount) > 0
       ? currencyFilter(parseFloat(transferAmount))
       : '';
+
   return (
     <>
       <div className="box developer-configs">

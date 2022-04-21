@@ -84,7 +84,6 @@ export function TransfersProvider(props: any) {
    */
   const getTransfersByUser = useCallback(async userId => {
     const { data: transfers } = await apiGetTransfersByUser(userId);
-    console.log(transfers);
     dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
   }, []);
 

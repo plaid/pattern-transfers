@@ -386,7 +386,7 @@ user list
 .ledger_table_row {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 6fr;
+  grid-template-columns: 2fr 2fr 2fr 3fr 10fr;
   margin-bottom: $unit;
   align-items: center;
 }
@@ -406,6 +406,10 @@ user list
   &.btn1 {
     margin-left: 0px;
   }
+}
+
+.sweep {
+  margin-bottom: 3 * $unit;
 }
 
 .return-to-payments {
