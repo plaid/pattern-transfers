@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { useHistory } from 'react-router-dom';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
@@ -9,12 +9,14 @@ import { PaymentType, ItemType, TransferType } from './types';
 interface Props {
   setPayments: (payment: PaymentType) => void;
   setTransfers: (transfers: TransferType[]) => void;
+  setIsLedgerView: (arg: boolean) => void;
   numOfItems: number;
   userId: number;
   payments: null | PaymentType;
   item: null | ItemType;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
+  const history = useHistory();
   const [transferAmount, setTransferAmount] = useState('');
 
   const handleSubmit = async (e: any) => {
@@ -83,7 +85,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           className="developer-configs_button admin-ledger_button"
           secondary
           centered
-          type="submit"
+          type="button"
+          onClick={() => {
+            props.setIsLedgerView(true);
+          }}
         >
           View Admin Ledger
         </Button>

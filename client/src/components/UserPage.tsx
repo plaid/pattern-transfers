@@ -28,7 +28,7 @@ import {
   ErrorMessage,
   TransferForm,
   UserTransfers,
-  Admin,
+  Ledger,
 } from '.';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
@@ -38,7 +38,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     created_at: '',
     updated_at: '',
   });
-
+  const [isLedgerView, setIsLedgerView] = useState(false);
   const [transfers, setTransfers] = useState<null | TransferType[]>(null);
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
@@ -173,82 +173,96 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         LOGOUT
       </NavigationLink>
 
-      <Banner username={user.username} />
+      <Banner
+        username={user.username}
+        isLedgerView={isLedgerView}
+        setIsLedgerView={setIsLedgerView}
+      />
       <div className="user-page-container">
-        <div className="user-page-left">
-          <h4>My Account: Manage Payments</h4>
-          <p>{myAccountMessage}</p>
-          {numOfItems === 0 && (
-            <div>
-              <Button
-                centered
-                className="add-account__button"
-                onClick={initiateLink}
-              >
-                Pay first month with bank account
-              </Button>
-              {/* // Plaid React Link cannot be rendered without a link token */}
-              <div className="item__button">
-                {token != null && (
-                  <LinkButton
+        {!isLedgerView && (
+          <div className="user-view-container">
+            <div className="user-page-left">
+              <h4>My Account: Manage Payments</h4>
+              <p>{myAccountMessage}</p>
+              {numOfItems === 0 && (
+                <div>
+                  <Button
+                    centered
+                    className="add-account__button"
+                    onClick={initiateLink}
+                  >
+                    Pay first month with bank account
+                  </Button>
+                  {/* // Plaid React Link cannot be rendered without a link token */}
+                  <div className="item__button">
+                    {token != null && (
+                      <LinkButton
+                        userId={userId}
+                        token={token}
+                        itemId={null}
+                        setPayments={setPayments}
+                      />
+                    )}
+                  </div>
+                  <p className="nacha-compliant-note">
+                    IMPORTANT NOTE: You will need to include appropraite legal
+                    authorization language here to capture NACHA-compliant
+                    authorzation prior to initiating a transfer.
+                  </p>
+                  <div className="item__callouts">
+                    {linkTokens.error.error_code != null && (
+                      <Callout warning>
+                        <div>
+                          Unable to fetch link_token: please make sure your
+                          backend server is running and that your .env file has
+                          been configured correctly.
+                        </div>
+                        <div>
+                          Error Code: <code>{linkTokens.error.error_code}</code>
+                        </div>
+                        <div>
+                          Error Type: <code>{linkTokens.error.error_type}</code>{' '}
+                        </div>
+                        <div>
+                          Error Message: {linkTokens.error.error_message}
+                        </div>
+                      </Callout>
+                    )}
+                  </div>
+                </div>
+              )}
+              {numOfItems > 0 && (
+                <>
+                  <Item
+                    user={user}
                     userId={userId}
-                    token={token}
-                    itemId={null}
-                    setPayments={setPayments}
+                    removeButton={false}
+                    linkButton={numOfItems === 0}
+                    accountName={accountName}
+                    payments={payments}
+                    item={item}
                   />
-                )}
-              </div>
-              <p className="nacha-compliant-note">
-                IMPORTANT NOTE: You will need to include appropraite legal
-                authorization language here to capture NACHA-compliant
-                authorzation prior to initiating a transfer.
-              </p>
-              <div className="item__callouts">
-                {linkTokens.error.error_code != null && (
-                  <Callout warning>
-                    <div>
-                      Unable to fetch link_token: please make sure your backend
-                      server is running and that your .env file has been
-                      configured correctly.
-                    </div>
-                    <div>
-                      Error Code: <code>{linkTokens.error.error_code}</code>
-                    </div>
-                    <div>
-                      Error Type: <code>{linkTokens.error.error_type}</code>{' '}
-                    </div>
-                    <div>Error Message: {linkTokens.error.error_message}</div>
-                  </Callout>
-                )}
-              </div>
+                  <UserTransfers transfers={transfers} />
+                </>
+              )}
+              <ErrorMessage />
             </div>
-          )}
-          {numOfItems > 0 && (
-            <>
-              <Item
-                user={user}
-                userId={userId}
-                removeButton={false}
-                linkButton={numOfItems === 0}
-                accountName={accountName}
+            <div className="user-page-right">
+              <TransferForm
+                numOfItems={numOfItems}
                 payments={payments}
+                userId={userId}
+                setPayments={setPayments}
+                setTransfers={setTransfers}
+                setIsLedgerView={setIsLedgerView}
                 item={item}
               />
-              <UserTransfers transfers={transfers} />
-            </>
-          )}
-          <ErrorMessage />
-        </div>
-        <div className="user-page-right">
-          <TransferForm
-            numOfItems={numOfItems}
-            payments={payments}
-            userId={userId}
-            setPayments={setPayments}
-            setTransfers={setTransfers}
-            item={item}
-          />
-        </div>
+            </div>
+          </div>
+        )}
+        {isLedgerView && (
+          <Ledger transfers={transfers} setIsLedgerView={setIsLedgerView} />
+        )}
       </div>
     </div>
   );

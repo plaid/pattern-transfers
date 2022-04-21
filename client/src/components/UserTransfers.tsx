@@ -12,7 +12,7 @@ const UserTransfers: React.FC<Props> = (props: Props) => {
       ? null
       : props.transfers.map((transfer, index) => {
           return (
-            <div className="transfers_table_row">
+            <div className="transfers_table_row" key={index}>
               {' '}
               <div className=" transfers_table_data column1">{index + 1}</div>
               <div className=" transfers_table_data column2">

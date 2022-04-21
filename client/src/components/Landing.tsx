@@ -23,7 +23,7 @@ const Landing: React.FC = () => {
   };
   return (
     <div>
-      <Banner initialSubheading />
+      <Banner initialSubheading isLedgerView={false} />
       {!isAdding && (
         <>
           <div>

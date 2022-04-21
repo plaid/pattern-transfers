@@ -11,4 +11,4 @@ export { default as Login } from './Login';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as TransferForm } from './TransferForm';
 export { default as UserTransfers } from './UserTransfers';
-export { default as Admin } from './Admin';
+export { default as Ledger } from './Ledger';
