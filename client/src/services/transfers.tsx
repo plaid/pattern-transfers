@@ -91,10 +91,10 @@ export function TransfersProvider(props: any) {
   const updateTransfersStatusByUser = useCallback(
     async userId => {
       const { data: transfers } = await apiGetTransfersByUser(userId);
-      await transfers.forEach((transfer: TransferType) => {
-        apiGetTransferStatus(transfer.transfer_id, false);
+      const updatedTransfers = await transfers.map((transfer: TransferType) => {
+        return apiGetTransferStatus(transfer.transfer_id, false);
       });
-      getTransfersByUser(userId);
+      await getTransfersByUser(userId);
     },
     [getTransfersByUser]
   );
