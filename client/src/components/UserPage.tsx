@@ -116,8 +116,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   // update data store with the user's transfers
   useEffect(() => {
     updateTransfersStatusByUser(userId);
+  }, [userId, updateTransfersStatusByUser]);
+
+  // update data store with the user's transfers
+  useEffect(() => {
     getTransfersByUser(userId);
-  }, [getTransfersByUser, userId, updateTransfersStatusByUser]);
+  }, [getTransfersByUser, userId]);
 
   // update no of items from data store
   useEffect(() => {

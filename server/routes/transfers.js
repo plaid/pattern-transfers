@@ -47,7 +47,6 @@ router.post(
       };
       let transferIntentId;
 
-      console.log(transIntentCreateRequest);
       const transferIntentCreateResponse = await plaid.transferIntentCreate(
         transIntentCreateRequest
       );
@@ -204,7 +203,6 @@ router.post(
       const transferGetRequest = {
         transfer_id: transferId,
       };
-      console.log(transferId, isTransferUI);
 
       const transferGetResponse = await plaid.transferGet(transferGetRequest);
       if (isTransferUI) {
