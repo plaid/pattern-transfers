@@ -22,7 +22,6 @@ import {
 } from '../services/api';
 import { useItems, useLink, useErrors, useTransfers } from '../services';
 import { TransferSuccessMetadata, PaymentType } from './types';
-import { PaymentStatusUpdateWebhookNewPaymentStatusEnum } from 'plaid/dist/api';
 interface Props {
   isOauth?: boolean;
   token: string;
@@ -99,8 +98,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           if (props.setPayments != null) {
             props.setPayments(response.data.updatedPayments[0]);
           }
-
-          console.log('payment response', response.data);
         }
         await getTransfersByUser(props.userId);
         await getPaymentsByUser(props.userId);

@@ -21,9 +21,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.userId,
       Number(transferAmount)
     );
-    // props.setSubscriptionAmount(
-    //   response.data.updatedPayments[0].monthly_payment.toString()
-    // );
     if (props.setPayments != null) {
       props.setPayments(response.data.updatedPayments[0]);
     }

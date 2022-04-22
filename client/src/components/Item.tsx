@@ -159,14 +159,6 @@ const Item: React.FC<Props> = (props: Props) => {
             Pay first month with bank account
           </Button>
         )}
-        {/* {(props.removeButton || (props.linkButton && numOfItems === 0)) && (
-          // Plaid React Link cannot be rendered without a link token
-          <div className="item__button">
-            {token != null && props.linkButton && (
-              <LinkButton userId={props.userId} token={token} itemId={null} />
-            )}
-          </div>
-        )} */}
       </div>
       <div className="item__callouts">
         {isSandbox && !isGoodState && (
