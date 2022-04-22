@@ -17,6 +17,7 @@ import {
   getTransferUIStatus,
   getTransferStatus,
   addTransferInfo,
+  getTransfersByUser as apiGetTransfersByUser,
   addPayment,
   getPaymentsByUser,
 } from '../services/api';
@@ -38,7 +39,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
-  const { transfersData, getTransfersByUser } = useTransfers();
+  const { getTransfersByUser } = useTransfers();
   const { setError, resetError } = useErrors();
 
   // define onSuccess, onExit and onEvent functions as configs for Plaid Link creation
@@ -65,39 +66,49 @@ const LinkButton: React.FC<Props> = (props: Props) => {
         );
         getItemsByUser(props.userId, true);
 
+        // need to get transfer_intent_id directly from database because context
+        // is wiped out with Oauth
+
+        const transferResponse = await apiGetTransfersByUser(props.userId);
+
         // use transfer_intent_id to obtain transfer_id from transferUI status
-        if (transfersData.transfer_intent_id != null) {
-          const transferUIDataResponse = await getTransferUIStatus(
-            transfersData.transfer_intent_id
-          );
 
-          // use transfer_id to obtain information about the transfer and add info to existing transfer in database
-          const transferDataResponse = await getTransferStatus(
-            transferUIDataResponse.data.transfer_intent.transfer_id,
-            true
-          );
-          const {
-            account_id,
-            id,
-            status,
-            sweep_status,
-            amount,
-          } = transferDataResponse.data.transfer;
-          // update database with information regarding the transfer
-          await addTransferInfo(
-            transfersData.transfer_intent_id,
-            account_id,
-            id,
-            status,
-            sweep_status,
-            data.items[0].id
-          );
-          const response = await addPayment(props.userId, Number(amount));
+        const transferUIDataResponse = await getTransferUIStatus(
+          transferResponse.data[0].transfer_intent_id
+        );
 
-          if (props.setPayments != null) {
-            props.setPayments(response.data[0]);
-          }
+        // use transfer_id to obtain information about the transfer and add info to existing transfer in database
+        const transferDataResponse = await getTransferStatus(
+          transferUIDataResponse.data.transfer_intent.transfer_id,
+          true
+        );
+        const {
+          account_id,
+          id,
+          status,
+          sweep_status,
+          amount,
+        } = transferDataResponse.data.transfer;
+        // update database with information regarding the transfer
+        await addTransferInfo(
+          transferResponse.data[0].transfer_intent_id,
+          account_id,
+          id,
+          status,
+          sweep_status,
+          data.items[0].id
+        );
+
+        // const amount = updateInitialTransfer(
+        //   transfersData.transfer_intent_id,
+        //   data.items[0].id
+        // );
+        const response = await addPayment(props.userId, Number(amount));
+
+        if (props.setPayments != null) {
+          props.setPayments(response.data[0]);
         }
+
         await getTransfersByUser(props.userId);
         await getPaymentsByUser(props.userId);
       } catch (e) {

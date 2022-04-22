@@ -1,16 +1,23 @@
 import React from 'react';
 
-import { TransferType } from './types';
+import { TransferType, ItemType } from './types';
+import { updateInitialTransfer } from '../util';
 
 interface Props {
   transfers: TransferType[] | null;
+  item: ItemType | null;
 }
 
 const UserTransfers: React.FC<Props> = (props: Props) => {
+  const itemId = props.item != null ? props.item.id : 0;
   const tableRows =
     props.transfers == null
       ? null
       : props.transfers.map((transfer, index) => {
+          console.log(transfer);
+          // if (transfer.status === null && index === 0) {
+          //   updateInitialTransfer(transfer.transfer_intent_id, itemId);
+          // }
           return (
             <div className="transfers_table_row" key={index}>
               {' '}

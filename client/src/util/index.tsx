@@ -6,7 +6,12 @@ import {
   PlaidLinkError,
 } from 'react-plaid-link';
 
-import { postLinkEvent as apiPostLinkEvent } from '../services/api';
+import {
+  postLinkEvent as apiPostLinkEvent,
+  getTransferUIStatus,
+  getTransferStatus,
+  addTransferInfo,
+} from '../services/api';
 import { TransferSuccessMetadata } from '../components/types';
 
 /**
@@ -83,4 +88,39 @@ export const logExit = async (
     ...eventError,
     status,
   });
+};
+
+export const updateInitialTransfer = async (
+  transferIntentId: string,
+  itemId: number
+) => {
+  console.log('helloe', transferIntentId);
+  const transferUIDataResponse = await getTransferUIStatus(transferIntentId);
+  // console.log(
+  //   'id response',
+  //   transferUIDataResponse.data.transfer_intent.transfer_id
+  // );
+  const transferDataResponse = await getTransferStatus(
+    transferUIDataResponse.data.transfer_intent.transfer_id,
+    true
+  );
+  // console.log('status', transferDataResponse);
+  const {
+    account_id,
+    id,
+    status,
+    sweep_status,
+    amount,
+  } = transferDataResponse.data.transfer;
+  // update database with information regarding the transfer
+  const addInfoResponse = await addTransferInfo(
+    transferIntentId,
+    account_id,
+    id,
+    status,
+    sweep_status,
+    itemId
+  );
+  console.log('add info response', addInfoResponse);
+  return amount;
 };
