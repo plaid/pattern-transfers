@@ -108,6 +108,20 @@ router.post(
       const transferAuthorizationCreateResponse = await plaid.transferAuthorizationCreate(
         transferAuthorizationCreateRequest
       );
+      console.log(
+        'nonapproval response',
+        transferAuthorizationCreateResponse.data
+      );
+      if (
+        transferAuthorizationCreateResponse.data.authorization.decision !==
+        'approved'
+      ) {
+        return res.status(500).json({
+          message:
+            transferAuthorizationCreateResponse.data.authorization
+              .decision_rationale.description,
+        });
+      }
 
       const authorizationId =
         transferAuthorizationCreateResponse.data.authorization.id;
@@ -150,7 +164,7 @@ router.post(
       );
 
       const transfers = await retrieveTransfersByUserId(userId);
-      res.json(transfers);
+      return res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
       return res.json(err.response.data);
