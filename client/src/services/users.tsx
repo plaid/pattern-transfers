@@ -58,27 +58,19 @@ export function UsersProvider(props: any) {
   /**
    * @desc Creates a new user
    */
-  const addNewUser = useCallback(
-    async (username, fullname, email, shouldVerifyIdentity) => {
-      try {
-        const { data: payload } = await apiAddNewUser(
-          username,
-          fullname,
-          email,
-          shouldVerifyIdentity
-        );
-        dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
-      } catch (err) {
-        const { response } = err;
-        if (response && response.status === 409) {
-          toast.error(`Username ${username} already exists`);
-        } else {
-          toast.error('Error adding new user');
-        }
+  const addNewUser = useCallback(async username => {
+    try {
+      const { data: payload } = await apiAddNewUser(username);
+      dispatch({ type: 'SUCCESSFUL_GET', payload: payload });
+    } catch (err) {
+      const { response } = err;
+      if (response && response.status === 409) {
+        toast.error(`Username ${username} already exists`);
+      } else {
+        toast.error('Error adding new user');
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   /**
    * @desc Requests all Users.

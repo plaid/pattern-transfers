@@ -26,8 +26,6 @@ interface Props {
   userId: number;
   itemId?: number | null;
   children?: React.ReactNode;
-  isProcessor?: boolean; // will remove later
-  isIdentity?: boolean; // will remove later
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
@@ -35,7 +33,7 @@ interface Props {
 // is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
-  const { getItemsByUser, getItemById, itemsByUser } = useItems();
+  const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
   const { transfersData, getTransfersByUser } = useTransfers();
   const { setError, resetError } = useErrors();
@@ -112,7 +110,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     logExit(error, metadata, props.userId);
     if (error != null) {
       if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, 'akdlf;ljkd'); // will fix later
+        await generateLinkToken(props.userId, props.itemId, ''); // will fix later
       } else {
         setError(
           error.error_code,
@@ -159,22 +157,11 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           userId: props.userId,
           itemId: props.itemId,
           token: props.token,
-          isProcessor: props.isProcessor,
-          isIdentity: props.isIdentity,
         })
       );
       open();
     }
-  }, [
-    ready,
-    open,
-    props.isOauth,
-    props.userId,
-    props.itemId,
-    props.token,
-    props.isProcessor,
-    props.isIdentity,
-  ]);
+  }, [ready, open, props.isOauth, props.userId, props.itemId, props.token]);
 
   return <></>;
 };

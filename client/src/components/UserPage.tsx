@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
-import { Institution } from 'plaid/dist/api';
 import { LinkButton } from '.';
 
 import { RouteInfo, ItemType, AccountType, UserType } from './types';
@@ -20,14 +19,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [user, setUser] = useState<UserType>({
     id: 0,
     username: null,
-    fullname: null,
-    email: null,
-    identity_check: false,
-    should_verify_identity: true,
     created_at: '',
     updated_at: '',
   });
-  const { generateLinkToken, linkTokens, deleteLinkToken } = useLink();
+  const { generateLinkToken, linkTokens } = useLink();
   const { generateTransferIntentId } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
@@ -162,6 +157,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
               subscriptionAmount={subscriptionAmount}
             />
           )}
+          <ErrorMessage />
         </div>
         <div className="user-page-right">
           <TransferForm setSubscriptionAmount={setSubscriptionAmount} />

@@ -18,10 +18,6 @@ CREATE TABLE users_table
 (
   id SERIAL PRIMARY KEY,
   username text UNIQUE NOT NULL,
-  fullname text NOT NULL,
-  email text NOT NULL,
-  identity_check boolean NOT NULL,
-  should_verify_identity boolean NOT NULL,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -36,10 +32,6 @@ AS
   SELECT
     id,
     username,
-    fullname,
-    email,
-    identity_check,
-    should_verify_identity,
     created_at,
     updated_at
   FROM

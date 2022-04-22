@@ -22,12 +22,8 @@ export const getLoginUser = (username: string) =>
 // users
 export const getUsers = () => api.get('/users');
 export const getUserById = (userId: number) => api.get(`/users/${userId}`);
-export const addNewUser = (
-  username: string,
-  fullname: string,
-  email: string,
-  shouldVerifyIdentity: boolean
-) => api.post('/users', { username, fullname, email, shouldVerifyIdentity });
+export const addNewUser = (username: string) =>
+  api.post('/users', { username });
 export const updateIdentityCheckById = (
   userId: number,
   identityCheck: boolean
@@ -40,15 +36,6 @@ export const updateUserInfo = (
 export const deleteUserById = (userId: number) =>
   api.delete(`/users/${userId}`);
 
-// app Funds
-export const getAppFundsByUser = (userId: number) =>
-  api.get(`/appFunds/${userId}`);
-export const updateAppFundsBalance = (
-  userId: number,
-  transferAmount: number,
-  accountId: string
-) =>
-  api.put(`/appFunds/${userId}/bank_transfer`, { transferAmount, accountId });
 // transfers
 export const getTransferIntentId = (
   userId: number,

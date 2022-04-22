@@ -32,8 +32,6 @@ const {
   retrieveUsers,
   retrieveUserById,
   retrieveUserByUsername,
-  updateIdentityCheck,
-  updateUserInfo,
 } = require('./users');
 
 const {
@@ -71,8 +69,6 @@ module.exports = {
   retrieveUserById,
   retrieveUserByUsername,
   retrieveUsers,
-  updateIdentityCheck,
-  updateUserInfo,
   // app funds
   createAppFund,
   updateAppFundsBalance,
