@@ -46,7 +46,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     <>
       <div className="box developer-configs">
         <h4 className="subheading">Developer Configs</h4>{' '}
-        <form className="developer-configs_form" onSubmit={handleSubmit}>
+        <form className="developer-configs__form" onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"
             name="transfer amount"
@@ -59,12 +59,12 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             }}
             className="transfer-funds__input"
           />
-          <Button className="developer-configs_button" centered type="submit">
+          <Button className="developer-configs__button" centered type="submit">
             Update price
           </Button>
         </form>
         <Button
-          className="developer-configs_button admin-ledger_button"
+          className="developer-configs__button admin-ledger__button"
           secondary
           centered
           type="submit"
@@ -81,7 +81,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
               Initiate month {numberOfPayments + 1} payment
             </Button>
             <Button
-              className="developer-configs_button"
+              className="developer-configs__button"
               centered
               secondary
               type="button"
