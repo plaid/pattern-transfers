@@ -242,7 +242,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                     payments={payments}
                     item={item}
                   />
-                  <UserTransfers transfers={transfers} item={item} />
+                  <UserTransfers transfers={transfers} />
                 </>
               )}
               <ErrorMessage />
