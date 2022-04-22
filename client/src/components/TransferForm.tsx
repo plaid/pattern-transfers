@@ -6,6 +6,8 @@ import { currencyFilter } from '../util';
 
 interface Props {
   setSubscriptionAmount: (arg: string) => void;
+  numOfItems: number;
+  numOfTransfers: number;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
@@ -28,7 +30,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     <>
       <div className="box developer-configs">
         <h4 className="subheading">Developer Configs</h4>{' '}
-        <form onSubmit={handleSubmit}>
+        <form className="developer-configs__form" onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"
             name="transfer amount"
@@ -41,12 +43,12 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             }}
             className="transfer-funds__input"
           />
-          <Button className="update-price_button" centered type="submit">
-            Update price {amt}
+          <Button className="developer-configs__button" centered type="submit">
+            Update price
           </Button>
         </form>
         <Button
-          className="admin-ledger_button"
+          className="developer-configs__button admin-ledger__button"
           secondary
           centered
           type="submit"
@@ -57,6 +59,21 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           {' '}
           Note: visit the admin page to simulate Transfer events.
         </p>
+        {props.numOfItems > 0 && (
+          <div className="dev-configs-bottom-buttons__container">
+            <Button className="initiate-payment__button" centered type="button">
+              Initiate month {props.numOfTransfers + 1} payment
+            </Button>
+            <Button
+              className="developer-configs__button"
+              centered
+              secondary
+              type="button"
+            >
+              Remove bank account {amt}
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -87,7 +87,7 @@ const Item: React.FC<Props> = (props: Props) => {
   }, [getInstitutionById, plaid_institution_id]);
 
   return (
-    <>
+    <div className="box item-container">
       <div>
         {numOfItems !== 0 && (
           <>
@@ -201,7 +201,7 @@ const Item: React.FC<Props> = (props: Props) => {
           </Callout>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
