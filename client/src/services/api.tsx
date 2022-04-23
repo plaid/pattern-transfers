@@ -63,7 +63,8 @@ export const addTransferInfo = (
   transferId: string,
   status: string,
   sweepStatus: string,
-  itemId: number
+  itemId: number,
+  type: string
 ) =>
   api.put(`/transfers/${transferIntentId}/add_info`, {
     accountId,
@@ -71,6 +72,7 @@ export const addTransferInfo = (
     status,
     sweepStatus,
     itemId,
+    type,
   });
 
 export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);

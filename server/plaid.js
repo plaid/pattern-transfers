@@ -104,6 +104,7 @@ const clientMethodLoggingFns = {
   transferIntentGet: noAccessTokenLogger,
   sandboxTransferSweepSimulate: noAccessTokenLogger,
   sandboxTransferSimulate: noAccessTokenLogger,
+  transferEventList: noAccessTokenLogger,
 };
 // Wrapper for the Plaid client. This allows us to easily log data for all Plaid client requests.
 class PlaidClientWrapper {

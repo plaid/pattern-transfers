@@ -227,6 +227,8 @@ router.post(
         transferGetResponse.data.transfer.sweep_status,
         transferId
       );
+      const trasferEventListRequest = {};
+      await plaid.trasferEventsList;
       const updatedTransfer = await retrieveTransferByPlaidTransferId(
         transferId
       );
@@ -257,15 +259,25 @@ router.put(
   asyncWrapper(async (req, res) => {
     try {
       const { transferIntentId } = req.params;
-      const { accountId, transferId, status, sweepStatus, itemId } = req.body;
+      const {
+        accountId,
+        transferId,
+        status,
+        sweepStatus,
+        itemId,
+        type,
+      } = req.body;
+
       const transfer = await addTransferInfo(
         status,
         transferId,
         accountId,
         sweepStatus,
         itemId,
+        type,
         transferIntentId
       );
+
       res.json(transfer);
     } catch (err) {
       console.log('error while adding info', err.response.data);
@@ -307,6 +319,31 @@ router.post(
       console.log(event);
       const transferSimulateResponse = await plaid.sandboxTransferSimulate(
         transferSimulateRequest
+      );
+      console.log(`${event} simulated`, transferSimulateResponse.data);
+      res.json(transferSimulateResponse.data);
+    } catch (err) {
+      console.log('error while simulating event', err.response.data);
+      return res.json(err.response.data);
+    }
+  })
+);
+
+router.post(
+  '/event_list',
+  asyncWrapper(async (req, res) => {
+    try {
+      const { transferId } = req.body;
+      const transfer = retrieveTransferByPlaidTransferId(transferId);
+      const transferEventListRequest = {
+        start_date: trasfer.created_at,
+        transfer_id: transferId,
+        transfer_type: trasfer.type,
+        count: 1,
+      };
+
+      const transferEventListResponse = await plaid.transferEventList(
+        trasferEventListRequest
       );
       console.log(`${event} simulated`, transferSimulateResponse.data);
       res.json(transferSimulateResponse.data);
