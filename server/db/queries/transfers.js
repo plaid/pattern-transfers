@@ -28,6 +28,7 @@ const createTransfer = async (
   transferId,
   amount,
   status,
+  type,
   sweepStatus
 ) => {
   const query = {
@@ -43,12 +44,13 @@ const createTransfer = async (
             transfer_id,
             amount,
             status,
+            type,
             sweep_status
           )
         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING
-          *
+          *;
       `,
     values: [
       itemId,
@@ -59,6 +61,7 @@ const createTransfer = async (
       transferId,
       amount,
       status,
+      type,
       sweepStatus,
     ],
   };
@@ -92,7 +95,7 @@ const addTransferInfo = async (
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: `
-        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, sweep_status = $4, item_id = $5, type = $6 WHERE transfer_intent_id = $7
+        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, sweep_status = $4, item_id = $5, type = $6 WHERE transfer_intent_id = $7;
       `,
     values: [
       status,

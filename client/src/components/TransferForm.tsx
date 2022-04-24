@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { Callout } from 'plaid-threads/Callout';
-import { currencyFilter } from '../util';
 import { setMonthlyPayment, createTransfer, addPayment } from '../services/api';
 import { PaymentType, ItemType, TransferType } from './types';
 

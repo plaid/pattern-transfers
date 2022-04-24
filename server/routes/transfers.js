@@ -52,7 +52,7 @@ router.post(
       );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
-      createTransfer(
+      const newTransfer = createTransfer(
         null, //item_id
         userId,
         null, // plaid_account_id
@@ -61,8 +61,10 @@ router.post(
         null, // transfer_id
         subscriptionAmount.toFixed(2),
         null, // status
+        'debit',
         null // sweep_status
       );
+      console.log('new Transfer', newTransfer);
       res.json(transferIntentCreateResponse.data);
     } catch (err) {
       console.log('error while creating transfer intent id', err.response.data);
@@ -160,6 +162,7 @@ router.post(
         id, // transfer_id
         Number(amount).toFixed(2),
         status,
+        'debit',
         null // sweep_status
       );
 
