@@ -25,11 +25,19 @@ router.post(
     const httpTunnel = tunnels.find(t => t.proto === 'http');
     console.log(`${httpTunnel.public_url}/services/webhook`);
     await axios
-      .post('https://sandbox.plaid.com/sandbox/transfer/fire_webhook', {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
-        webhook: 'http://f2a4-38-104-174-146.ngrok.io/services/webhook',
-      })
+      .post(
+        'https://sandbox.plaid.com/sandbox/transfer/fire_webhook',
+        {
+          client_id: PLAID_CLIENT_ID,
+          secret: PLAID_SECRET_SANDBOX,
+          webhook: 'http://e153-38-104-174-146.ngrok.io/services/webhook',
+        },
+        {
+          headers: {
+            'content-type': 'application/json',
+          },
+        }
+      )
       .then(response => {
         console.log(response.data);
       });
@@ -41,14 +49,14 @@ router.post(
     // await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
   })
 
-  const transferIntentCreateResponse = await axios.post(
-    `https://sandbox.plaid.com/transfer/intent/create`,
-    transIntentCreateRequest,
-    {
-      headers: {
-        'content-type': 'application/json',
-      },
-    }
+  // const transferIntentCreateResponse = await axios.post(
+  //   `https://sandbox.plaid.com/transfer/intent/create`,
+  //   transIntentCreateRequest,
+  //   {
+  //     headers: {
+  //       'content-type': 'application/json',
+  //     },
+  //   }
 );
 
 module.exports = router;

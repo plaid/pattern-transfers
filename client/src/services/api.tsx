@@ -54,8 +54,10 @@ export const getTransfersByUser = (userId: number) =>
 export const getTransferUIStatus = (intentId: string) =>
   api.post(`/transfers/transfer_ui/status`, { intentId });
 
-export const getTransferStatus = (transferId: string, isTransferUI: boolean) =>
-  api.post(`/transfers/transfer/status`, { transferId, isTransferUI });
+export const getTransfersStatusByUser = (
+  userId: string,
+  isTransferUI: boolean
+) => api.post(`/transfers/${userId}/transfers/status`, { isTransferUI });
 
 export const addTransferInfo = (
   transferIntentId: string,
