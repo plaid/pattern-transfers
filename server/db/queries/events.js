@@ -36,7 +36,7 @@ const createEvent = async (
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: `
-        INSERT INTO transfers_table
+        INSERT INTO events_table
           (
             plaid_event_id,
             user_id,
@@ -51,7 +51,8 @@ const createEvent = async (
             timestamp
           )
         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          ON CONFLICT (plaid_event_id) DO NOTHING
         RETURNING
           *
       `,
@@ -73,6 +74,20 @@ const createEvent = async (
   return rows[0];
 };
 
+/**
+ * Retrieves all events.
+ *
+ * @returns {Object[]} an array of users.
+ */
+const retrieveEvents = async () => {
+  const query = {
+    text: 'SELECT * FROM events ORDER BY plaid_event_id',
+  };
+  const { rows: events } = await db.query(query);
+  return events;
+};
+
 module.exports = {
   createEvent,
+  retrieveEvents,
 };

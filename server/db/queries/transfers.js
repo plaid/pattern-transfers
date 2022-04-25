@@ -153,11 +153,11 @@ const retrieveTransfersByItemId = async itemId => {
  */
 const retrieveTransferByPlaidTransferId = async transferId => {
   const query = {
-    text: 'SELECT * FROM transfers WHERE transfer_id = $1 ORDER BY id',
+    text: 'SELECT * FROM transfers WHERE transfer_id = $1',
     values: [transferId],
   };
-  const { rows: transfers } = await db.query(query);
-  return transfers[0];
+  const { rows } = await db.query(query);
+  return rows[0];
 };
 
 /**

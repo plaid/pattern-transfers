@@ -129,8 +129,8 @@ CREATE TABLE transfers_table
   authorization_id text,
   transfer_id text,
   amount numeric,
-  type text,
   status text,
+  type text,
   sweep_status text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -152,8 +152,8 @@ AS
     authorization_id,
     transfer_id,
     amount,
-    type,
     status,
+    type,
     sweep_status,
     created_at,
     updated_at
@@ -168,7 +168,7 @@ AS
 CREATE TABLE events_table
 (
   id SERIAL PRIMARY KEY,
-  plaid_event_id integer,
+  plaid_event_id integer UNIQUE,
   user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
   plaid_account_id text,
   transfer_type text,

@@ -16,7 +16,7 @@ const {
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
 } = require('./transfers');
-const { createEvent } = require('./events');
+const { createEvent, retrieveEvents } = require('./events');
 const {
   createItem,
   retrieveItemById,
@@ -58,6 +58,7 @@ module.exports = {
   retrieveTransferByPlaidTransferId,
   // events
   createEvent,
+  retrieveEvents,
   // items
   createItem,
   retrieveItemById,
