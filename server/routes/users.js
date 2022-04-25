@@ -53,7 +53,6 @@ router.post(
     if (usernameExists)
       throw new Boom('Username already exists', { statusCode: 409 });
     const newUser = await createUser(username);
-    console.log(newUser);
     await createPayments(newUser.id);
     res.json(sanitizeUsers(newUser));
   })

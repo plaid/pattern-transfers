@@ -1,5 +1,5 @@
 /**
- * @file Defines all routes for the transfers route.
+ * @file Defines all routes for the payments route.
  */
 
 const express = require('express');
@@ -17,7 +17,7 @@ const router = express.Router();
  *
  *  @param {number} userId the ID of the user.
  *  @param {number} paymentAmount the amount being transferred.
- * @return {Object{}} the new appFund and new account objects.
+ * @return {Object{}} the new payments object.
  */
 router.put(
   '/:userId/add_payment',
@@ -42,7 +42,7 @@ module.exports = router;
  *
  *  @param {number} userId the ID of the user.
  *  @param {number} monthlyPayment the amount being transferred.
- * @return {Object{}} the new appFund and new account objects.
+ * @return {Object{}} the new payments object
  */
 router.put(
   '/:userId/set_monthly_payment',

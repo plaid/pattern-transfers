@@ -256,7 +256,7 @@ Transfers
   width: 100%;
 }
 
-.developer-configs_button {
+.developer-configs__button {
   width: 100%;
   margin-bottom: 2 * $unit;
 }
@@ -268,11 +268,11 @@ Transfers
 .developer-configs {
   padding: 0 3 * $unit 3 * $unit 3 * $unit;
 
-  .developer-configs_form {
+  .developer-configs__form {
     border-bottom: 1px solid black;
   }
 
-  .admin-ledger_button {
+  .admin-ledger__button {
     margin-top: 2 * $unit;
   }
 
@@ -281,11 +281,11 @@ Transfers
     font-style: italic;
     font-size: 1.2rem;
   }
-  .dev-configs-bottom-buttons-container {
+  .dev-configs-bottom-buttons__container {
     margin-top: $unit;
     border-top: 1px solid black;
 
-    .initiate-payment_button {
+    .initiate-payment__button {
       margin-top: 2 * $unit;
       width: 100%;
       margin-bottom: 2 * $unit;
@@ -344,23 +344,23 @@ user list
 
 // transfers table
 
-.transfers_table {
+.transfers-table {
   width: 90%;
 }
 
-.transfers_table_row {
+.transfers-table__row {
   width: 100%;
   display: grid;
   grid-template-columns: 33% 33% 33%;
   grid-gap: 3 * $unit;
   justify-content: space-between;
 }
-.transfers_table_header {
+.transfers-table__header {
   text-align: left;
   font-weight: bold;
 }
 
-.transfers_table_data {
+.transfers-table__data {
   text-align: left;
 }
 

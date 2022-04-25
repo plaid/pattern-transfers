@@ -1,5 +1,5 @@
 /**
- * @file Defines the queries for the app_funds table/views.
+ * @file Defines the queries for payments table/views.
  */
 
 const db = require('../');
@@ -8,7 +8,7 @@ const db = require('../');
  * Creates an payments account.
  *
  * @param {number} userId the user id of the user.
- * @returns {Object} the new app fund for the user.
+ * @returns {Object} the payments object for the user.
  */
 const createPayments = async userId => {
   const query = {
@@ -58,7 +58,7 @@ const setMonthlyPayment = async (userId, monthlyPayment) => {
  * Retrieves payments for a single user.
  *
  * @param {number} userId the ID of the user.
- * @returns {Object[]} an array of app Funds.
+ * @returns {Object[]} an array of payments
  */
 const retrievePaymentsByUser = async userId => {
   const query = {
