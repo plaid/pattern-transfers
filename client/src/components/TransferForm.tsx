@@ -3,24 +3,37 @@ import React, { useState } from 'react';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
+import { setMonthlyPayment } from '../services/api';
+import { PaymentType } from './types';
 
 interface Props {
-  setSubscriptionAmount: (arg: string) => void;
+  setPayments?: (payment: PaymentType) => void;
   numOfItems: number;
-  numOfTransfers: number;
+  userId: number;
+  payments: null | PaymentType;
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    props.setSubscriptionAmount(transferAmount);
-    setTransferAmount(
+    const response = await setMonthlyPayment(
+      props.userId,
+      Number(transferAmount)
+    );
+    if (props.setPayments != null) {
+      props.setPayments(response.data.updatedPayments[0]);
+    }
+
+    await setTransferAmount(
       `$${Number(transferAmount)
         .toFixed(2)
         .toString()}`
     );
   };
+
+  const numberOfPayments =
+    props.payments != null ? props.payments.number_of_payments : 0;
 
   const amt =
     parseFloat(transferAmount) > 0
@@ -60,9 +73,9 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           Note: visit the admin page to simulate Transfer events.
         </p>
         {props.numOfItems > 0 && (
-          <div className="dev-configs-bottom-buttons__container">
-            <Button className="initiate-payment__button" centered type="button">
-              Initiate month {props.numOfTransfers + 1} payment
+          <div className="dev-configs-bottom-buttons-container">
+            <Button className="initiate-payment_button" centered type="button">
+              Initiate month {numberOfPayments + 1} payment
             </Button>
             <Button
               className="developer-configs__button"

@@ -20,6 +20,7 @@ const {
   linkTokensRouter,
   unhandledRouter,
   transfersRouter,
+  paymentsRouter,
 } = require('./routes');
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/services', serviceRouter);
 app.use('/link-event', linkEventsRouter);
 app.use('/link-token', linkTokensRouter);
 app.use('/transfers', transfersRouter);
+app.use('/payments', paymentsRouter);
 app.use('*', unhandledRouter);
 
 // Error handling has to sit at the bottom of the stack.

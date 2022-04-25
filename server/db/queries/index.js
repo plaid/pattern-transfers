@@ -35,10 +35,12 @@ const {
 } = require('./users');
 
 const {
-  createAppFund,
-  updateAppFundsBalance,
-  retrieveAppFundsByUser,
-} = require('./appFunds');
+  createPayments,
+  addPayment,
+  setMonthlyPayment,
+  retrievePaymentsByUser,
+} = require('./payments');
+
 const { createLinkEvent } = require('./linkEvents');
 
 module.exports = {
@@ -69,10 +71,11 @@ module.exports = {
   retrieveUserById,
   retrieveUserByUsername,
   retrieveUsers,
-  // app funds
-  createAppFund,
-  updateAppFundsBalance,
-  retrieveAppFundsByUser,
+  // payments
+  createPayments,
+  addPayment,
+  setMonthlyPayment,
+  retrievePaymentsByUser,
   // link events
   createLinkEvent,
 };

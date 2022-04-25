@@ -7,3 +7,4 @@ export { default as useLink } from './link';
 export { default as useInstitutions } from './institutions';
 export { default as useErrors } from './errors';
 export { default as useTransfers } from './transfers';
+export { default as usePayments } from './payments';

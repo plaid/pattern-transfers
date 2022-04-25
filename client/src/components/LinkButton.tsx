@@ -17,15 +17,18 @@ import {
   getTransferUIStatus,
   getTransferStatus,
   addTransferInfo,
+  addPayment,
+  getPaymentsByUser,
 } from '../services/api';
 import { useItems, useLink, useErrors, useTransfers } from '../services';
-import { TransferSuccessMetadata } from './types';
+import { TransferSuccessMetadata, PaymentType } from './types';
 interface Props {
   isOauth?: boolean;
   token: string;
   userId: number;
   itemId?: number | null;
   children?: React.ReactNode;
+  setPayments?: (payment: PaymentType) => void;
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
@@ -78,6 +81,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             origination_account_id,
             status,
             sweep_status,
+            amount,
           } = transferDataResponse.data.transfer;
           // update database with information regarding the transfer
           await addTransferInfo(
@@ -89,9 +93,14 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             sweep_status,
             data.items[0].id
           );
-        }
+          const response = await addPayment(props.userId, Number(amount));
 
+          if (props.setPayments != null) {
+            props.setPayments(response.data.updatedPayments[0]);
+          }
+        }
         await getTransfersByUser(props.userId);
+        await getPaymentsByUser(props.userId);
       } catch (e) {
         if (e instanceof Error) {
           console.error('error', e.message);

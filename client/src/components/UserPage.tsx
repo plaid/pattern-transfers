@@ -10,6 +10,7 @@ import {
   AccountType,
   UserType,
   TransferType,
+  PaymentType,
 } from './types';
 import {
   useItems,
@@ -17,6 +18,7 @@ import {
   useUsers,
   useLink,
   useTransfers,
+  usePayments,
 } from '../services';
 
 import { Banner, Item, ErrorMessage, TransferForm, UserTransfers } from '.';
@@ -42,8 +44,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [account, setAccount] = useState<AccountType | null>(null);
 
   const [token, setToken] = useState<string | null>('');
-  const [subscriptionAmount, setSubscriptionAmount] = useState('0');
+  const [payments, setPayments] = useState<null | PaymentType>(null);
   const { getAccountsByUser, accountsByUser } = useAccounts();
+  const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
   const userId = Number(match.params.userId);
@@ -89,6 +92,18 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [accountsByUser, userId, numOfItems]);
 
+  // // update data store with the user's payments
+  useEffect(() => {
+    getPaymentsByUser(userId);
+  }, [getPaymentsByUser, userId]);
+
+  // update state payment data from data store
+  useEffect(() => {
+    if (paymentsByUser[userId] != null && paymentsByUser[userId].length > 0) {
+      setPayments(paymentsByUser[userId][0]);
+    }
+  }, [paymentsByUser, userId]);
+
   useEffect(() => {
     if (numOfItems === 0) {
       setToken(linkTokens.byUser[userId]);
@@ -111,28 +126,27 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [transfersByUser, userId]);
 
+  const monthlyPayment = payments != null ? payments.monthly_payment : 0;
+
   const initiateLink = async () => {
     // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
+
     const transfer_intent_id = await generateTransferIntentId(
       userId,
-      Number(subscriptionAmount)
+      monthlyPayment
     );
     // only generate a link token upon a click from enduser to add a bank;
-    // if done earlier, it may expire before enuser actually activates Link to add a bank.
+    // if done earlier, it may expire before enduser actually activates Link to add a bank.
     await generateLinkToken(userId, null, transfer_intent_id);
   };
   const accountName = account != null ? `${account.name}` : '';
-  const numOfTransfers = transfers == null ? 0 : transfers.length;
   const myAccountMessage =
     numOfItems === 0
       ? [
           <span>Add a bank account to pay for your</span>,
           <span className="subscription-amount">
             {' '}
-            $
-            {`${Number(subscriptionAmount)
-              .toFixed(2)
-              .toString()}`}{' '}
+            ${`${monthlyPayment.toFixed(2).toString()}`}{' '}
           </span>,
           <span>PlatyFlix subscription using Plaid!!</span>,
         ]
@@ -163,7 +177,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
               {/* // Plaid React Link cannot be rendered without a link token */}
               <div className="item__button">
                 {token != null && (
-                  <LinkButton userId={userId} token={token} itemId={null} />
+                  <LinkButton
+                    userId={userId}
+                    token={token}
+                    itemId={null}
+                    setPayments={setPayments}
+                  />
                 )}
               </div>
               <p className="nacha-compliant-note">
@@ -182,8 +201,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 linkButton={numOfItems === 0}
                 numOfItems={numOfItems}
                 accountName={accountName}
+                payments={payments}
                 item={item}
-                subscriptionAmount={subscriptionAmount}
               />
               <UserTransfers transfers={transfers} />
             </>
@@ -192,9 +211,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         </div>
         <div className="user-page-right">
           <TransferForm
-            setSubscriptionAmount={setSubscriptionAmount}
             numOfItems={numOfItems}
-            numOfTransfers={numOfTransfers}
+            payments={payments}
+            userId={userId}
+            setPayments={setPayments}
           />
         </div>
       </div>
