@@ -45,7 +45,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
     props.setTransfers(transfersResponse.data);
     const paymentsResponse = await addPayment(props.userId, monthlyPayment);
-    console.log(paymentsResponse.data);
     props.setPayments(paymentsResponse.data[0]);
   };
 
