@@ -40,6 +40,15 @@ router.post(
     // };
     // await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
   })
+
+  const transferIntentCreateResponse = await axios.post(
+    `https://sandbox.plaid.com/transfer/intent/create`,
+    transIntentCreateRequest,
+    {
+      headers: {
+        'content-type': 'application/json',
+      },
+    }
 );
 
 module.exports = router;
