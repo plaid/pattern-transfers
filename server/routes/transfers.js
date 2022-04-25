@@ -227,10 +227,10 @@ router.post(
         transferGetResponse.data.transfer.sweep_status,
         transferId
       );
-      await plaid.trasferEventsList;
       const updatedTransfer = await retrieveTransferByPlaidTransferId(
         transferId
       );
+      console.log('updatedTransfer:', updatedTransfer);
       res.json(updatedTransfer);
     } catch (err) {
       console.log('error while getting status', err.response.data);
@@ -310,8 +310,6 @@ router.post(
     try {
       const { transferId, event } = req.body;
       const transferSimulateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         transfer_id: transferId,
         event_type: event,
       };

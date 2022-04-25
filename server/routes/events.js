@@ -3,11 +3,11 @@
  */
 
 const express = require('express');
-const { PlaidErrorErrorTypeEnum } = require('plaid');
+const plaid = require('plaid');
 
-const { createEvent, retrieveEvents } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
-const plaid = require('../plaid');
+const axios = require('axios');
+const fetch = require('node-fetch');
 
 const router = express.Router();
 
@@ -17,32 +17,28 @@ const router = express.Router();
  */
 
 router.post(
-  '/',
+  '/sandbox/fire_webhook',
   asyncWrapper(async (req, res) => {
-    const allEvents = await retrieveEvents();
-    const sycnRequest = {
-      after_id: allEvents[allEvents.length - 1].plaid_event_id,
-      count: 25,
-    };
-    const syncResponse = await plaid.transferEventSync(sycnRequest);
+    const response = await fetch('http://ngrok:4040/api/tunnels');
 
-    await syncResponse.data.transfer_events.forEach(async event => {
-      await createEvent(
-        event.event_id,
-        transfer_response.user_id,
-        event.account_id,
-        event.transfer_id,
-        event.transfer_type,
-        event.event_type,
-        event.transfer_amount,
-        event.sweep_amount,
-        event.sweep_id,
-        event.failure_reason,
-        event.timepstamp
-      );
-    });
-
-    res.sendStatus(200);
+    const { tunnels } = await response.json();
+    const httpTunnel = tunnels.find(t => t.proto === 'http');
+    console.log(`${httpTunnel.public_url}/services/webhook`);
+    await axios
+      .post('https://sandbox.plaid.com/sandbox/transfer/fire_webhook', {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+        webhook: 'http://f2a4-38-104-174-146.ngrok.io/services/webhook',
+      })
+      .then(response => {
+        console.log(response.data);
+      });
+    // const fireWebhookRequest = {
+    //   client_id: PLAID_CLIENT_ID,
+    //   secret: PLAID_SECRET_SANDBOX,
+    //   webhook: 'http://f2a4-38-104-174-146.ngrok.io/services/webhook',
+    // };
+    // await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
   })
 );
 

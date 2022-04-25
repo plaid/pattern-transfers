@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
-import { useAccounts, useItems } from '../services';
+import { useItems } from '../services';
 const io = require('socket.io-client');
 const { REACT_APP_SERVER_PORT } = process.env;
 
 const Sockets = () => {
   const socket = useRef();
-  const { getAccountsByItem } = useAccounts();
   const { getItemById } = useItems();
 
   useEffect(() => {
@@ -27,11 +26,17 @@ const Sockets = () => {
       getItemById(itemId, true);
     });
 
+    socket.current.on('TRANSFER_EVENTS_UPDATE', () => {
+      const msg = `New Webhook Event: Transfer Events Update`;
+      console.log(msg);
+      toast(msg);
+    });
+
     return () => {
       socket.current.removeAllListeners();
       socket.current.close();
     };
-  }, [getAccountsByItem, getItemById]);
+  }, [getItemById]);
 
   return <div />;
 };

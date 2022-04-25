@@ -84,19 +84,23 @@ export function TransfersProvider(props: any) {
    */
   const getTransfersByUser = useCallback(async userId => {
     const { data: transfers } = await apiGetTransfersByUser(userId);
+    console.log('all transfers', transfers);
     dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
   }, []);
 
-  const updateTransfersStatusByUser = useCallback(
-    async userId => {
-      const { data: transfers } = await apiGetTransfersByUser(userId);
-      await transfers.forEach((transfer: TransferType) => {
-        apiGetTransferStatus(transfer.transfer_id, false);
-      });
-      await getTransfersByUser(userId);
-    },
-    [getTransfersByUser]
-  );
+  const updateTransfersStatusByUser = useCallback(async userId => {
+    const { data: transfers } = await apiGetTransfersByUser(userId);
+    await transfers.forEach(async (transfer: TransferType) => {
+      const newTransfer = await apiGetTransferStatus(
+        transfer.transfer_id,
+        false
+      );
+      console.log('inside the for each function', newTransfer);
+    });
+    const { data: newTransfers } = await apiGetTransfersByUser(userId);
+    console.log('all transfers after the fact', transfers);
+    dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: newTransfers });
+  }, []);
 
   const value = useMemo(() => {
     const allTransfers = Object.values(transfersData.transfersById);

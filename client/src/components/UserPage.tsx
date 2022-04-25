@@ -139,6 +139,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [transfersByUser, userId]);
 
+  // update the events data store with latest events
+  // todo: implement this every 10 minutes
+  useEffect(() => {
+    // syncEvents();
+  }, [userId]);
+
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
   const initiateLink = async () => {

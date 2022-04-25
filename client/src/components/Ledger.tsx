@@ -2,7 +2,11 @@ import React from 'react';
 import Button from 'plaid-threads/Button';
 
 import { TransferType } from './types';
-import { simulateTransferEvent, simulateSweep } from '../services/api';
+import {
+  simulateTransferEvent,
+  simulateSweep,
+  fireTransferWebhook,
+} from '../services/api';
 
 interface Props {
   transfers: TransferType[] | null;
@@ -88,6 +92,18 @@ const Ledger: React.FC<Props> = (props: Props) => {
       >
         {' '}
         Simulate sweep
+      </Button>
+      <Button
+        secondary
+        centered
+        inline
+        className="simulate_button sweep"
+        onClick={() => {
+          fireTransferWebhook();
+        }}
+      >
+        {' '}
+        Test transfer webhook
       </Button>
       <div className="ledger_table">
         <div className="ledger_table_row">

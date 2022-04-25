@@ -80,6 +80,11 @@ export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);
 export const simulateTransferEvent = (transferId: string, event: string) =>
   api.post(`/transfers/simulate_event`, { transferId, event });
 
+// events
+
+export const fireTransferWebhook = () =>
+  api.post(`/events/sandbox/fire_webhook`);
+
 // payments
 
 export const getPaymentsByUser = (userId: number) =>
