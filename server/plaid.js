@@ -97,6 +97,11 @@ const clientMethodLoggingFns = {
   identityGet: defaultLogger,
   accountsBalanceGet: defaultLogger,
   processorTokenCreate: defaultLogger,
+  transferIntentCreate: noAccessTokenLogger,
+  transferAuthorizationCreate: defaultLogger,
+  transferCreate: defaultLogger,
+  transferGet: noAccessTokenLogger,
+  transferIntentGet: noAccessTokenLogger,
 };
 // Wrapper for the Plaid client. This allows us to easily log data for all Plaid client requests.
 class PlaidClientWrapper {

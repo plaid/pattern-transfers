@@ -23,7 +23,6 @@ const createTransfer = async (
   itemId,
   userId,
   accountId,
-  destinationId,
   transferIntentId,
   authorizationId,
   transferId,
@@ -39,7 +38,6 @@ const createTransfer = async (
             item_id,
             user_id,
             plaid_account_id,
-            destination_account_id,
             transfer_intent_id,
             authorization_id,
             transfer_id,
@@ -48,7 +46,7 @@ const createTransfer = async (
             sweep_status
           )
         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING
           *
       `,
@@ -56,7 +54,6 @@ const createTransfer = async (
       itemId,
       userId,
       accountId,
-      destinationId,
       transferIntentId,
       authorizationId,
       transferId,
@@ -86,8 +83,7 @@ const createTransfer = async (
 const addTransferInfo = async (
   status,
   transferId,
-  originationId,
-  destinationId,
+  accountId,
   sweepStatus,
   itemId,
   transferIntentId
@@ -95,17 +91,36 @@ const addTransferInfo = async (
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: `
-        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, destination_account_id = $4, sweep_status = $5, item_id = $6 WHERE transfer_intent_id = $7
+        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, sweep_status = $4, item_id = $5 WHERE transfer_intent_id = $6
       `,
     values: [
       status,
       transferId,
-      originationId,
-      destinationId,
+      accountId,
       sweepStatus,
       itemId,
       transferIntentId,
     ],
+  };
+  const { rows } = await db.query(query);
+  return rows[0];
+};
+
+/**
+ * Updates status in a transfer.
+ *
+ * @param {string} transferId the transfer id of the transfer.
+ * @param {string} status the status of the transfer.
+ * @param {string} sweepStatus the sweep status of the transfer.
+ * @returns {Object} the new transfer.
+ */
+const updateTransferStatus = async (status, sweepStatus, transferId) => {
+  const query = {
+    // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
+    text: `
+        UPDATE transfers SET status = $1, sweep_status = $2 WHERE transfer_id = $3
+      `,
+    values: [status, sweepStatus, transferId],
   };
   const { rows } = await db.query(query);
   return rows[0];
@@ -123,6 +138,21 @@ const retrieveTransfersByItemId = async itemId => {
   };
   const { rows: transfers } = await db.query(query);
   return transfers;
+};
+
+/**
+ * Retrieves the transfer by the plaid transfer id.
+ *
+ * @param {string} transferId the plaid transfer ID of the transfer.
+ * @returns {Object[]} an array of transfers.
+ */
+const retrieveTransferByPlaidTransferId = async transferId => {
+  const query = {
+    text: 'SELECT * FROM transfers WHERE transfer_id = $1 ORDER BY id',
+    values: [transferId],
+  };
+  const { rows: transfers } = await db.query(query);
+  return transfers[0];
 };
 
 /**
@@ -145,4 +175,6 @@ module.exports = {
   retrieveTransfersByItemId,
   retrieveTransfersByUserId,
   addTransferInfo,
+  updateTransferStatus,
+  retrieveTransferByPlaidTransferId,
 };

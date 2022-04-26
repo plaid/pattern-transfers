@@ -42,28 +42,32 @@ export const getTransferIntentId = (
   subscriptionAmount: number
 ) => api.post(`/transfers/transfer_ui`, { userId, subscriptionAmount });
 
+export const createTransfer = (
+  userId: number,
+  itemId: number,
+  subscriptionAmount: number
+) => api.post(`/transfers/transfer`, { userId, itemId, subscriptionAmount });
+
 export const getTransfersByUser = (userId: number) =>
   api.get(`/users/${userId}/transfers`);
 
 export const getTransferUIStatus = (intentId: string) =>
   api.post(`/transfers/transfer_ui/status`, { intentId });
 
-export const getTransferStatus = (transferId: string) =>
-  api.post(`/transfers/transfer/status`, { transferId });
+export const getTransferStatus = (transferId: string, isTransferUI: boolean) =>
+  api.post(`/transfers/transfer/status`, { transferId, isTransferUI });
 
 export const addTransferInfo = (
   transferIntentId: string,
-  destinationId: string,
+  accountId: string,
   transferId: string,
-  originationId: string,
   status: string,
   sweepStatus: string,
   itemId: number
 ) =>
   api.put(`/transfers/${transferIntentId}/add_info`, {
-    destinationId,
+    accountId,
     transferId,
-    originationId,
     status,
     sweepStatus,
     itemId,

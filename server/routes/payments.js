@@ -3,7 +3,6 @@
  */
 
 const express = require('express');
-const axios = require('axios');
 const {
   addPayment,
   setMonthlyPayment,
@@ -32,8 +31,7 @@ router.put(
     const newNumberOfPayments = oldNumberOfPayments + 1;
     await addPayment(userId, newTotal, newNumberOfPayments);
     const updatedPayments = await retrievePaymentsByUser(userId);
-    const response = { updatedPayments };
-    res.json(response);
+    res.json(updatedPayments);
   })
 );
 
@@ -53,8 +51,7 @@ router.put(
     const { monthlyPayment } = req.body;
     await setMonthlyPayment(userId, monthlyPayment);
     const updatedPayments = await retrievePaymentsByUser(userId);
-    const response = { updatedPayments };
-    res.json(response);
+    res.json(updatedPayments);
   })
 );
 

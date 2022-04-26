@@ -13,6 +13,8 @@ const {
   retrieveTransfersByItemId,
   retrieveTransfersByUserId,
   addTransferInfo,
+  updateTransferStatus,
+  retrieveTransferByPlaidTransferId,
 } = require('./transfers');
 const {
   createItem,
@@ -54,6 +56,8 @@ module.exports = {
   retrieveTransfersByItemId,
   retrieveTransfersByUserId,
   addTransferInfo,
+  updateTransferStatus,
+  retrieveTransferByPlaidTransferId,
   // items
   createItem,
   deleteItem,

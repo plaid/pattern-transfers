@@ -38,6 +38,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     generateTransferIntentId,
     getTransfersByUser,
     transfersByUser,
+    updateTransfersStatusByUser,
   } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
@@ -111,6 +112,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setToken(null);
     }
   }, [linkTokens, userId, numOfItems]);
+
+  // update data store with the user's transfers
+  useEffect(() => {
+    updateTransfersStatusByUser(userId);
+  }, [userId, updateTransfersStatusByUser]);
 
   // update data store with the user's transfers
   useEffect(() => {
@@ -215,6 +221,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             payments={payments}
             userId={userId}
             setPayments={setPayments}
+            setTransfers={setTransfers}
+            item={item}
           />
         </div>
       </div>

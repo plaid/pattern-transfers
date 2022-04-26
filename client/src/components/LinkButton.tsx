@@ -73,12 +73,12 @@ const LinkButton: React.FC<Props> = (props: Props) => {
 
           // use transfer_id to obtain information about the transfer and add info to existing transfer in database
           const transferDataResponse = await getTransferStatus(
-            transferUIDataResponse.data.transfer_intent.transfer_id
+            transferUIDataResponse.data.transfer_intent.transfer_id,
+            true
           );
           const {
             account_id,
             id,
-            origination_account_id,
             status,
             sweep_status,
             amount,
@@ -88,7 +88,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
             transfersData.transfer_intent_id,
             account_id,
             id,
-            origination_account_id,
             status,
             sweep_status,
             data.items[0].id
@@ -96,7 +95,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           const response = await addPayment(props.userId, Number(amount));
 
           if (props.setPayments != null) {
-            props.setPayments(response.data.updatedPayments[0]);
+            props.setPayments(response.data[0]);
           }
         }
         await getTransfersByUser(props.userId);

@@ -65,15 +65,8 @@ router.post(
       if (redirect_uri.indexOf('http') === 0) {
         linkTokenParams.redirect_uri = redirect_uri;
       }
-      const createResponse = await axios.post(
-        `https://sandbox.plaid.com/link/token/create`,
-        linkTokenParams,
-        {
-          headers: {
-            'content-type': 'application/json',
-          },
-        }
-      );
+
+      const createResponse = await plaid.linkTokenCreate(linkTokenParams);
       res.json(createResponse.data);
     } catch (err) {
       console.log('error while fetching client token', err.response.data);
