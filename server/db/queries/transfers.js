@@ -175,6 +175,19 @@ const retrieveTransfersByUserId = async userId => {
   return transfers;
 };
 
+/**
+ * Retrieves all transfers.
+ *
+ * @returns {Object[]} an array of transfers.
+ */
+const retrieveAllTransfers = async () => {
+  const query = {
+    text: 'SELECT * FROM transfers ORDER BY id',
+  };
+  const { rows: transfers } = await db.query(query);
+  return transfers;
+};
+
 module.exports = {
   createTransfer,
   retrieveTransfersByItemId,
@@ -182,4 +195,5 @@ module.exports = {
   addTransferInfo,
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
+  retrieveAllTransfers,
 };

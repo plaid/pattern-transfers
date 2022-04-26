@@ -8,7 +8,7 @@ const {
   retrieveEvents,
   retrieveTransferByPlaidTransferId,
   updateTransferStatus,
-  retrieveTransfersByUserId,
+  retrieveAllTransfers,
 } = require('../db/queries');
 const plaid = require('../plaid');
 
@@ -32,26 +32,65 @@ const transfersHandler = async (requestBody, io) => {
     if (webhookCode) io.emit(webhookCode);
   };
 
-  switch (webhookCode) {
-    case 'TRANSFER_EVENTS_UPDATE': {
-      const allEvents = await retrieveEvents();
-      let afterId;
-      if (allEvents.length === 0) {
-        afterId = 840;
-      } else {
-        afterId = allEvents[allEvents.length - 1].plaid_event_id;
-      }
-      const sycnRequest = {
-        after_id: afterId,
+  const callEventList = async () => {
+    const allTransfers = await retrieveAllTransfers();
+    const allEvents = allTransfers.map(async transfer => {
+      const date = new Date();
+      const endDate = date.toISOString();
+      const transferEventListRequest = {
+        start_date: transfer.created_at,
+        end_date: endDate,
+        transfer_id: transfer.transfer_id,
+        account_id: transfer.plaid_account_id,
+        transfer_type: transfer.type,
+        event_types: [
+          'pending',
+          'cancelled',
+          'failed',
+          'posted',
+          'reversed',
+          'swept',
+          'reverse_swept',
+        ],
         count: 25,
       };
-      const syncResponse = await plaid.transferEventSync(sycnRequest);
-      let userId;
-      const newEvents = syncResponse.data.transfer_events.map(async event => {
+      const transferEventListResponse = await plaid.transferEventList(
+        transferEventListRequest
+      );
+      if (transferEventListResponse != null) {
+        return transferEventListResponse.data.transfer_events;
+      }
+      return null;
+    });
+    const allEventsArray = await Promise.all(allEvents);
+    return [].concat.apply([], allEventsArray);
+  };
+
+  const callEventSync = async afterId => {
+    const sycnRequest = {
+      after_id: afterId,
+      count: 25,
+    };
+    const syncResponse = await plaid.transferEventSync(sycnRequest);
+    return syncResponse.data.transfer_events;
+  };
+
+  switch (webhookCode) {
+    case 'TRANSFER_EVENTS_UPDATE': {
+      const currentEventsInDB = await retrieveEvents();
+      console.log('current', currentEventsInDB);
+      // if no events are saved in database, need to call transfer/event/list on all transfers instead of events/sync because you don't have an after_id for events/sync
+      const allNewPlaidEvents =
+        currentEventsInDB.length === 0
+          ? await callEventList()
+          : await callEventSync(
+              currentEventsInDB[currentEventsInDB.length - 1].plaid_event_id
+            );
+
+      const newEventsAddedToDatabase = allNewPlaidEvents.map(async event => {
         const transfer = await retrieveTransferByPlaidTransferId(
           event.transfer_id
         );
-        userId = transfer.user_id;
         const newEvent = await createEvent(
           event.event_id,
           transfer.user_id,
@@ -77,8 +116,7 @@ const transfersHandler = async (requestBody, io) => {
         );
         return newEvent;
       });
-
-      await Promise.all(newEvents);
+      await Promise.all(newEventsAddedToDatabase);
 
       serverLogAndEmitSocket(webhookCode);
       break;

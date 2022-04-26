@@ -160,7 +160,7 @@ router.post(
         Number(amount).toFixed(2),
         status,
         'debit',
-        null // sweep_status
+        'unswept'
       );
 
       const transfers = await retrieveTransfersByUserId(userId);

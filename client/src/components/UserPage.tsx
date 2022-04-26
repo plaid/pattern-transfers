@@ -55,7 +55,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     generateTransferIntentId,
     getTransfersByUser,
     transfersByUser,
-    updateTransfersStatusByUser,
   } = useTransfers();
   const userId = Number(match.params.userId);
 
@@ -122,11 +121,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   // update data store with the user's transfers
   useEffect(() => {
-    updateTransfersStatusByUser(userId);
-  }, [userId, updateTransfersStatusByUser]);
-
-  // update data store with the user's transfers
-  useEffect(() => {
     getTransfersByUser(userId);
   }, [getTransfersByUser, userId]);
 
@@ -138,12 +132,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setTransfers(null);
     }
   }, [transfersByUser, userId]);
-
-  // update the events data store with latest events
-  // todo: implement this every 10 minutes
-  useEffect(() => {
-    // syncEvents();
-  }, [userId]);
 
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
@@ -183,6 +171,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         username={user.username}
         isLedgerView={isLedgerView}
         setIsLedgerView={setIsLedgerView}
+        userId={userId}
+        setTransfers={setTransfers}
       />
       <div className="user-page-container">
         {!isLedgerView && (
@@ -268,9 +258,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         )}
         {isLedgerView && (
           <Ledger
+            userId={userId}
             transfers={transfers}
             setIsLedgerView={setIsLedgerView}
-            setTransfers={setTransfers}
           />
         )}
       </div>
