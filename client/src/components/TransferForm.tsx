@@ -23,8 +23,9 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.userId,
       Number(transferAmount)
     );
-
-    props.setPayments(response.data[0]);
+    if (props.setPayments != null) {
+      props.setPayments(response.data.updatedPayments[0]);
+    }
 
     await setTransferAmount(
       `$${Number(transferAmount)
@@ -44,7 +45,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
     props.setTransfers(transfersResponse.data);
     const paymentsResponse = await addPayment(props.userId, monthlyPayment);
-    console.log(paymentsResponse.data);
     props.setPayments(paymentsResponse.data[0]);
   };
 
@@ -59,7 +59,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     <>
       <div className="box developer-configs">
         <h4 className="subheading">Developer Configs</h4>{' '}
-        <form className="developer-configs_form" onSubmit={handleSubmit}>
+        <form className="developer-configs__form" onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"
             name="transfer amount"
@@ -75,12 +75,12 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             }}
             className="transfer-funds__input"
           />
-          <Button className="developer-configs_button" centered type="submit">
+          <Button className="developer-configs__button" centered type="submit">
             Update price
           </Button>
         </form>
         <Button
-          className="developer-configs_button admin-ledger_button"
+          className="developer-configs__button admin-ledger__button"
           secondary
           centered
           type="submit"
