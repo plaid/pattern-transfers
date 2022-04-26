@@ -90,11 +90,13 @@ export function TransfersProvider(props: any) {
 
   const updateTransfersStatusByUser = useCallback(async userId => {
     const { data: transfers } = await apiGetTransfersByUser(userId);
-    const transferStatuses = transfers.map(async (transfer: TransferType) => {
-      const newTransfer = await apiGetTransferStatus(userId, false);
+    await transfers.forEach(async (transfer: TransferType) => {
+      const newTransfer = await apiGetTransferStatus(
+        transfer.transfer_id,
+        false
+      );
       console.log('inside the for each function', newTransfer.data);
     });
-    await Promise.all(transferStatuses);
     const { data: newTransfers } = await apiGetTransfersByUser(userId);
     console.log('all transfers after the fact', newTransfers);
     dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: newTransfers });

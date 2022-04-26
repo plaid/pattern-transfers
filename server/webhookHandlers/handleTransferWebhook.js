@@ -3,7 +3,13 @@
  * https://plaid.com/docs/#item-webhooks
  */
 
-const { createEvent, retrieveEvents } = require('../db/queries');
+const {
+  createEvent,
+  retrieveEvents,
+  retrieveTransferByPlaidTransferId,
+  updateTransferStatus,
+  retrieveTransfersByUserId,
+} = require('../db/queries');
 const plaid = require('../plaid');
 
 /**
@@ -18,7 +24,6 @@ const transfersHandler = async (requestBody, io) => {
     item_id: plaidItemId,
     error,
   } = requestBody;
-
   const serverLogAndEmitSocket = webhookCode => {
     console.log(
       `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`
@@ -28,18 +33,28 @@ const transfersHandler = async (requestBody, io) => {
   };
 
   switch (webhookCode) {
-    case 'TRANSFER_EVENTS_UPDATE"': {
+    case 'TRANSFER_EVENTS_UPDATE': {
       const allEvents = await retrieveEvents();
+      let afterId;
+      if (allEvents.length === 0) {
+        afterId = 840;
+      } else {
+        afterId = allEvents[allEvents.length - 1].plaid_event_id;
+      }
       const sycnRequest = {
-        after_id: allEvents[allEvents.length - 1].plaid_event_id,
+        after_id: afterId,
         count: 25,
       };
       const syncResponse = await plaid.transferEventSync(sycnRequest);
-
-      await syncResponse.data.transfer_events.forEach(async event => {
+      let userId;
+      const newEvents = syncResponse.data.transfer_events.map(async event => {
+        const transfer = await retrieveTransferByPlaidTransferId(
+          event.transfer_id
+        );
+        userId = transfer.user_id;
         const newEvent = await createEvent(
           event.event_id,
-          transfer_response.user_id,
+          transfer.user_id,
           event.account_id,
           event.transfer_id,
           event.transfer_type,
@@ -50,8 +65,21 @@ const transfersHandler = async (requestBody, io) => {
           event.failure_reason,
           event.timepstamp
         );
+
+        const transferGetResponse = await plaid.transferGet({
+          transfer_id: newEvent.transfer_id,
+        });
+
+        await updateTransferStatus(
+          transferGetResponse.data.transfer.status,
+          transferGetResponse.data.transfer.sweep_status,
+          newEvent.transfer_id
+        );
+        return newEvent;
       });
-      console.log('newEvent:', newEvent);
+
+      await Promise.all(newEvents);
+
       serverLogAndEmitSocket(webhookCode);
       break;
     }

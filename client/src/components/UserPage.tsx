@@ -267,7 +267,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           </div>
         )}
         {isLedgerView && (
-          <Ledger transfers={transfers} setIsLedgerView={setIsLedgerView} />
+          <Ledger
+            transfers={transfers}
+            setIsLedgerView={setIsLedgerView}
+            setTransfers={setTransfers}
+          />
         )}
       </div>
     </div>

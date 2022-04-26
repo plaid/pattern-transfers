@@ -3,7 +3,6 @@
  */
 
 const express = require('express');
-const axios = require('axios');
 const {
   createTransfer,
   addTransferInfo,
@@ -13,6 +12,8 @@ const {
   retrieveTransfersByUserId,
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
+  createEvent,
+  retrieveEvents,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -52,7 +53,7 @@ router.post(
       );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
-      createTransfer(
+      const newTransfer = await createTransfer(
         null, //item_id
         userId,
         null, // plaid_account_id
@@ -61,6 +62,7 @@ router.post(
         null, // transfer_id
         subscriptionAmount.toFixed(2),
         null, // status
+        'debit',
         null // sweep_status
       );
       res.json(transferIntentCreateResponse.data);
@@ -108,6 +110,16 @@ router.post(
       const transferAuthorizationCreateResponse = await plaid.transferAuthorizationCreate(
         transferAuthorizationCreateRequest
       );
+      if (
+        transferAuthorizationCreateResponse.data.authorization.decision !==
+        'approved'
+      ) {
+        return res.status(500).json({
+          message:
+            transferAuthorizationCreateResponse.data.authorization
+              .decision_rationale.description,
+        });
+      }
 
       const authorizationId =
         transferAuthorizationCreateResponse.data.authorization.id;
@@ -135,6 +147,7 @@ router.post(
         account_id,
         amount,
         status,
+        type,
       } = transferCreateResponse.data.transfer;
 
       await createTransfer(
@@ -146,11 +159,12 @@ router.post(
         id, // transfer_id
         Number(amount).toFixed(2),
         status,
+        'debit',
         null // sweep_status
       );
 
       const transfers = await retrieveTransfersByUserId(userId);
-      res.json(transfers);
+      return res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
       return res.json(err.response.data);
@@ -213,6 +227,7 @@ router.post(
         transferGetResponse.data.transfer.sweep_status,
         transferId
       );
+
       const updatedTransfer = await retrieveTransferByPlaidTransferId(
         transferId
       );
@@ -243,18 +258,92 @@ router.put(
   asyncWrapper(async (req, res) => {
     try {
       const { transferIntentId } = req.params;
-      const { accountId, transferId, status, sweepStatus, itemId } = req.body;
+      const {
+        accountId,
+        transferId,
+        status,
+        sweepStatus,
+        itemId,
+        type,
+      } = req.body;
+
       const transfer = await addTransferInfo(
         status,
         transferId,
         accountId,
         sweepStatus,
         itemId,
+        type,
         transferIntentId
       );
+
       res.json(transfer);
     } catch (err) {
       console.log('error while adding info', err.response.data);
+      return res.json(err.response.data);
+    }
+  })
+);
+
+router.post(
+  '/simulate_sweep',
+  asyncWrapper(async (req, res) => {
+    try {
+      const sweepRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+      };
+      const sweepResponse = await plaid.sandboxTransferSweepSimulate(
+        sweepRequest
+      );
+      res.json(sweepResponse.data);
+    } catch (err) {
+      console.log('error while sweeping', err.response.data);
+      return res.json(err.response.data);
+    }
+  })
+);
+
+router.post(
+  '/simulate_event',
+  asyncWrapper(async (req, res) => {
+    try {
+      const { transferId, event } = req.body;
+      const transferSimulateRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+        transfer_id: transferId,
+        event_type: event,
+      };
+      const transferSimulateResponse = await plaid.sandboxTransferSimulate(
+        transferSimulateRequest
+      );
+      const transfer_response = await retrieveTransferByPlaidTransferId(
+        transferId
+      );
+      const date = new Date();
+      const endDate = date.toISOString();
+      const transferEventListRequest = {
+        start_date: transfer_response.created_at,
+        end_date: endDate,
+        transfer_id: transferId,
+        account_id: transfer_response.plaid_account_id,
+        event_types: [
+          'posted',
+          'reversed',
+          'swept',
+          'reverse_swept',
+          'failed',
+          'pending',
+          'cancelled',
+        ],
+        transfer_type: transfer_response.type,
+        count: 20,
+      };
+
+      res.json(transferSimulateResponse.data);
+    } catch (err) {
+      console.log('error while simulating event', err.response.data);
       return res.json(err.response.data);
     }
   })

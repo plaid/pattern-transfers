@@ -11,6 +11,7 @@ import {
 interface Props {
   transfers: TransferType[] | null;
   setIsLedgerView: (arg: boolean) => void;
+  setTransfers: (transfers: TransferType[]) => void;
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {

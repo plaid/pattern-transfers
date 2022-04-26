@@ -9,7 +9,7 @@ const router = express.Router();
 
 const { asyncWrapper } = require('../middleware');
 const {
-  handleTransactionsWebhook,
+  handleTransferWebhook,
   handleItemWebhook,
   unhandledWebhook,
 } = require('../webhookHandlers');
