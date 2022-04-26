@@ -22,14 +22,7 @@ import {
   usePayments,
 } from '../services';
 
-import {
-  Banner,
-  Item,
-  ErrorMessage,
-  TransferForm,
-  UserTransfers,
-  Admin,
-} from '.';
+import { Banner, Item, ErrorMessage, TransferForm, UserTransfers } from '.';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [user, setUser] = useState<UserType>({
