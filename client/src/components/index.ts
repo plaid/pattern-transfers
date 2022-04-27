@@ -3,7 +3,6 @@ export { default as Banner } from './Banner';
 export { default as UserPage } from './UserPage';
 export { default as Landing } from './Landing';
 export { default as LinkButton } from './LinkButton';
-export { default as UpdateLink } from './UpdateLink';
 export { default as Sockets } from './Sockets';
 export { default as Item } from './Item';
 export { default as UserList } from './UserList';

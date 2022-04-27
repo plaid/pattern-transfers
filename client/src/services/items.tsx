@@ -17,7 +17,6 @@ import { ItemType } from '../components/types';
 import {
   getItemsByUser as apiGetItemsByUser,
   getItemById as apiGetItemById,
-  deleteItemById as apiDeleteItemById,
 } from './api';
 
 interface ItemsState {
@@ -35,7 +34,6 @@ type ItemsAction =
 
 interface ItemsContextShape extends ItemsState {
   dispatch: Dispatch<ItemsAction>;
-  deleteItemById: (id: number, userId: number) => void;
   getItemsByUser: (userId: number, refresh: boolean) => void;
   getItemById: (id: number, refresh: boolean) => void;
   itemsById: { [itemId: number]: ItemType[] };
@@ -77,21 +75,6 @@ export function ItemsProvider(props: any) {
   }, []);
 
   /**
-   * @desc Will deletes Item by itemId.
-   */
-  const deleteItemById = useCallback(
-    async (id, userId) => {
-      await apiDeleteItemById(id);
-      dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
-      // Update items list after deletion.
-      await getItemsByUser(userId);
-
-      delete hasRequested.current.byId[id];
-    },
-    [getItemsByUser]
-  );
-
-  /**
    * @desc Will delete all items that belong to an individual User.
    * There is no api request as apiDeleteItemById in items delete all related transactions
    */
@@ -112,16 +95,9 @@ export function ItemsProvider(props: any) {
       itemsByUser: groupBy(allItems, 'user_id'),
       getItemById,
       getItemsByUser,
-      deleteItemById,
       deleteItemsByUserId,
     };
-  }, [
-    itemsById,
-    getItemById,
-    getItemsByUser,
-    deleteItemById,
-    deleteItemsByUserId,
-  ]);
+  }, [itemsById, getItemById, getItemsByUser, deleteItemsByUserId]);
 
   return <ItemsContext.Provider value={value} {...props} />;
 }

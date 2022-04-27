@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
+import Callout from 'plaid-threads/Callout';
 import { LinkButton } from '.';
 
 import {
@@ -32,14 +33,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   });
 
   const [transfers, setTransfers] = useState<null | TransferType[]>(null);
-
-  const { generateLinkToken, linkTokens } = useLink();
-  const {
-    generateTransferIntentId,
-    getTransfersByUser,
-    transfersByUser,
-    updateTransfersStatusByUser,
-  } = useTransfers();
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
@@ -50,6 +43,13 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
   const { itemsByUser, getItemsByUser } = useItems();
+  const { generateLinkToken, linkTokens } = useLink();
+  const {
+    generateTransferIntentId,
+    getTransfersByUser,
+    transfersByUser,
+    updateTransfersStatusByUser,
+  } = useTransfers();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -196,6 +196,24 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 authorization language here to capture NACHA-compliant
                 authorzation prior to initiating a transfer.
               </p>
+              <div className="item__callouts">
+                {linkTokens.error.error_code != null && (
+                  <Callout warning>
+                    <div>
+                      Unable to fetch link_token: please make sure your backend
+                      server is running and that your .env file has been
+                      configured correctly.
+                    </div>
+                    <div>
+                      Error Code: <code>{linkTokens.error.error_code}</code>
+                    </div>
+                    <div>
+                      Error Type: <code>{linkTokens.error.error_type}</code>{' '}
+                    </div>
+                    <div>Error Message: {linkTokens.error.error_message}</div>
+                  </Callout>
+                )}
+              </div>
             </div>
           )}
           {numOfItems > 0 && (
@@ -205,7 +223,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                 userId={userId}
                 removeButton={false}
                 linkButton={numOfItems === 0}
-                numOfItems={numOfItems}
                 accountName={accountName}
                 payments={payments}
                 item={item}

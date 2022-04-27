@@ -65,7 +65,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             name="transfer amount"
             value={transferAmount}
             required
-            placeholder={transferAmount}
+            placeholder={
+              monthlyPayment.toFixed(2).toString() ||
+              'Monthly subscription amount'
+            }
             label="Subscription price"
             onChange={e => {
               setTransferAmount(e.currentTarget.value);
@@ -97,14 +100,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
               onClick={initiateTransfer}
             >
               Initiate month {numberOfPayments + 1} payment
-            </Button>
-            <Button
-              className="developer-configs__button"
-              centered
-              secondary
-              type="button"
-            >
-              Remove bank account {amt}
             </Button>
           </div>
         )}
