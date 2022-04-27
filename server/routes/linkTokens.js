@@ -15,6 +15,7 @@ const {
   PLAID_ENV,
   PLAID_CLIENT_ID,
   PLAID_SECRET_SANDBOX,
+  LINK_CUSTOMIZATION_NAME,
 } = process.env;
 
 const redirect_uri =
@@ -58,7 +59,7 @@ router.post(
         transfer: {
           intent_id: transferIntentId,
         },
-        link_customization_name: 'transfer_ui_woo',
+        link_customization_name: LINK_CUSTOMIZATION_NAME,
       };
 
       // If user has entered a redirect uri in the .env file
