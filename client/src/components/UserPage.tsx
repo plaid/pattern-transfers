@@ -20,6 +20,7 @@ import {
   useLink,
   useTransfers,
   usePayments,
+  useCurrentUser,
 } from '../services';
 
 import {
@@ -56,6 +57,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     getTransfersByUser,
     transfersByUser,
   } = useTransfers();
+  const { setCurrentUser } = useCurrentUser();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -132,6 +134,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setTransfers(null);
     }
   }, [transfersByUser, userId]);
+
+  useEffect(() => {
+    setCurrentUser(usersById[userId].username);
+  }, [setCurrentUser, usersById, userId]);
 
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 

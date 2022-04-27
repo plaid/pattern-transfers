@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 
 import { TransferType } from './types';
@@ -6,7 +6,6 @@ import {
   simulateTransferEvent,
   simulateSweep,
   fireTransferWebhook,
-  getTransfersByUser,
 } from '../services/api';
 
 interface Props {
@@ -16,28 +15,19 @@ interface Props {
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
-  const [transfers, setTransfers] = useState<TransferType[] | null>(
-    props.transfers
-  );
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
       await simulateSweep();
-      await fireTransferWebhook();
     } else {
       await simulateTransferEvent(transferId, event);
-      await fireTransferWebhook();
     }
-  };
-
-  const updateLedger = async () => {
-    const newTransfers = await getTransfersByUser(props.userId);
-    setTransfers(newTransfers.data);
+    await fireTransferWebhook();
   };
 
   const tableRows =
-    transfers == null
+    props.transfers == null
       ? null
-      : transfers.map((transfer, index) => {
+      : props.transfers.map((transfer, index) => {
           return (
             <div className="ledger_table_row" key={index}>
               {' '}
@@ -104,16 +94,6 @@ const Ledger: React.FC<Props> = (props: Props) => {
       >
         {' '}
         Simulate sweep
-      </Button>
-      <Button
-        secondary
-        centered
-        inline
-        className="simulate_button sweep"
-        onClick={updateLedger}
-      >
-        {' '}
-        Update Ledger
       </Button>
       <div className="ledger_table">
         <div className="ledger_table_row">

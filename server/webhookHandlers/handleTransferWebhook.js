@@ -78,7 +78,6 @@ const transfersHandler = async (requestBody, io) => {
   switch (webhookCode) {
     case 'TRANSFER_EVENTS_UPDATE': {
       const currentEventsInDB = await retrieveEvents();
-      console.log('current', currentEventsInDB);
       // if no events are saved in database, need to call transfer/event/list on all transfers instead of events/sync because you don't have an after_id for events/sync
       const allNewPlaidEvents =
         currentEventsInDB.length === 0
