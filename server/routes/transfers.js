@@ -290,11 +290,9 @@ router.post(
         transfer_id: transferId,
         event_type: event,
       };
-      console.log(event);
       const transferSimulateResponse = await plaid.sandboxTransferSimulate(
         transferSimulateRequest
       );
-      console.log(`${event} simulated`, transferSimulateResponse.data);
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
