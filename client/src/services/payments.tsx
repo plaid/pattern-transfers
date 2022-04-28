@@ -58,6 +58,7 @@ export function PaymentsProvider(props: any) {
    * @desc Will deletes Payment by paymentId.
    */
   const deletePaymentById = useCallback(async (id, userId) => {
+    // will add this function in later
     // await apiDeletePaymentById(id);
     // dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
     // // Update payments list after deletion.
