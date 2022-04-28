@@ -12,8 +12,6 @@ const {
   retrieveTransfersByUserId,
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
-  createEvent,
-  retrieveEvents,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -318,28 +316,6 @@ router.post(
       const transferSimulateResponse = await plaid.sandboxTransferSimulate(
         transferSimulateRequest
       );
-      const transfer_response = await retrieveTransferByPlaidTransferId(
-        transferId
-      );
-      const date = new Date();
-      const endDate = date.toISOString();
-      const transferEventListRequest = {
-        start_date: transfer_response.created_at,
-        end_date: endDate,
-        transfer_id: transferId,
-        account_id: transfer_response.plaid_account_id,
-        event_types: [
-          'posted',
-          'reversed',
-          'swept',
-          'reverse_swept',
-          'failed',
-          'pending',
-          'cancelled',
-        ],
-        transfer_type: transfer_response.type,
-        count: 20,
-      };
 
       res.json(transferSimulateResponse.data);
     } catch (err) {

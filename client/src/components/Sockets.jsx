@@ -33,8 +33,6 @@ const Sockets = () => {
       const msg = `New Webhook Event: Transfer Events Update`;
       console.log(msg);
       await toast(msg);
-      const transfers = apiGetTransfersByUser(userState.currentUser.id);
-      console.log(transfers.data);
       getTransfersByUser(userState.currentUser.id);
     });
 

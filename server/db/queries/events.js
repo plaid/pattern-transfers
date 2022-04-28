@@ -1,11 +1,11 @@
 /**
- * @file Defines the queries for the accounts table/view.
+ * @file Defines the queries for the events table/view.
  */
 
 const db = require('../');
 
 /**
- * Creates transfer related to a single item from the Transfer UI
+ * Creates event related to a simulated event.
  *
  * @param {number} eventId the plaid event Id.
  * @param {number} userId the user Id.
@@ -14,9 +14,9 @@ const db = require('../');
  * @param {string} transferType the transfer type.
  * @param {string} eventType the event type.
  * @param {number} amount the amount of the transfer.
- * @param {number }sweeepAmount  the sweep amount of the transfer.
- * @param {string} sweepId the sweep id of the transfer.
- * @param {string} failureReaon the failure reason of the evnt.
+ * @param {number }sweeepAmount  the sweep amount of the event.
+ * @param {string} sweepId the sweep id of the event.
+ * @param {string} failureReaon the failure reason of the event.
  * @param {string} timestamp the datetime when the event occurred.
  * @returns {Object} the new event.
  */
@@ -34,7 +34,7 @@ const createEvent = async (
   timestamp
 ) => {
   const query = {
-    // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
+    // RETURNING is a Postgres-specific clause that returns a list of the inserted events.
     text: `
         INSERT INTO events_table
           (
@@ -77,7 +77,7 @@ const createEvent = async (
 /**
  * Retrieves all events.
  *
- * @returns {Object[]} an array of users.
+ * @returns {Object[]} an array of events.
  */
 const retrieveEvents = async () => {
   const query = {

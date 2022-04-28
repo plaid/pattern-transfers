@@ -1,7 +1,6 @@
 /**
- * @file Defines the handler for Item webhooks.
- * https://plaid.com/docs/#item-webhooks
- */
+ * @file Defines the handler for Transfers webhooks.
+ * https://plaid.com/docs/transfer/webhooks/
 
 const {
   createEvent,
@@ -13,17 +12,13 @@ const {
 const plaid = require('../plaid');
 
 /**
- * Handles all Item webhook events.
+ * Handles all Transfers webhook events.
  *
  * @param {Object} requestBody the request body of an incoming webhook event.
  * @param {Object} io a socket.io server instance.
  */
 const transfersHandler = async (requestBody, io) => {
-  const {
-    webhook_code: webhookCode,
-    item_id: plaidItemId,
-    error,
-  } = requestBody;
+  const { webhook_code: webhookCode } = requestBody;
   const serverLogAndEmitSocket = webhookCode => {
     console.log(
       `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`

@@ -17,9 +17,11 @@ interface Props {
 const Ledger: React.FC<Props> = (props: Props) => {
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
-      await simulateSweep();
+      const sweepData = await simulateSweep();
+      console.log(sweepData);
     } else {
-      await simulateTransferEvent(transferId, event);
+      const eventData = await simulateTransferEvent(transferId, event);
+      console.log(eventData);
     }
     await fireTransferWebhook();
   };
