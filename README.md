@@ -83,7 +83,7 @@ Both PENDING_EXPIRATION and ITEM_LOGIN_REQUIRED are item webhooks demonstrated i
 
 ### Admin
 
-A view of all users is provided to developers on `http://localhost:3002/admin`. Developers have the ability to remove a user here.
+A view of all users is provided to developers on `http://localhost:3002/userlist`. Developers have the ability to remove a user here.
 
 # Plaid Pattern - Server
 

@@ -14,6 +14,16 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error?.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+);
+
 export default api;
 // currentUser
 export const getLoginUser = (username: string) =>

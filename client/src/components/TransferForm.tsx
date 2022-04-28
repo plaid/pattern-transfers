@@ -4,6 +4,7 @@ import { Button } from 'plaid-threads/Button';
 import { Callout } from 'plaid-threads/Callout';
 import { setMonthlyPayment, createTransfer, addPayment } from '../services/api';
 import { PaymentType, ItemType, TransferType } from './types';
+import { AxiosResponse } from 'axios';
 
 interface Props {
   setPayments: (payment: PaymentType) => void;
@@ -26,11 +27,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
     props.setPayments(response.data[0]);
 
-    await setTransferAmount(
-      `$${Number(transferAmount)
-        .toFixed(2)
-        .toString()}`
-    );
+    await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);
   };
 
   const itemId = props.item != null ? props.item.id : 0;
@@ -50,10 +47,8 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.setPayments(paymentsResponse.data[0]);
       setError(null);
     } catch (err) {
-      //@ts-ignore
       if (err instanceof Error) {
-        //@ts-ignore
-        setError(`$${monthlyPayment.toFixed(2)} ${err.response.data.message}.`);
+        setError(`$${monthlyPayment.toFixed(2)} ${err.message}.`);
       }
     }
   };
