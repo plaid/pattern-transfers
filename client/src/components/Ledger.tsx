@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Button from 'plaid-threads/Button';
 
 import { TransferType } from './types';
@@ -7,7 +7,6 @@ import {
   simulateSweep,
   fireTransferWebhook,
 } from '../services/api';
-import { useCurrentUser, useUsers } from '../services';
 
 interface Props {
   transfers: TransferType[] | null;
@@ -16,8 +15,6 @@ interface Props {
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
-  const { setCurrentUser } = useCurrentUser();
-  const { usersById, getUsers } = useUsers();
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
       await simulateSweep();
@@ -26,14 +23,6 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
     await fireTransferWebhook();
   };
-
-  useEffect(() => {
-    getUsers();
-  }, [getUsers, props.userId]);
-
-  useEffect(() => {
-    setCurrentUser(usersById[props.userId].username);
-  }, [setCurrentUser, usersById, props.userId]);
 
   const tableRows =
     props.transfers == null
