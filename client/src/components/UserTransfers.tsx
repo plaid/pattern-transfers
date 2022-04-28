@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { TransferType } from './types';
-
 interface Props {
   transfers: TransferType[] | null;
 }

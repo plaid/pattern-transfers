@@ -72,6 +72,12 @@ export const addTransferInfo = (
     sweepStatus,
     itemId,
   });
+
+export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);
+
+export const simulateTransferEvent = (transferId: string, event: string) =>
+  api.post(`/transfers/simulate_event`, { transferId, event });
+
 // payments
 
 export const getPaymentsByUser = (userId: number) =>

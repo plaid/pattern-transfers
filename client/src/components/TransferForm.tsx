@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
 import { currencyFilter } from '../util';
@@ -9,6 +8,7 @@ import { PaymentType, ItemType, TransferType } from './types';
 interface Props {
   setPayments: (payment: PaymentType) => void;
   setTransfers: (transfers: TransferType[]) => void;
+  setIsLedgerView: (arg: boolean) => void;
   numOfItems: number;
   userId: number;
   payments: null | PaymentType;
@@ -33,7 +33,9 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         .toString()}`
     );
   };
+
   const itemId = props.item != null ? props.item.id : 0;
+
   const monthlyPayment =
     props.payments != null ? props.payments.monthly_payment : 0;
 
@@ -55,6 +57,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     parseFloat(transferAmount) > 0
       ? currencyFilter(parseFloat(transferAmount))
       : '';
+
   return (
     <>
       <div className="box developer-configs">
@@ -83,7 +86,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           className="developer-configs__button admin-ledger__button"
           secondary
           centered
-          type="submit"
+          type="button"
+          onClick={() => {
+            props.setIsLedgerView(true);
+          }}
         >
           View Admin Ledger
         </Button>
@@ -92,9 +98,9 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           Note: visit the admin page to simulate Transfer events.
         </p>
         {props.numOfItems > 0 && (
-          <div className="dev-configs-bottom-buttons-container">
+          <div className="dev-configs-bottom-buttons__container">
             <Button
-              className="initiate-payment_button"
+              className="initiate-payment__button"
               centered
               type="button"
               onClick={initiateTransfer}

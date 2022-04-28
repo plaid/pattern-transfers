@@ -324,6 +324,9 @@ user list
 
 .user-page-container {
   width: 100%;
+}
+
+.user-view-container {
   display: grid;
   grid-template-columns: 67% 33%;
 }
@@ -372,4 +375,49 @@ user list
 .column3 {
   justify-self: end;
   padding-right: $unit;
+}
+
+//ledger
+
+.ledger-container {
+  width: 100%;
+  position: relative;
+}
+.ledger_table_row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 3fr 10fr;
+  margin-bottom: $unit;
+  align-items: center;
+}
+
+.ledger_table_data {
+  vertical-align: middle;
+}
+
+.ledger4 {
+  display: flex;
+  flex-direction: row;
+}
+
+.simulate_button {
+  margin-left: $unit;
+
+  &.btn1 {
+    margin-left: 0px;
+  }
+}
+
+.sweep {
+  margin-bottom: 3 * $unit;
+}
+
+.return-to-payments {
+  display: flex;
+  align-items: center;
+  .chevron {
+    position: relative;
+    left: 2 * $unit;
+    z-index: 1;
+  }
 }

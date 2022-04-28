@@ -260,4 +260,45 @@ router.put(
   })
 );
 
+router.post(
+  '/simulate_sweep',
+  asyncWrapper(async (req, res) => {
+    try {
+      const sweepRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+      };
+      const sweepResponse = await plaid.sandboxTransferSweepSimulate(
+        sweepRequest
+      );
+      res.json(sweepResponse.data);
+    } catch (err) {
+      console.log('error while sweeping', err.response.data);
+      return res.json(err.response.data);
+    }
+  })
+);
+
+router.post(
+  '/simulate_event',
+  asyncWrapper(async (req, res) => {
+    try {
+      const { transferId, event } = req.body;
+      const transferSimulateRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+        transfer_id: transferId,
+        event_type: event,
+      };
+      const transferSimulateResponse = await plaid.sandboxTransferSimulate(
+        transferSimulateRequest
+      );
+      res.json(transferSimulateResponse.data);
+    } catch (err) {
+      console.log('error while simulating event', err.response.data);
+      return res.json(err.response.data);
+    }
+  })
+);
+
 module.exports = router;

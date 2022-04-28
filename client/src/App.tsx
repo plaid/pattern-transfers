@@ -42,7 +42,7 @@ function App() {
                           <Route exact path="/" component={Landing} />
                           <Route path="/user/:userId" component={UserPage} />
                           <Route path="/oauth-link" component={OAuthLink} />
-                          <Route path="/admin" component={UserList} />
+                          <Route path="/userlist" component={UserList} />
                         </Switch>
                       </CurrentUserProvider>
                     </UsersProvider>
