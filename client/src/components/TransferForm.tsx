@@ -26,11 +26,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     );
     props.setPayments(response.data[0]);
 
-    await setTransferAmount(
-      `$${Number(transferAmount)
-        .toFixed(2)
-        .toString()}`
-    );
+    await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);
   };
 
   const itemId = props.item != null ? props.item.id : 0;
