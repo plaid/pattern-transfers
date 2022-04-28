@@ -53,9 +53,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
-    useTransfers();
-
+  const {
+    generateTransferIntentId,
+    getTransfersByUser,
+    transfersByUser,
+  } = useTransfers();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -124,7 +126,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     getTransfersByUser(userId);
   }, [getTransfersByUser, userId]);
 
-  // update no of items from data store
+  // update state transfers from data store
   useEffect(() => {
     if (transfersByUser[userId] != null) {
       setTransfers(transfersByUser[userId]);

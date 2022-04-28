@@ -316,7 +316,6 @@ router.post(
       const transferSimulateResponse = await plaid.sandboxTransferSimulate(
         transferSimulateRequest
       );
-
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
