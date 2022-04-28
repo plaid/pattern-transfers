@@ -50,8 +50,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       props.setPayments(paymentsResponse.data[0]);
       setError(null);
     } catch (err) {
-      //@ts-ignore
-      setError(`$${monthlyPayment.toFixed(2)} ${err.response.data.message}.`);
+      if (err instanceof Error) {
+        //@ts-ignore
+        setError(`$${monthlyPayment.toFixed(2)} ${err.response.data.message}.`);
+      }
     }
   };
 
