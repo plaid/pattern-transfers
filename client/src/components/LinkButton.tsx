@@ -56,14 +56,8 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       true
     );
 
-    const {
-      account_id,
-      id,
-      status,
-      sweep_status,
-      amount,
-      type,
-    } = transferDataResponse.data.transfer;
+    const { account_id, id, status, sweep_status, amount, type } =
+      transferDataResponse.data.transfer;
     // update database with information regarding the transfer
     await addTransferInfo(
       transferResponse.data[0].transfer_intent_id,
