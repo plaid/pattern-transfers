@@ -89,34 +89,3 @@ export const logExit = async (
     status,
   });
 };
-
-export const updateInitialTransfer = async (
-  transferIntentId: string,
-  itemId: number
-) => {
-  console.log('helloe', transferIntentId);
-  const transferUIDataResponse = await getTransferUIStatus(transferIntentId);
-  // console.log(
-  //   'id response',
-  //   transferUIDataResponse.data.transfer_intent.transfer_id
-  // );
-  const transferDataResponse = await getTransferStatus(
-    transferUIDataResponse.data.transfer_intent.transfer_id,
-    true
-  );
-  // console.log('status', transferDataResponse);
-  const { account_id, id, status, sweep_status, amount } =
-    transferDataResponse.data.transfer;
-  // update database with information regarding the transfer
-  const addInfoResponse = await addTransferInfo(
-    transferIntentId,
-    account_id,
-    id,
-    status,
-    sweep_status,
-    itemId,
-    'some type'
-  );
-  console.log('add info response', addInfoResponse);
-  return amount;
-};
