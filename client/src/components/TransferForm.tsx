@@ -25,7 +25,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       Number(transferAmount)
     );
     if (props.setPayments != null) {
-      props.setPayments(response.data.updatedPayments[0]);
+      props.setPayments(response.data[0]);
     }
 
     await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);

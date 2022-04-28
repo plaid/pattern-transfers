@@ -1,6 +1,7 @@
 /**
  * @file Defines the handler for Transfers webhooks.
  * https://plaid.com/docs/transfer/webhooks/
+ */
 
 const {
   createEvent,
