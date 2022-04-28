@@ -4,7 +4,6 @@ import { Button } from 'plaid-threads/Button';
 import { Callout } from 'plaid-threads/Callout';
 import { setMonthlyPayment, createTransfer, addPayment } from '../services/api';
 import { PaymentType, ItemType, TransferType } from './types';
-import { AxiosResponse } from 'axios';
 
 interface Props {
   setPayments: (payment: PaymentType) => void;
