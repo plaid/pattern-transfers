@@ -53,11 +53,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const {
-    generateTransferIntentId,
-    getTransfersByUser,
-    transfersByUser,
-  } = useTransfers();
+  const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
+    useTransfers();
 
   const userId = Number(match.params.userId);
 
