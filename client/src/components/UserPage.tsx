@@ -55,7 +55,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     generateTransferIntentId,
     getTransfersByUser,
     transfersByUser,
-    updateTransfersStatusByUser,
   } = useTransfers();
   const userId = Number(match.params.userId);
 
@@ -122,15 +121,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   // update data store with the user's transfers
   useEffect(() => {
-    updateTransfersStatusByUser(userId);
-  }, [userId, updateTransfersStatusByUser]);
-
-  // update data store with the user's transfers
-  useEffect(() => {
     getTransfersByUser(userId);
   }, [getTransfersByUser, userId]);
 
-  // update no of items from data store
+  // update state transfers from data store
   useEffect(() => {
     if (transfersByUser[userId] != null) {
       setTransfers(transfersByUser[userId]);
@@ -205,7 +199,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                     )}
                   </div>
                   <p className="nacha-compliant-note">
-                    IMPORTANT NOTE: You will need to include appropraite legal
+                    IMPORTANT NOTE: You will need to include appropriate legal
                     authorization language here to capture NACHA-compliant
                     authorzation prior to initiating a transfer.
                   </p>

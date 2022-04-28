@@ -47,7 +47,6 @@ interface TransfersContextShape extends TransfersState {
     userId: number,
     subscriptionAmount: number
   ) => string;
-  updateTransfersStatusByUser: (userId: number) => void;
 }
 const TransfersContext = createContext<TransfersContextShape>(
   initialState as TransfersContextShape
@@ -87,17 +86,6 @@ export function TransfersProvider(props: any) {
     dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
   }, []);
 
-  const updateTransfersStatusByUser = useCallback(
-    async userId => {
-      const { data: transfers } = await apiGetTransfersByUser(userId);
-      await transfers.forEach((transfer: TransferType) => {
-        apiGetTransferStatus(transfer.transfer_id, false);
-      });
-      await getTransfersByUser(userId);
-    },
-    [getTransfersByUser]
-  );
-
   const value = useMemo(() => {
     const allTransfers = Object.values(transfersData.transfersById);
     return {
@@ -106,14 +94,8 @@ export function TransfersProvider(props: any) {
       transfersByUser: groupBy(allTransfers, 'user_id'),
       generateTransferIntentId,
       getTransfersByUser,
-      updateTransfersStatusByUser,
     };
-  }, [
-    transfersData,
-    getTransfersByUser,
-    generateTransferIntentId,
-    updateTransfersStatusByUser,
-  ]);
+  }, [transfersData, getTransfersByUser, generateTransferIntentId]);
 
   return <TransfersContext.Provider value={value} {...props} />;
 }
