@@ -10,7 +10,7 @@ The full Plaid Pattern collection of sample apps includes:
 
 [Plaid Pattern Account Funding App](https://github.com/plaid/pattern-account-funding) - Demonstrates the Plaid Auth, Balance, and Identity APIs
 
-[Plaid Pattern Transfers App](https://github.com/plaid/transfers) - Demonstrates the Transfer API
+[Plaid Pattern Transfer App](https://github.com/plaid/pattern-transfers) - Demonstrates the Transfer API
 
 Plaid Pattern apps are provided for illustrative purposes and are not meant to be run as production applications.
 
