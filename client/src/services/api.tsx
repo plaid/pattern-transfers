@@ -25,6 +25,10 @@ api.interceptors.response.use(
 );
 
 export default api;
+// appStatus
+export const setAppStatus = () => api.get('/appStatus/initial');
+export const getAppStatus = () => api.get('/appStatus/status');
+
 // currentUser
 export const getLoginUser = (username: string) =>
   api.post('/sessions', { username });

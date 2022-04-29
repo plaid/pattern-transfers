@@ -47,7 +47,7 @@ const Item: React.FC<Props> = (props: Props) => {
           <p className="value">{props.accountName}</p>
         </div>
         <div>
-          <h3 className="heading">Recurring payment</h3>
+          <h3 className="heading">Payment</h3>
           <p className="subscription-amount">
             ${monthlyPayment.toFixed(2).toString()}
           </p>

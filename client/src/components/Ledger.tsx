@@ -1,17 +1,19 @@
 import React from 'react';
 import Button from 'plaid-threads/Button';
 
-import { TransferType } from './types';
+import { TransferType, AppStatusType } from './types';
 import {
   simulateTransferEvent,
   simulateSweep,
   fireTransferWebhook,
 } from '../services/api';
+import appStatus from '../services/dist/appStatus';
 
 interface Props {
   transfers: TransferType[] | null;
   setIsLedgerView: (arg: boolean) => void;
   userId: number;
+  appStatus: AppStatusType | null;
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
@@ -23,7 +25,8 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
     await fireTransferWebhook();
   };
-
+  const account_balance =
+    props.appStatus != null ? props.appStatus.app_account_balance : 0;
   const tableRows =
     props.transfers == null
       ? null
@@ -84,7 +87,13 @@ const Ledger: React.FC<Props> = (props: Props) => {
   return (
     <div className="ledger-container">
       {' '}
-      <h4>PlatyFlix Transfer Ledger</h4>
+      <div className="ledger-header">
+        <h4>PlatyFlix Transfer Ledger</h4>
+        <h4>
+          PlatyFlix Business Checking Account balance:{' '}
+          <span>${account_balance.toFixed(2)}</span>
+        </h4>
+      </div>
       <Button
         secondary
         centered

@@ -160,6 +160,35 @@ AS
   FROM
     transfers_table;
 
+-- APP_STATUS
+-- This table is used to store the status of our application. The view returns the same data as the
+-- table, we're just creating it to follow the pattern used in other tables.
+
+CREATE TABLE app_status_table
+(
+  id SERIAL PRIMARY KEY,
+  number_of_events integer,
+  app_account_balance numeric,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+CREATE TRIGGER app_status_updated_at_timestamp
+BEFORE UPDATE ON app_status_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE VIEW app_status
+AS
+  SELECT
+    id,
+    number_of_events,
+    app_account_balance,
+    created_at,
+    updated_at
+  FROM
+    app_status_table;
+
     -- EVENTS
 -- This table is used to store the events associated with each transfer.  The view returns the same data
 -- as the table, we're just using both to maintain consistency with our other tables. For more info on the Plaid

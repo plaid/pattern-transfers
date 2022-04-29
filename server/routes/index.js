@@ -14,6 +14,7 @@ const linkTokensRouter = require('./linkTokens');
 const transfersRouter = require('./transfers');
 const paymentsRouter = require('./payments');
 const eventsRouter = require('./events');
+const appStatusRouter = require('./appStatus');
 
 module.exports = {
   usersRouter,
@@ -28,4 +29,5 @@ module.exports = {
   transfersRouter,
   paymentsRouter,
   eventsRouter,
+  appStatusRouter,
 };

@@ -19,6 +19,12 @@ const {
 } = require('./transfers');
 const { createEvent, retrieveEvents } = require('./events');
 const {
+  createInitialStatus,
+  setNumberOfEvents,
+  updateAppAccountBalance,
+  retrieveAppStatus,
+} = require('./appStatus');
+const {
   createItem,
   retrieveItemById,
   retrieveItemByPlaidAccessToken,
@@ -61,6 +67,11 @@ module.exports = {
   // events
   createEvent,
   retrieveEvents,
+  // appStatus
+  createInitialStatus,
+  setNumberOfEvents,
+  updateAppAccountBalance,
+  retrieveAppStatus,
   // items
   createItem,
   retrieveItemById,
