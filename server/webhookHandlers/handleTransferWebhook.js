@@ -44,7 +44,6 @@ const transfersHandler = async (requestBody, io) => {
       const currentEventsInDB = await retrieveEvents();
       // if no events are saved in database ( you are in development mode), need to get latest event_id from app_status
       const appStatus = await retrieveAppStatus();
-      console.log(appStatus);
       const afterId =
         currentEventsInDB.length === 0
           ? appStatus[0].number_of_events
@@ -52,7 +51,6 @@ const transfersHandler = async (requestBody, io) => {
 
       const allNewPlaidEvents = await callEventSync(afterId);
 
-      console.log('allNEwevents!!!!!!!!!!!!', allNewPlaidEvents);
       let newSweepAmountToAdd = 0;
       const newEventsAddedToDatabase = allNewPlaidEvents.map(async event => {
         const transfer = await retrieveTransferByPlaidTransferId(
@@ -72,7 +70,6 @@ const transfersHandler = async (requestBody, io) => {
           event.timepstamp
         );
 
-        console.log(event.sweep_amount);
         if (event.sweep_amount != null) {
           console.log(Number(event.sweep_amount));
           newSweepAmountToAdd += Number(event.sweep_amount);
