@@ -112,7 +112,7 @@ router.post(
         transferAuthorizationCreateResponse.data.authorization.decision !==
         'approved'
       ) {
-        return res.status(500).json({
+        return res.status(400).json({
           message:
             transferAuthorizationCreateResponse.data.authorization
               .decision_rationale.description,
@@ -294,7 +294,7 @@ router.post(
       const sweepResponse = await plaid.sandboxTransferSweepSimulate(
         sweepRequest
       );
-      res.json(sweepResponse.data);
+      console.log('sweep', sweepResponse.data);
     } catch (err) {
       console.log('error while sweeping', err.response.data);
       return res.json(err.response.data);
@@ -316,16 +316,13 @@ router.post(
       const transferSimulateResponse = await plaid.sandboxTransferSimulate(
         transferSimulateRequest
       );
-
-      if (transferSimulateResponse.data.error_message != null) {
-        return res.status(500).json({
-          message: transferSimulateResponse.data.error_message,
-        });
-      }
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
-      return res.status(500).json({ message: err.response.data.error_message });
+      //handle if user clicks on an event that does not jibe with current transfer status
+      //for example if status is posted and user clicks on "fail"
+
+      return res.status(400).json({ message: err.response.data.error_message });
     }
   })
 );

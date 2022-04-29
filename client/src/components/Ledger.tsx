@@ -9,6 +9,7 @@ import {
   fireTransferWebhook,
 } from '../services/api';
 import appStatus from '../services/dist/appStatus';
+import { createImportSpecifier } from 'typescript';
 
 interface Props {
   transfers: TransferType[] | null;
@@ -32,7 +33,7 @@ const Ledger: React.FC<Props> = (props: Props) => {
         await fireTransferWebhook();
       } catch (err) {
         if (err instanceof Error) {
-          console.error(err.message);
+          console.log(err);
           toast.error(err.message);
         }
       }
