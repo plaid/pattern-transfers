@@ -315,7 +315,7 @@ Plaid Pattern is a demo app that is intended to be used only for the purpose of 
 [transfer-webhooks]: https://plaid.com/docs/transfer/webhooks/
 [users-routes]: /server/routes/users.js
 [vscode-debugging]: https://code.visualstudio.com/docs/editor/debugging
-[client-img]: docs/account_funding_screenshot.jpg
+[client-img]: docs/transfer.jpg
 [client-readme]: #plaid-pattern---client
 [docker]: https://docs.docker.com/
 [docker-compose]: https://docs.docker.com/compose/
