@@ -231,6 +231,10 @@ The `*.sql` scripts in the `init` directory are used to initialize the database 
 See the [create.sql][create-script] initialization script to see some brief notes for and the schemas of the tables used in this application.
 While most of them are fairly self-explanitory, we've added some additional notes for some of the tables below.
 
+### transfer_events_table
+
+This table stores all events received from the transfer/event/sync endpoint. It stores the plaid_event_id,related transfer_id, type of event, timestamp and sweep_amount and sweep_id, if applicable.
+
 ### link_events_table
 
 This table stores responses from the Plaid API for client requests to the Plaid Link client.

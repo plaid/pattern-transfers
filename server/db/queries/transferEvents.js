@@ -1,8 +1,8 @@
 /**
- * @file Defines the queries for the events table/view.
+ * @file Defines the queries for the transfer events table/view.
  */
 
-const db = require('../');
+const db = require('..');
 
 /**
  * Creates event related to a simulated event.
@@ -36,7 +36,7 @@ const createEvent = async (
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted events.
     text: `
-        INSERT INTO events_table
+        INSERT INTO transfer_events_table
           (
             plaid_event_id,
             user_id,
@@ -75,13 +75,13 @@ const createEvent = async (
 };
 
 /**
- * Retrieves all events.
+ * Retrieves all transfer events.
  *
  * @returns {Object[]} an array of events.
  */
 const retrieveEvents = async () => {
   const query = {
-    text: 'SELECT * FROM events ORDER BY plaid_event_id',
+    text: 'SELECT * FROM transfer_events ORDER BY plaid_event_id',
   };
   const { rows: events } = await db.query(query);
   return events;

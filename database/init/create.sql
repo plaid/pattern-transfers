@@ -189,12 +189,12 @@ AS
   FROM
     app_status_table;
 
-    -- EVENTS
+    -- TRANSFER EVENTS
 -- This table is used to store the events associated with each transfer.  The view returns the same data
 -- as the table, we're just using both to maintain consistency with our other tables. For more info on the Plaid
 -- Events schema, see the docs page:  https://plaid.com/docs/products/transfer/#transfereventsync
 
-CREATE TABLE events_table
+CREATE TABLE transfer_events_table
 (
   id SERIAL PRIMARY KEY,
   plaid_event_id integer UNIQUE,
@@ -212,12 +212,12 @@ CREATE TABLE events_table
   updated_at timestamptz default now()
 );
 
-CREATE TRIGGER events_updated_at_timestamp
-BEFORE UPDATE ON events_table
+CREATE TRIGGER transfer_events_updated_at_timestamp
+BEFORE UPDATE ON transfer_events_table
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
-CREATE VIEW events
+CREATE VIEW transfer_events
 AS
   SELECT
     id,
@@ -235,7 +235,7 @@ AS
     created_at,
     updated_at
   FROM
-    events_table;
+    transfer_events_table;
 
 -- Payments
 -- This table is used to store the payments associated with each user.  The view returns the same data
