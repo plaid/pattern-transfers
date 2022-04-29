@@ -15,7 +15,7 @@ const plaid = require('../plaid');
 const router = express.Router();
 
 /**
- * Retrieves app funds for a single user
+ * Sets up initial app status if it doesn't already exist.
  *
  * @param {string} userId the ID of the user.
  * @returns {Object[]} an array of app funds
@@ -25,7 +25,6 @@ router.get(
   asyncWrapper(async (req, res) => {
     try {
       const status = await retrieveAppStatus();
-      console.log(status);
 
       if (status.length === 0) {
         // get all events associated with clientId in order to get the last event_id

@@ -42,7 +42,7 @@ const transfersHandler = async (requestBody, io) => {
   switch (webhookCode) {
     case 'TRANSFER_EVENTS_UPDATE': {
       const currentEventsInDB = await retrieveEvents();
-      // if no events are saved in database, need to get latest event_id from app_status
+      // if no events are saved in database ( you are in development mode), need to get latest event_id from app_status
       const appStatus = await retrieveAppStatus();
       console.log(appStatus);
       const afterId =
