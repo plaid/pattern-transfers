@@ -3,12 +3,7 @@
  */
 
 const express = require('express');
-const {
-  createInitialStatus,
-  setNumberOfEvents,
-  updateAppAccountBalance,
-  retrieveAppStatus,
-} = require('../db/queries');
+const { createInitialStatus, retrieveAppStatus } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
 

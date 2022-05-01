@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from 'plaid-threads/Button';
+import { toast } from 'react-toastify';
 
 import { TransferType, AppStatusType } from './types';
 import {
@@ -19,9 +20,22 @@ interface Props {
 const Ledger: React.FC<Props> = (props: Props) => {
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
-      await simulateSweep();
+      try {
+        await simulateSweep();
+        await fireTransferWebhook();
+      } catch (err) {
+        console.log(err);
+      }
     } else {
-      await simulateTransferEvent(transferId, event);
+      try {
+        await simulateTransferEvent(transferId, event);
+        await fireTransferWebhook();
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err);
+          toast.error(err.message);
+        }
+      }
     }
     await fireTransferWebhook();
   };

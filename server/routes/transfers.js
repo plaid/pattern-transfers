@@ -112,7 +112,7 @@ router.post(
         transferAuthorizationCreateResponse.data.authorization.decision !==
         'approved'
       ) {
-        return res.status(500).json({
+        return res.status(400).json({
           message:
             transferAuthorizationCreateResponse.data.authorization
               .decision_rationale.description,
@@ -319,7 +319,10 @@ router.post(
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
-      return res.json(err.response.data);
+      //handle if user clicks on an event that does not jibe with current transfer status
+      //for example if status is posted and user clicks on "fail"
+
+      return res.status(400).json({ message: err.response.data.error_message });
     }
   })
 );

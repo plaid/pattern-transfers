@@ -17,7 +17,7 @@ const api = axios.create({
 api.interceptors.response.use(
   response => response,
   error => {
-    if (error?.response?.data?.message) {
+    if (error?.response?.data?.message && error.response.status === 400) {
       throw new Error(error.response.data.message);
     }
     throw error;
