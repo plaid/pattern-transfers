@@ -42,10 +42,11 @@ const setNumberOfEvents = async numberOfEvents => {
  * @param {number} appAccountBalance the updated balance for the app.
  */
 
-const updateAppAccountBalance = async appAccountBalance => {
+const updateAppStatus = async (appAccountBalance, numberOfEvents) => {
   const query = {
-    text: 'UPDATE app_status SET app_account_balance = $1 WHERE id = $2',
-    values: [appAccountBalance, 1],
+    text:
+      'UPDATE app_status SET app_account_balance = $1, number_of_events = $2 WHERE id = $3',
+    values: [appAccountBalance, numberOfEvents, 1],
   };
   await db.query(query);
 };
@@ -67,6 +68,6 @@ const retrieveAppStatus = async () => {
 module.exports = {
   createInitialStatus,
   setNumberOfEvents,
-  updateAppAccountBalance,
+  updateAppStatus,
   retrieveAppStatus,
 };

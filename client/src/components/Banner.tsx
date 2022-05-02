@@ -3,7 +3,7 @@ import Button from 'plaid-threads/Button';
 import ChevronS2Left from 'plaid-threads/Icons/ChevronS2Left';
 
 import { TransferType } from './types';
-import { getTransfersByUser } from '../services/api';
+import { getTransfersByUserId } from '../services/api';
 
 interface Props {
   initialSubheading?: boolean;
@@ -38,7 +38,8 @@ const Banner: React.FC<Props> = (props: Props) => {
 
   const returnToPayments = async () => {
     if (props.userId != null && props.setTransfers != null) {
-      const transfers = await getTransfersByUser(props.userId);
+      console.log('user id from banner', props.userId);
+      const transfers = await getTransfersByUserId(props.userId);
       await props.setTransfers(transfers.data);
     }
 

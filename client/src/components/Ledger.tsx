@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 import { toast } from 'react-toastify';
 
@@ -8,7 +8,7 @@ import {
   simulateSweep,
   fireTransferWebhook,
 } from '../services/api';
-import appStatus from '../services/dist/appStatus';
+import { useUsers, useCurrentUser } from '../services';
 
 interface Props {
   transfers: TransferType[] | null;
@@ -18,6 +18,8 @@ interface Props {
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
+  const { usersById } = useUsers();
+  const { setCurrentUser } = useCurrentUser();
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
       try {
@@ -28,7 +30,8 @@ const Ledger: React.FC<Props> = (props: Props) => {
       }
     } else {
       try {
-        await simulateTransferEvent(transferId, event);
+        const eventResponse = await simulateTransferEvent(transferId, event);
+        console.log(eventResponse);
         await fireTransferWebhook();
       } catch (err) {
         if (err instanceof Error) {
@@ -39,6 +42,13 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
     await fireTransferWebhook();
   };
+  const user = usersById[props.userId];
+  useEffect(() => {
+    if (user.username != null) {
+      setCurrentUser(user.username);
+    }
+  }, [setCurrentUser, user]);
+
   const account_balance =
     props.appStatus != null ? props.appStatus.app_account_balance : 0;
   const tableRows =

@@ -10,7 +10,7 @@ const {
   updateTransferStatus,
   retrieveAllTransfers,
   retrieveAppStatus,
-  updateAppAccountBalance,
+  updateAppStatus,
 } = require('../db/queries');
 const plaid = require('../plaid');
 
@@ -22,80 +22,77 @@ const plaid = require('../plaid');
  */
 const transfersHandler = async (requestBody, io) => {
   const { webhook_code: webhookCode } = requestBody;
-  const serverLogAndEmitSocket = webhookCode => {
+  const serverLogAndEmitSocket = async webhookCode => {
     console.log(
       `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`
     );
     // use websocket to notify the client that a webhook has been received and handled
-    if (webhookCode) io.emit(webhookCode);
-  };
-
-  const callEventSync = async afterId => {
-    const sycnRequest = {
-      after_id: afterId,
-      count: 25,
-    };
-    const syncResponse = await plaid.transferEventSync(sycnRequest);
-    return syncResponse.data.transfer_events;
+    if (webhookCode) await io.emit(webhookCode);
   };
 
   switch (webhookCode) {
     case 'TRANSFER_EVENTS_UPDATE': {
-      const currentEventsInDB = await retrieveEvents();
-      // if no events are saved in database ( you are in development mode), need to get latest event_id from app_status
       const appStatus = await retrieveAppStatus();
-      const afterId =
-        currentEventsInDB.length === 0
-          ? appStatus[0].number_of_events
-          : currentEventsInDB[currentEventsInDB.length - 1].plaid_event_id;
+      // get newest events
+      const sycnRequest = {
+        after_id: appStatus[0].number_of_events,
+        count: 25,
+      };
 
-      const allNewPlaidEvents = await callEventSync(afterId);
+      const syncResponse = await plaid.transferEventSync(sycnRequest);
+      const allNewPlaidEvents = syncResponse.data.transfer_events;
+      if (allNewPlaidEvents.length === 0) {
+        return;
+      }
 
       let newSweepAmountToAdd = 0;
       const newEventsAddedToDatabase = allNewPlaidEvents.map(async event => {
         const transfer = await retrieveTransferByPlaidTransferId(
           event.transfer_id
         );
-        const newEvent = await createEvent(
-          event.event_id,
-          transfer.user_id,
-          event.account_id,
-          event.transfer_id,
-          event.transfer_type,
-          event.event_type,
-          event.transfer_amount,
-          event.sweep_amount,
-          event.sweep_id,
-          event.failure_reason,
-          event.timepstamp
-        );
+        if (transfer != null) {
+          const newEvent = await createEvent(
+            event.event_id,
+            transfer.user_id,
+            event.account_id,
+            event.transfer_id,
+            event.transfer_type,
+            event.event_type,
+            event.transfer_amount,
+            event.sweep_amount,
+            event.sweep_id,
+            event.failure_reason,
+            event.timepstamp
+          );
 
-        if (event.sweep_amount != null) {
-          console.log(Number(event.sweep_amount));
-          newSweepAmountToAdd += Number(event.sweep_amount);
+          if (event.sweep_amount != null) {
+            newSweepAmountToAdd += Number(event.sweep_amount);
+          }
+
+          const transferGetResponse = await plaid.transferGet({
+            transfer_id: newEvent.transfer_id,
+          });
+
+          await updateTransferStatus(
+            transferGetResponse.data.transfer.status,
+            transferGetResponse.data.transfer.sweep_status,
+            newEvent.transfer_id
+          );
+          return newEvent;
         }
-
-        const transferGetResponse = await plaid.transferGet({
-          transfer_id: newEvent.transfer_id,
-        });
-
-        await updateTransferStatus(
-          transferGetResponse.data.transfer.status,
-          transferGetResponse.data.transfer.sweep_status,
-          newEvent.transfer_id
-        );
-        return newEvent;
       });
 
       await Promise.all(newEventsAddedToDatabase);
       const oldAccountBalance = appStatus[0].app_account_balance;
       const newAccountBalance = oldAccountBalance + newSweepAmountToAdd;
-      console.log(oldAccountBalance, newSweepAmountToAdd, newAccountBalance);
-      await updateAppAccountBalance(newAccountBalance);
+      const newNumberOfEvents = (appStatus[0].number_of_events +=
+        allNewPlaidEvents.length);
+      await updateAppStatus(newAccountBalance, newNumberOfEvents);
       const newStatus = await retrieveAppStatus();
-      console.log('new', newStatus);
+      console.log(newStatus);
 
-      serverLogAndEmitSocket(webhookCode);
+      await serverLogAndEmitSocket(webhookCode);
+
       break;
     }
     default:

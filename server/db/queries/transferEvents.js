@@ -30,7 +30,7 @@ const createEvent = async (
   amount,
   sweeepAmount,
   sweepId,
-  failureReaon,
+  failureReason,
   timestamp
 ) => {
   const query = {
@@ -54,7 +54,7 @@ const createEvent = async (
           ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           ON CONFLICT (plaid_event_id) DO NOTHING
         RETURNING
-          *
+          *;
       `,
     values: [
       eventId,
@@ -66,7 +66,7 @@ const createEvent = async (
       amount,
       sweeepAmount,
       sweepId,
-      failureReaon,
+      failureReason,
       timestamp,
     ],
   };

@@ -21,7 +21,7 @@ const { createEvent, retrieveEvents } = require('./transferEvents');
 const {
   createInitialStatus,
   setNumberOfEvents,
-  updateAppAccountBalance,
+  updateAppStatus,
   retrieveAppStatus,
 } = require('./appStatus');
 const {
@@ -70,7 +70,7 @@ module.exports = {
   // appStatus
   createInitialStatus,
   setNumberOfEvents,
-  updateAppAccountBalance,
+  updateAppStatus,
   retrieveAppStatus,
   // items
   createItem,

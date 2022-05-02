@@ -62,7 +62,7 @@ export const createTransfer = (
   subscriptionAmount: number
 ) => api.post(`/transfers/transfer`, { userId, itemId, subscriptionAmount });
 
-export const getTransfersByUser = (userId: number) =>
+export const getTransfersByUserId = (userId: number) =>
   api.get(`/users/${userId}/transfers`);
 
 export const getTransferUIStatus = (intentId: string) =>

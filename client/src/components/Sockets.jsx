@@ -7,7 +7,7 @@ import {
   useCurrentUser,
   useAppStatus,
 } from '../services';
-import { getTransfersByUser as apiGetTransfersByUser } from '../services/api';
+
 const io = require('socket.io-client');
 const { REACT_APP_SERVER_PORT } = process.env;
 
@@ -39,6 +39,7 @@ const Sockets = () => {
       const msg = `New Webhook Event: Transfer Events Update`;
       console.log(msg);
       await toast(msg);
+      await console.log('in socket', userState.currentUser.id);
       await getTransfersByUser(userState.currentUser.id);
       await getAppStatus();
     });
@@ -47,7 +48,7 @@ const Sockets = () => {
       socket.current.removeAllListeners();
       socket.current.close();
     };
-  }, [getItemById, getTransfersByUser, userState.currentUser.id]);
+  }, [getAppStatus, getTransfersByUser, getItemById, userState.currentUser.id]);
 
   return <div />;
 };

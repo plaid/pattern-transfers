@@ -14,7 +14,7 @@ import { TransferType } from '../components/types';
 
 import {
   getTransferIntentId,
-  getTransfersByUser as apiGetTransfersByUser,
+  getTransfersByUserId as apiGetTransfersByUserId,
   getTransferStatus as apiGetTransferStatus,
 } from './api';
 
@@ -82,8 +82,12 @@ export function TransfersProvider(props: any) {
    * @desc Requests all Transfers that belong to an individual User.
    */
   const getTransfersByUser = useCallback(async userId => {
-    const { data: transfers } = await apiGetTransfersByUser(userId);
-    dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
+    if (userId != null) {
+      const { data: transfers } = await apiGetTransfersByUserId(userId);
+      console.log('transfers', transfers);
+      dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
+    }
+    console.log('no userId', userId);
   }, []);
 
   const value = useMemo(() => {

@@ -33,7 +33,6 @@ import {
   UserTransfers,
   Ledger,
 } from '.';
-import { getAppStatus as apiGetAppStatus } from '../services/api';
 
 const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [user, setUser] = useState<UserType>({
@@ -127,7 +126,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   // update data store with the user's transfers
   useEffect(() => {
-    getTransfersByUser(userId);
+    if (userId != null) {
+      console.log('userpage', userId);
+      getTransfersByUser(userId);
+    }
   }, [getTransfersByUser, userId]);
 
   // update state transfers from data store
