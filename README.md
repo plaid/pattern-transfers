@@ -255,7 +255,7 @@ If the request returned an error, the error_type and error_code columns will be 
 
 -   [PostgreSQL documentation][postgres-docs]
 
-# Plaid Pattern - ngrok
+# Plaid Pattern Transfer - ngrok
 
 This demo includes [ngrok](https://ngrok.com/), a utility that creates a secure tunnel between your local machine and the outside world. We're using it here to expose the local webhooks endpoint to the internet.
 
