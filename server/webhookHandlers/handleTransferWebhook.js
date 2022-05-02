@@ -89,7 +89,6 @@ const transfersHandler = async (requestBody, io) => {
         allNewPlaidEvents.length);
       await updateAppStatus(newAccountBalance, newNumberOfEvents);
       const newStatus = await retrieveAppStatus();
-      console.log(newStatus);
 
       await serverLogAndEmitSocket(webhookCode);
 

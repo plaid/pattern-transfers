@@ -26,15 +26,15 @@ Note: We recommend running these commands in a unix terminal. Windows users can 
 1. Clone the repo.
     ```shell
     git clone https://github.com/plaid/pattern-transfers.git
-    cd pattern
+    cd pattern-transfers
     ```
+1. Follow the instructions for [Transfer UI](https://plaid.com/docs/transfer/using-transfer-ui/#prerequisites-for-using-transfer-ui) to set up your link customization on the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
+
 1. Create the `.env` file.
     ```shell
     cp .env.template .env
     ```
 1. Update the `.env` file with your [Plaid API keys][plaid-keys] and OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>) and link customization name.
-
-1. Follow the instructions for [Transfer UI](https://plaid.com/docs/transfer/using-transfer-ui/#prerequisites-for-using-transfer-ui) to set up your link customization on the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
 
 1. You will also need to configure an allowed redirect URI for your client ID through the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
 
@@ -71,7 +71,7 @@ We use [Docker Compose][docker-compose] to orchestrate these services. As such, 
 
 More information about the individual services is given below.
 
-# Plaid Pattern - Client
+# Plaid Pattern transfer - Client
 
 The Pattern web client is written in JavaScript using [React]. It presents the [Transfer UI][transfer-ui] workflow to the user, including an implementation of [OAuth][plaid-oauth]. The app runs on port 3002 by default, although you can modify this in [docker-compose.yml](../docker-compose.yml). It includes an administration ledger view where you can simulate different transfer events.
 
@@ -91,15 +91,15 @@ The TRANSFER_EVENTS_UPDATE webhook is demonstrated in this sample app in the [tr
 
 A view of all users is provided to developers on `http://localhost:3002/userlist`. Developers have the ability to remove a user here.
 
-# Plaid Pattern - Server
+# Plaid Pattern Transfer - Server
 
 The application server is written in JavaScript using [Node.js][nodejs] and [Express][expressjs]. It interacts with the Plaid API via the [Plaid Node SDK][plaid-node], and with the [database][database-readme] using [`node-postgres`][node-pg]. While we've used Node for the reference implementation, the concepts shown here will apply no matter what language your backend is written in.
 
 ## Key Concepts
 
-### Using transfers events webhook.
+### Using transfer events webhook.
 
-Plaid uses [webhooks][transfers-webhooks] to notify you whenever a new transfer event has occured. This sample app demonstrates the use of the sandbox transfer fire_webhook endpoint to test this webhook. For an example of this, see the [transfer webhook handler][transfers-handler]. Upon receipt of this webhook, a call will be made to the transfer [event sync endpoint](https://plaid.com/docs/api/products/transfer/#transfereventsync) to request the latest transfer events. For each event, the transfer get endpooint is called in order to get the current status of the transfer, and then the event is saved to the database.
+Plaid uses [webhooks][transfer-webhooks] to notify you whenever a new transfer event has occured. This sample app demonstrates the use of the sandbox transfer fire_webhook endpoint to test this webhook. For an example of this, see the [transfer webhook handler][transfers-handler]. Upon receipt of this webhook, a call will be made to the transfer [event sync endpoint](https://plaid.com/docs/api/products/transfer/#transfereventsync) to request the latest transfer events. For each event, the [transfer get endpooint](https://plaid.com/docs/api/products/transfer/#transferget) is called in order to get the current status of the transfer, and then the event is saved to the database.
 
 For webhooks to work, the server must be publicly accessible on the internet. For development purposes, this application uses [ngrok][ngrok-readme] to accomplish that. The ngrok session is only valid for 2 hours and the server must be re-started after that.
 
@@ -188,10 +188,6 @@ while [ "$(curl -s -o /dev/null -w "%{http_code}" -m 1 https://localhost:3002)" 
 
 After starting up the Pattern sample app, you can now view it at https://localhost:3002. Your browser will alert you with an invalid certificate warning; click on "advanced" and proceed.
 
-## Initial App Status and database
-
-For purposes of this sample app only, an initial call to transfer/event/sync is made when the app is loaded. This is because in order to call transfer/event/sync later you will need the event_id of the very last event created on your clientId to set as the after_id in the request. In the case that you have cleared your database before starting the server, you will no longer have a database of events in order to obtain that last event_id. The initial call to transfer/event/sync will paginate through the events to find the very last event created and saves this event_id in the database to use in the transfer/event/sync call in response to the first webhook received. For subsequent webhooks, calls made to transfer/event/sync can use the event_id of the very last event in the database.
-
 ## Debugging
 
 The node debugging port (9229) is exposed locally on port 9229.
@@ -233,7 +229,7 @@ While most of them are fairly self-explanitory, we've added some additional note
 
 ### transfer_events_table
 
-This table stores all events received from the transfer/event/sync endpoint. It stores the plaid_event_id,related transfer_id, type of event, timestamp and sweep_amount and sweep_id, if applicable.
+This table stores all events received from the transfer/event/sync endpoint. It stores the plaid_event_id,related transfer_id, type of event, timestamp and sweep_amount and sweep_id, if applicable.  Transfer events can be mapped to either their associated transfer or a specific userId.
 
 ### link_events_table
 

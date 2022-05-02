@@ -21,7 +21,6 @@ router.get(
   asyncWrapper(async (req, res) => {
     try {
       const status = await retrieveAppStatus();
-      console.log(status);
 
       if (status.length === 0) {
         // get the last event_id
