@@ -31,16 +31,15 @@ const Ledger: React.FC<Props> = (props: Props) => {
     } else {
       try {
         const eventResponse = await simulateTransferEvent(transferId, event);
-        console.log(eventResponse);
+        console.log('failed response', eventResponse);
         await fireTransferWebhook();
       } catch (err) {
         if (err instanceof Error) {
-          console.log(err);
+          console.log('error response', err);
           toast.error(err.message);
         }
       }
     }
-    await fireTransferWebhook();
   };
   const user = usersById[props.userId];
   useEffect(() => {

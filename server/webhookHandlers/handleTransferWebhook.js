@@ -44,7 +44,7 @@ const transfersHandler = async (requestBody, io) => {
       if (allNewPlaidEvents.length === 0) {
         return;
       }
-
+      // to update app's business checking account balance, track sweep amount totals from new events
       let newSweepAmountToAdd = 0;
       const newEventsAddedToDatabase = allNewPlaidEvents.map(async event => {
         const transfer = await retrieveTransferByPlaidTransferId(
