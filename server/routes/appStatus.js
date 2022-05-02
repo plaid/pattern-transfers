@@ -13,7 +13,6 @@ const { PLAID_CLIENT_ID, PLAID_SECRET_SANDBOX } = process.env;
 /**
  * Sets up initial app status if it doesn't already exist.
  *
- * @param {string} userId the ID of the user.
  * @returns {Object[]} an array of app funds
  */
 router.get(

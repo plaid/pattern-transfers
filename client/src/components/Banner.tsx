@@ -38,7 +38,6 @@ const Banner: React.FC<Props> = (props: Props) => {
 
   const returnToPayments = async () => {
     if (props.userId != null && props.setTransfers != null) {
-      console.log('user id from banner', props.userId);
       const transfers = await getTransfersByUserId(props.userId);
       await props.setTransfers(transfers.data);
     }

@@ -59,7 +59,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { generateLinkToken, linkTokens } = useLink();
   const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
     useTransfers();
-  //@ts-ignore
+
   const { getAppStatus, appStatus } = useAppStatus();
   const userId = Number(match.params.userId);
 
@@ -127,7 +127,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   // update data store with the user's transfers
   useEffect(() => {
     if (userId != null) {
-      console.log('userpage', userId);
       getTransfersByUser(userId);
     }
   }, [getTransfersByUser, userId]);

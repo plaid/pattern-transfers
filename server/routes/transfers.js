@@ -52,7 +52,7 @@ router.post(
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
       const newTransfer = await createTransfer(
-        null, //item_id
+        null, // item_id
         userId,
         null, // plaid_account_id
         transferIntentId,
@@ -319,8 +319,8 @@ router.post(
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
-      //handle if user clicks on an event that does not jibe with current transfer status
-      //for example if status is posted and user clicks on "fail"
+      // handle if user tries to simulate an event that does not jibe with current transfer status.
+      // for example if status is posted and user clicks on "fail"
 
       return res.status(400).json({ message: err.response.data.error_message });
     }

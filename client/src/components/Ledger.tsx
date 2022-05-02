@@ -30,8 +30,7 @@ const Ledger: React.FC<Props> = (props: Props) => {
       }
     } else {
       try {
-        const eventResponse = await simulateTransferEvent(transferId, event);
-        console.log('failed response', eventResponse);
+        await simulateTransferEvent(transferId, event);
         await fireTransferWebhook();
       } catch (err) {
         if (err instanceof Error) {

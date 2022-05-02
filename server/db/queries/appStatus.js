@@ -1,5 +1,5 @@
 /**
- * @file Defines the queries for the app_funds table/views.
+ * @file Defines the queries for the app_status table/views.
  */
 
 const db = require('..');
@@ -7,7 +7,7 @@ const db = require('..');
 /**
  * Creates initial app status.
  *
- * @returns {Object} the new app fund for the user.
+ * @returns {Object} the new app status for the user.
  */
 const createInitialStatus = async numberOfEvents => {
   const query = {
@@ -23,8 +23,7 @@ const createInitialStatus = async numberOfEvents => {
 /**
  * Updates number of events for app.
  *
- * @param {number} id the ID of the app.
- * @param {number} numberOfEvents the initial number of the events for the clientId for the app.
+ * @param {number} numberOfEvents the total number of events associated with the clientID for the app.
  */
 
 const setNumberOfEvents = async numberOfEvents => {
@@ -36,9 +35,9 @@ const setNumberOfEvents = async numberOfEvents => {
 };
 
 /**
- * Updates balance for app.
+ * Updates app status.
  *
- * @param {number} id the ID of the app.
+ * @param {number} numberOfEvents the updated number of events for the clientID for the app.
  * @param {number} appAccountBalance the updated balance for the app.
  */
 
@@ -54,7 +53,6 @@ const updateAppStatus = async (appAccountBalance, numberOfEvents) => {
 /**
  * Retrieves app status
  *
- * @param {number} userId the ID of the user.
  * @returns {Object[]} an array of app Funds.
  */
 const retrieveAppStatus = async () => {

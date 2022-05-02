@@ -42,7 +42,7 @@ interface TransfersContextShape extends TransfersState {
   transfersByUser: {
     [userId: number]: TransferType[];
   };
-  getTransfersByUser: (userId: number) => string;
+  getTransfersByUser: (userId: number) => TransferType[];
   generateTransferIntentId: (
     userId: number,
     subscriptionAmount: number
@@ -84,10 +84,8 @@ export function TransfersProvider(props: any) {
   const getTransfersByUser = useCallback(async userId => {
     if (userId != null) {
       const { data: transfers } = await apiGetTransfersByUserId(userId);
-      console.log('transfers', transfers);
       dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
     }
-    console.log('no userId', userId);
   }, []);
 
   const value = useMemo(() => {

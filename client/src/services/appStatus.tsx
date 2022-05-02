@@ -25,6 +25,7 @@ type AppStatusAction = {
 interface AppStatusContextShape extends AppStatusState {
   dispatch: Dispatch<AppStatusAction>;
   getAppStatus: () => void;
+  appStatus: AppStatusState;
 }
 const AppStatusContext = createContext<AppStatusContextShape>(
   initialState as AppStatusContextShape
@@ -46,8 +47,7 @@ export function AppStatusProvider(props: any) {
   }, []);
 
   /**
-   * @desc Builds a more accessible state shape from the Institution data. useMemo will prevent
-   * these from being rebuilt on every render unless institutionsById is updated in the reducer.
+   * @desc useMemo will prevent functions from being rebuilt on every render unless appStatus is updated in the reducer.
    */
   const value = useMemo(() => {
     return {
