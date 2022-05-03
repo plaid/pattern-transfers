@@ -159,15 +159,18 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
   const initiateLink = async () => {
-    // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
-
-    const transfer_intent_id = await generateTransferIntentId(
-      userId,
-      monthlyPayment
-    );
-    // only generate a link token upon a click from enduser to add a bank;
-    // if done earlier, it may expire before enduser actually activates Link to add a bank.
-    await generateLinkToken(userId, null, transfer_intent_id);
+    try {
+      // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
+      const transfer_intent_id = await generateTransferIntentId(
+        userId,
+        monthlyPayment
+      );
+      // only generate a link token upon a click from enduser to add a bank;
+      // if done earlier, it may expire before enduser actually activates Link to add a bank.
+      await generateLinkToken(userId, null, transfer_intent_id);
+    } catch (err) {
+      console.error(err);
+    }
   };
   const accountName = account != null ? `${account.name}` : '';
   const myAccountMessage =

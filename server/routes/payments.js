@@ -47,11 +47,16 @@ module.exports = router;
 router.put(
   '/:userId/set_monthly_payment',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const { monthlyPayment } = req.body;
-    await setMonthlyPayment(userId, monthlyPayment);
-    const updatedPayments = await retrievePaymentsByUser(userId);
-    res.json(updatedPayments);
+    try {
+      const { userId } = req.params;
+      const { monthlyPayment } = req.body;
+      await setMonthlyPayment(userId, monthlyPayment);
+      const updatedPayments = await retrievePaymentsByUser(userId);
+      res.json(updatedPayments);
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

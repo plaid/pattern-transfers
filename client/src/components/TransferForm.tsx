@@ -19,16 +19,22 @@ const TransferForm: React.FC<Props> = (props: Props) => {
   const [error, setError] = useState<null | string>(null);
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const response = await setMonthlyPayment(
-      props.userId,
-      Number(transferAmount)
-    );
-    if (props.setPayments != null) {
-      props.setPayments(response.data[0]);
-    }
+    try {
+      e.preventDefault();
+      const response = await setMonthlyPayment(
+        props.userId,
+        Number(transferAmount)
+      );
+      if (props.setPayments != null) {
+        props.setPayments(response.data[0]);
+      }
 
-    await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);
+      await setTransferAmount(
+        `$${Number(transferAmount).toFixed(2).toString()}`
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const itemId = props.item != null ? props.item.id : 0;

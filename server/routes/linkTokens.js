@@ -43,7 +43,6 @@ router.post(
       const response = await fetch('http://ngrok:4040/api/tunnels');
       const { tunnels } = await response.json();
       const httpTunnel = tunnels.find(t => t.proto === 'http');
-      console.log("link cust name", LINK_CUSTOMIZATION_NAME);
       const linkTokenParams = {
         client_id: PLAID_CLIENT_ID,
         secret: PLAID_SECRET_SANDBOX,

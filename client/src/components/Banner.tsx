@@ -37,13 +37,17 @@ const Banner: React.FC<Props> = (props: Props) => {
     : successText;
 
   const returnToPayments = async () => {
-    if (props.userId != null && props.setTransfers != null) {
-      const transfers = await getTransfersByUserId(props.userId);
-      await props.setTransfers(transfers.data);
-    }
+    try {
+      if (props.userId != null && props.setTransfers != null) {
+        const transfers = await getTransfersByUserId(props.userId);
+        await props.setTransfers(transfers.data);
+      }
 
-    if (props.setIsLedgerView != null) {
-      props.setIsLedgerView(false);
+      if (props.setIsLedgerView != null) {
+        props.setIsLedgerView(false);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 

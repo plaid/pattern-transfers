@@ -31,8 +31,13 @@ const plaid = require('../plaid');
 router.get(
   '/',
   asyncWrapper(async (req, res) => {
-    const users = await retrieveUsers();
-    res.json(sanitizeUsers(users));
+    try {
+      const users = await retrieveUsers();
+      res.json(sanitizeUsers(users));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -47,14 +52,19 @@ router.get(
 router.post(
   '/',
   asyncWrapper(async (req, res) => {
-    const { username } = req.body;
-    const usernameExists = await retrieveUserByUsername(username);
-    // prevent duplicates
-    if (usernameExists)
-      throw new Boom('Username already exists', { statusCode: 409 });
-    const newUser = await createUser(username);
-    await createPayments(newUser.id);
-    res.json(sanitizeUsers(newUser));
+    try {
+      const { username } = req.body;
+      const usernameExists = await retrieveUserByUsername(username);
+      // prevent duplicates
+      if (usernameExists)
+        throw new Boom('Username already exists', { statusCode: 409 });
+      const newUser = await createUser(username);
+      await createPayments(newUser.id);
+      res.json(sanitizeUsers(newUser));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -67,9 +77,14 @@ router.post(
 router.get(
   '/:userId',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const user = await retrieveUserById(userId);
-    res.json(sanitizeUsers(user));
+    try {
+      const { userId } = req.params;
+      const user = await retrieveUserById(userId);
+      res.json(sanitizeUsers(user));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -82,9 +97,14 @@ router.get(
 router.get(
   '/:userId/items',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const items = await retrieveItemsByUser(userId);
-    res.json(sanitizeItems(items));
+    try {
+      const { userId } = req.params;
+      const items = await retrieveItemsByUser(userId);
+      res.json(sanitizeItems(items));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -97,9 +117,14 @@ router.get(
 router.get(
   '/:userId/accounts',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const accounts = await retrieveAccountsByUserId(userId);
-    res.json(sanitizeAccounts(accounts));
+    try {
+      const { userId } = req.params;
+      const accounts = await retrieveAccountsByUserId(userId);
+      res.json(sanitizeAccounts(accounts));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -113,7 +138,6 @@ router.get(
   '/:userId/transfers',
   asyncWrapper(async (req, res) => {
     try {
-      console.log(req.params)
       const { userId } = req.params;
       if (userId !== 'undefined') {
         const transfers = await retrieveTransfersByUserId(userId);
@@ -122,6 +146,7 @@ router.get(
       res.json({});
     } catch (err) {
       console.log(err);
+      res.json(err);
     }
   })
 );
@@ -135,9 +160,14 @@ router.get(
 router.get(
   '/:userId/payments',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const payments = await retrievePaymentsByUser(userId);
-    res.json(payments);
+    try {
+      const { userId } = req.params;
+      const payments = await retrievePaymentsByUser(userId);
+      res.json(payments);
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -150,11 +180,16 @@ router.get(
 router.put(
   '/:userId/confirmation',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const { fullname, email } = req.body;
-    await updateUserInfo(userId, fullname, email);
-    const user = await retrieveUserById(userId);
-    res.json(sanitizeUsers(user));
+    try {
+      const { userId } = req.params;
+      const { fullname, email } = req.body;
+      await updateUserInfo(userId, fullname, email);
+      const user = await retrieveUserById(userId);
+      res.json(sanitizeUsers(user));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

@@ -19,21 +19,26 @@ const router = express.Router();
 router.get(
   '/',
   asyncWrapper(async (req, res) => {
-    let { count = 200, offset = 0 } = req.query;
-    const radix = 10;
-    count = parseInt(count, radix);
-    offset = parseInt(offset, radix);
-    const requst = {
-      count: count,
-      offset: offset,
-      options: {
-        include_optional_metadata: true,
-      },
-    };
+    try {
+      let { count = 200, offset = 0 } = req.query;
+      const radix = 10;
+      count = parseInt(count, radix);
+      offset = parseInt(offset, radix);
+      const requst = {
+        count: count,
+        offset: offset,
+        options: {
+          include_optional_metadata: true,
+        },
+      };
 
-    const response = await plaid.institutionsGet(request);
-    const institutions = response.data.institutions;
-    res.json(toArray(institutions));
+      const response = await plaid.institutionsGet(request);
+      const institutions = response.data.institutions;
+      res.json(toArray(institutions));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -80,9 +85,12 @@ router.get(
           url,
         },
       };
-      // prettyPrintResponse(responseData);
+      prettyPrintResponse(responseData);
       res.json(toArray(institution));
-    } catch (error) {}
+    } catch (error) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

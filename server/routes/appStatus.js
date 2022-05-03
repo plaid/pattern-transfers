@@ -36,7 +36,7 @@ router.get(
 
       res.json(status);
     } catch (err) {
-      console.log("here's the response", err);
+      console.log(err);
       res.json(err);
     }
   })
@@ -50,6 +50,7 @@ router.get(
       res.json(status);
     } catch (err) {
       console.log(err);
+      res.json(err);
     }
   })
 );

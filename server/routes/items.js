@@ -30,41 +30,45 @@ router.post(
   '/',
   asyncWrapper(async (req, res) => {
     const { publicToken, institutionId, userId, accounts } = req.body;
+    try {
+      // exchange the public token for a private access token and store with the item.
+      const response = await plaid.itemPublicTokenExchange({
+        public_token: publicToken,
+      });
+      const accessToken = response.data.access_token;
+      const itemId = response.data.item_id;
+      const newItem = await createItem(
+        institutionId,
+        accessToken,
+        itemId,
+        userId
+      );
 
-    // exchange the public token for a private access token and store with the item.
-    const response = await plaid.itemPublicTokenExchange({
-      public_token: publicToken,
-    });
-    const accessToken = response.data.access_token;
-    const itemId = response.data.item_id;
-    const newItem = await createItem(
-      institutionId,
-      accessToken,
-      itemId,
-      userId
-    );
+      // in case developer did not customize their Account Select in the dashboard to enable only one account,
+      // choose the checking or savings account.
+      const checkingAccount = accounts.filter(
+        account => account.subtype === 'checking'
+      );
+      const savingsAccount = accounts.filter(
+        account => account.subtype === 'savings'
+      );
+      const account =
+        accounts.length === 1
+          ? accounts[0]
+          : checkingAccount.length > 0
+          ? checkingAccount[0]
+          : savingsAccount[0];
 
-    // in case developer did not customize their Account Select in the dashboard to enable only one account,
-    // choose the checking or savings account.
-    const checkingAccount = accounts.filter(
-      account => account.subtype === 'checking'
-    );
-    const savingsAccount = accounts.filter(
-      account => account.subtype === 'savings'
-    );
-    const account =
-      accounts.length === 1
-        ? accounts[0]
-        : checkingAccount.length > 0
-        ? checkingAccount[0]
-        : savingsAccount[0];
+      const newAccount = await createAccount(itemId, userId, account);
 
-    const newAccount = await createAccount(itemId, userId, account);
-
-    res.json({
-      items: sanitizeItems(newItem),
-      accounts: newAccount,
-    });
+      res.json({
+        items: sanitizeItems(newItem),
+        accounts: newAccount,
+      });
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -77,9 +81,14 @@ router.post(
 router.get(
   '/:itemId',
   asyncWrapper(async (req, res) => {
-    const { itemId } = req.params;
-    const item = await retrieveItemById(itemId);
-    res.json(sanitizeItems(item));
+    try {
+      const { itemId } = req.params;
+      const item = await retrieveItemById(itemId);
+      res.json(sanitizeItems(item));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -92,9 +101,14 @@ router.get(
 router.get(
   '/:itemId/accounts',
   asyncWrapper(async (req, res) => {
-    const { itemId } = req.params;
-    const accounts = await retrieveAccountsByItemId(itemId);
-    res.json(sanitizeAccounts(accounts));
+    try {
+      const { itemId } = req.params;
+      const accounts = await retrieveAccountsByItemId(itemId);
+      res.json(sanitizeAccounts(accounts));
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

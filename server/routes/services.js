@@ -22,10 +22,15 @@ const {
 router.get(
   '/ngrok',
   asyncWrapper(async (req, res) => {
-    const response = await fetch('http://ngrok:4040/api/tunnels');
-    const { tunnels } = await response.json();
-    const httpTunnel = tunnels.find(t => t.proto === 'http');
-    res.json({ url: httpTunnel.public_url });
+    try {
+      const response = await fetch('http://ngrok:4040/api/tunnels');
+      const { tunnels } = await response.json();
+      const httpTunnel = tunnels.find(t => t.proto === 'http');
+      res.json({ url: httpTunnel.public_url });
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 
@@ -36,17 +41,22 @@ router.get(
 router.post(
   '/webhook',
   asyncWrapper(async (req, res) => {
-    const { webhook_type: webhookType } = req.body;
-    const { io } = req;
-    const type = webhookType.toLowerCase();
-    // There are six types of webhooks: AUTH, TRANSACTIONS, ITEM, INCOME, TRANSFER, and ASSETS.
-    const webhookHandlerMap = {
-      item: handleItemWebhook,
-      transfer: handleTransferWebhook,
-    };
-    const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
-    webhookHandler(req.body, io);
-    res.json({ status: 'ok' });
+    try {
+      const { webhook_type: webhookType } = req.body;
+      const { io } = req;
+      const type = webhookType.toLowerCase();
+      // There are six types of webhooks: AUTH, TRANSACTIONS, ITEM, INCOME, TRANSFER, and ASSETS.
+      const webhookHandlerMap = {
+        item: handleItemWebhook,
+        transfer: handleTransferWebhook,
+      };
+      const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
+      webhookHandler(req.body, io);
+      res.json({ status: 'ok' });
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

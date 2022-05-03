@@ -18,14 +18,18 @@ const router = express.Router();
 router.post(
   '/sandbox/fire_webhook',
   asyncWrapper(async (req, res) => {
-    const response = await fetch('http://ngrok:4040/api/tunnels');
-
-    const { tunnels } = await response.json();
-    const httpTunnel = tunnels.find(t => t.proto === 'http');
-    const fireWebhookRequest = {
-      webhook: `${httpTunnel.public_url}/services/webhook`,
-    };
-    await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
+    try {
+      const response = await fetch('http://ngrok:4040/api/tunnels');
+      const { tunnels } = await response.json();
+      const httpTunnel = tunnels.find(t => t.proto === 'http');
+      const fireWebhookRequest = {
+        webhook: `${httpTunnel.public_url}/services/webhook`,
+      };
+      await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
+    } catch (err) {
+      console.log(err);
+      res.json(err);
+    }
   })
 );
 

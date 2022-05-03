@@ -43,36 +43,40 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const { setError, resetError } = useErrors();
 
   const updateInitalTransfer = async (itemId: number) => {
-    // need to get transfer_intent_id directly from database because context
-    // is wiped out with Oauth
-    const transferResponse = await apiGetTransfersByUserId(props.userId);
-    // use transfer_intent_id to obtain transfer_id from transferUI status
-    const transferUIDataResponse = await getTransferUIStatus(
-      transferResponse.data[0].transfer_intent_id
-    );
-    // use transfer_id to obtain information about the transfer and add info to existing transfer in database
-    const transferDataResponse = await getTransferStatus(
-      transferUIDataResponse.data.transfer_intent.transfer_id,
-      true
-    );
+    try {
+      // need to get transfer_intent_id directly from database because context
+      // is wiped out with Oauth
+      const transferResponse = await apiGetTransfersByUserId(props.userId);
+      // use transfer_intent_id to obtain transfer_id from transferUI status
+      const transferUIDataResponse = await getTransferUIStatus(
+        transferResponse.data[0].transfer_intent_id
+      );
+      // use transfer_id to obtain information about the transfer and add info to existing transfer in database
+      const transferDataResponse = await getTransferStatus(
+        transferUIDataResponse.data.transfer_intent.transfer_id,
+        true
+      );
 
-    const { account_id, id, status, sweep_status, amount, type } =
-      transferDataResponse.data.transfer;
-    // update database with information regarding the transfer
-    await addTransferInfo(
-      transferResponse.data[0].transfer_intent_id,
-      account_id,
-      id,
-      status,
-      sweep_status,
-      itemId,
-      type
-    );
+      const { account_id, id, status, sweep_status, amount, type } =
+        transferDataResponse.data.transfer;
+      // update database with information regarding the transfer
+      await addTransferInfo(
+        transferResponse.data[0].transfer_intent_id,
+        account_id,
+        id,
+        status,
+        sweep_status,
+        itemId,
+        type
+      );
 
-    const response = await addPayment(props.userId, Number(amount));
+      const response = await addPayment(props.userId, Number(amount));
 
-    if (props.setPayments != null) {
-      props.setPayments(response.data[0]);
+      if (props.setPayments != null) {
+        props.setPayments(response.data[0]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -117,17 +121,26 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     error: PlaidLinkError | null,
     metadata: PlaidLinkOnExitMetadata
   ) => {
-    // log and save error and metatdata
-    logExit(error, metadata, props.userId);
-    if (error != null) {
-      if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, ''); // will fix later
-      } else {
-        setError(
-          error.error_code,
-          error.display_message || error.error_message
-        );
+    try {
+      // log and save error and metatdata
+      logExit(error, metadata, props.userId);
+      if (error != null) {
+        if (error.error_code === 'INVALID_LINK_TOKEN') {
+          const transferResponse = await apiGetTransfersByUserId(props.userId);
+          await generateLinkToken(
+            props.userId,
+            props.itemId,
+            transferResponse.data[0].transfer_intent_id
+          );
+        } else {
+          setError(
+            error.error_code,
+            error.display_message || error.error_message
+          );
+        }
       }
+    } catch (err) {
+      console.error(err);
     }
     // to handle other error codes, see https://plaid.com/docs/errors/
   };
