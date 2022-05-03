@@ -27,7 +27,11 @@ const transfersHandler = async (requestBody, io) => {
       `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`
     );
     // use websocket to notify the client that a webhook has been received and handled
-    if (webhookCode) await io.emit(webhookCode);
+    if (webhookCode) {
+      await io.emit(webhookCode);
+    } else {
+      console.log("no webhook code: didn't emit the socket");
+    }
   };
 
   switch (webhookCode) {
