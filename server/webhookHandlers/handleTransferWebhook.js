@@ -104,10 +104,6 @@ const transfersHandler = async (requestBody, io) => {
           allNewPlaidEvents.length);
         await updateAppStatus(newAccountBalance, newNumberOfEvents);
         const newStatus = await retrieveAppStatus();
-        const myTransfer = await retrieveTransferByPlaidTransferId(
-          '2d766e99-8945-cd97-4743-4a93dcc092f7'
-        );
-        console.log('myTransfer!!!!!!!!!!!!!!!!!!!!!!!!!!', myTransfer);
 
         await serverLogAndEmitSocket(webhookCode);
 
