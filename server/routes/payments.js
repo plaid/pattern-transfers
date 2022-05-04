@@ -22,16 +22,20 @@ const router = express.Router();
 router.put(
   '/:userId/add_payment',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const { paymentAmount } = req.body;
-    const payments = await retrievePaymentsByUser(userId);
-    const oldTotal = payments[0].payments_total;
-    const oldNumberOfPayments = payments[0].number_of_payments;
-    const newTotal = oldTotal + paymentAmount;
-    const newNumberOfPayments = oldNumberOfPayments + 1;
-    await addPayment(userId, newTotal, newNumberOfPayments);
-    const updatedPayments = await retrievePaymentsByUser(userId);
-    res.json(updatedPayments);
+    try {
+      const { userId } = req.params;
+      const { paymentAmount } = req.body;
+      const payments = await retrievePaymentsByUser(userId);
+      const oldTotal = payments[0].payments_total;
+      const oldNumberOfPayments = payments[0].number_of_payments;
+      const newTotal = oldTotal + paymentAmount;
+      const newNumberOfPayments = oldNumberOfPayments + 1;
+      await addPayment(userId, newTotal, newNumberOfPayments);
+      const updatedPayments = await retrievePaymentsByUser(userId);
+      res.json(updatedPayments);
+    } catch (err) {
+      errorHandler(err);
+    }
   })
 );
 
@@ -54,8 +58,7 @@ router.put(
       const updatedPayments = await retrievePaymentsByUser(userId);
       res.json(updatedPayments);
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

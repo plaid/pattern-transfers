@@ -27,8 +27,7 @@ router.post(
         res.json(null);
       }
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

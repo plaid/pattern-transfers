@@ -165,6 +165,12 @@ router.post(
       return res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
+      if (err.response.data.error_type === 'RATE_LIMIT_EXCEEDED') {
+        return res.status(400).json({
+          message:
+            'You have exceeded the transfer-create rate limit for this item. Try again later',
+        });
+      }
       return res.json(err.response.data);
     }
   })

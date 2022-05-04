@@ -15,7 +15,6 @@ import { TransferType } from '../components/types';
 import {
   getTransferIntentId,
   getTransfersByUserId as apiGetTransfersByUserId,
-  getTransferStatus as apiGetTransferStatus,
 } from './api';
 
 interface TransfersState {

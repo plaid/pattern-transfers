@@ -10,7 +10,7 @@ const {
   createItem,
   createAccount,
 } = require('../db/queries');
-const { asyncWrapper } = require('../middleware');
+const { asyncWrapper, errorHandler } = require('../middleware');
 const plaid = require('../plaid');
 const { sanitizeAccounts, sanitizeItems } = require('../util');
 
@@ -66,8 +66,7 @@ router.post(
         accounts: newAccount,
       });
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -86,8 +85,7 @@ router.get(
       const item = await retrieveItemById(itemId);
       res.json(sanitizeItems(item));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -106,8 +104,7 @@ router.get(
       const accounts = await retrieveAccountsByItemId(itemId);
       res.json(sanitizeAccounts(accounts));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

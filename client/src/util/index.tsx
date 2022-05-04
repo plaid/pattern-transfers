@@ -6,12 +6,7 @@ import {
   PlaidLinkError,
 } from 'react-plaid-link';
 
-import {
-  postLinkEvent as apiPostLinkEvent,
-  getTransferUIStatus,
-  getTransferStatus,
-  addTransferInfo,
-} from '../services/api';
+import { postLinkEvent as apiPostLinkEvent } from '../services/api';
 import { TransferSuccessMetadata } from '../components/types';
 
 /**

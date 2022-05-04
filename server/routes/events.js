@@ -27,8 +27,7 @@ router.post(
       };
       await plaid.sandboxTransferFireWebhook(fireWebhookRequest);
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

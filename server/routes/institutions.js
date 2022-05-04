@@ -36,8 +36,7 @@ router.get(
       const institutions = response.data.institutions;
       res.json(toArray(institutions));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -88,8 +87,7 @@ router.get(
       prettyPrintResponse(responseData);
       res.json(toArray(institution));
     } catch (error) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

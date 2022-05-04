@@ -37,6 +37,7 @@ const Sockets = () => {
 
     socket.current.on('TRANSFER_EVENTS_UPDATE', async () => {
       try {
+        console.log('userid', userState.currentUser.id);
         const msg = `New Webhook Event: Transfer Events Update`;
         await toast(msg);
         await getTransfersByUser(userState.currentUser.id);

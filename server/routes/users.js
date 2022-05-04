@@ -102,8 +102,7 @@ router.get(
       const items = await retrieveItemsByUser(userId);
       res.json(sanitizeItems(items));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -122,8 +121,7 @@ router.get(
       const accounts = await retrieveAccountsByUserId(userId);
       res.json(sanitizeAccounts(accounts));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -138,6 +136,7 @@ router.get(
   '/:userId/transfers',
   asyncWrapper(async (req, res) => {
     try {
+      console.log(req.params);
       const { userId } = req.params;
       if (userId !== 'undefined') {
         const transfers = await retrieveTransfersByUserId(userId);
@@ -145,8 +144,7 @@ router.get(
       }
       res.json({});
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -165,8 +163,7 @@ router.get(
       const payments = await retrievePaymentsByUser(userId);
       res.json(payments);
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -187,8 +184,7 @@ router.put(
       const user = await retrieveUserById(userId);
       res.json(sanitizeUsers(user));
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );

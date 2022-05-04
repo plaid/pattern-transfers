@@ -28,8 +28,7 @@ router.get(
       const httpTunnel = tunnels.find(t => t.proto === 'http');
       res.json({ url: httpTunnel.public_url });
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
@@ -51,11 +50,11 @@ router.post(
         transfer: handleTransferWebhook,
       };
       const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
-      webhookHandler(req.body, io);
+      await webhookHandler(req.body, io);
+      console.log('finished!');
       res.json({ status: 'ok' });
     } catch (err) {
-      console.log(err);
-      res.json(err);
+      errorHandler(err);
     }
   })
 );
