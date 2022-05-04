@@ -135,6 +135,7 @@ router.get(
 router.get(
   '/:userId/transfers',
   asyncWrapper(async (req, res) => {
+    console.log(req.params);
     try {
       console.log(req.params);
       const { userId } = req.params;
@@ -211,7 +212,7 @@ router.delete(
       )
     );
 
-    // delete from the db
+    // delete from the db (deletion of users from db will cascade to other tables)
     await deleteUsers(userId);
     res.sendStatus(204);
   })

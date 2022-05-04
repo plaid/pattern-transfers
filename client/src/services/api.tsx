@@ -61,8 +61,10 @@ export const createTransfer = (
   subscriptionAmount: number
 ) => api.post(`/transfers/transfer`, { userId, itemId, subscriptionAmount });
 
-export const getTransfersByUserId = (userId: number) =>
-  api.get(`/users/${userId}/transfers`);
+export const getTransfersByUserId = (userId: number) => {
+  alert(`in the api${userId}`);
+  return api.get(`/users/${userId}/transfers`);
+};
 
 export const getTransferUIStatus = (intentId: string) =>
   api.post(`/transfers/transfer_ui/status`, { intentId });

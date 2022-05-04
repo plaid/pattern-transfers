@@ -12,7 +12,7 @@ import omit from 'lodash/omit';
 import { toast } from 'react-toastify';
 
 import { UserType } from '../components/types';
-import { useAccounts, useItems } from '.';
+import { useAccounts, useItems, useTransfers, usePayments } from '.';
 import {
   getUsers as apiGetUsers,
   getUserById as apiGetUserById,
@@ -46,6 +46,8 @@ export function UsersProvider(props: any) {
   const [usersById, dispatch] = useReducer(reducer, {});
   const { deleteAccountsByUserId } = useAccounts();
   const { deleteItemsByUserId } = useItems();
+  const { deleteTransfersByUserId } = useTransfers();
+  const { deletePaymentsByUserId } = usePayments();
 
   const hasRequested = useRef<{
     all: Boolean;
@@ -103,13 +105,20 @@ export function UsersProvider(props: any) {
    */
   const deleteUserById = useCallback(
     async id => {
-      await apiDeleteUserById(id); // this will delete all items associated with user
+      await apiDeleteUserById(id); // this will delete all items, transfers and payments associated with user
       deleteItemsByUserId(id);
       deleteAccountsByUserId(id);
+      deleteTransfersByUserId(id);
+      deletePaymentsByUserId(id);
       dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
       delete hasRequested.current.byId[id];
     },
-    [deleteItemsByUserId, deleteAccountsByUserId]
+    [
+      deleteItemsByUserId,
+      deleteAccountsByUserId,
+      deleteTransfersByUserId,
+      deletePaymentsByUserId,
+    ]
   );
 
   /**
