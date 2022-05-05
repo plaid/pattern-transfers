@@ -17,6 +17,7 @@ interface Props {
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
   const [error, setError] = useState<null | string>(null);
+  const [isWorking, setIsWorking] = useState(false);
 
   const handleSubmit = async (e: any) => {
     try {
@@ -30,7 +31,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       }
 
       await setTransferAmount(
-        `$${Number(transferAmount).toFixed(2).toString()}`
+        `${Number(transferAmount).toFixed(2).toString()}`
       );
     } catch (err) {
       console.error(err);
@@ -44,6 +45,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
 
   const initiateTransfer = async () => {
     try {
+      setIsWorking(true);
       const transfersResponse = await createTransfer(
         props.userId,
         itemId,
@@ -53,9 +55,11 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       const paymentsResponse = await addPayment(props.userId, monthlyPayment);
       props.setPayments(paymentsResponse.data[0]);
       setError(null);
+      setIsWorking(false);
     } catch (err) {
       if (err instanceof Error) {
         setError(`$${monthlyPayment.toFixed(2)} ${err.message}.`);
+        setIsWorking(false);
       }
     }
   };
@@ -105,12 +109,15 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         {props.numOfItems > 0 && (
           <div className="dev-configs-bottom-buttons__container">
             <Button
+              disabled={isWorking}
               className="initiate-payment__button"
               centered
               type="button"
               onClick={initiateTransfer}
             >
-              Initiate month {numberOfPayments + 1} payment
+              {isWorking
+                ? 'Working...'
+                : `Initiate month ${numberOfPayments + 1} payment`}
             </Button>
             {error != null && <Callout>{error}</Callout>}
           </div>
