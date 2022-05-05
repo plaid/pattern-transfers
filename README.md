@@ -77,8 +77,9 @@ The Pattern web client is written in JavaScript using [React]. It presents the [
 
 For Transfer UI, the sandbox credentials are:
 
-Username: user_good
+```Username: user_good
 Password: pass_good
+```
 
 ## Key concepts
 
