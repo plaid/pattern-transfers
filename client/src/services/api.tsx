@@ -14,6 +14,16 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error?.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+);
+
 export default api;
 // currentUser
 export const getLoginUser = (username: string) =>
@@ -63,7 +73,8 @@ export const addTransferInfo = (
   transferId: string,
   status: string,
   sweepStatus: string,
-  itemId: number
+  itemId: number,
+  type: string
 ) =>
   api.put(`/transfers/${transferIntentId}/add_info`, {
     accountId,
@@ -71,12 +82,18 @@ export const addTransferInfo = (
     status,
     sweepStatus,
     itemId,
+    type,
   });
 
 export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);
 
 export const simulateTransferEvent = (transferId: string, event: string) =>
   api.post(`/transfers/simulate_event`, { transferId, event });
+
+// events
+
+export const fireTransferWebhook = () =>
+  api.post(`/events/sandbox/fire_webhook`);
 
 // payments
 

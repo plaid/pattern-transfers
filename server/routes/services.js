@@ -9,7 +9,7 @@ const router = express.Router();
 
 const { asyncWrapper } = require('../middleware');
 const {
-  handleTransactionsWebhook,
+  handleTransferWebhook,
   handleItemWebhook,
   unhandledWebhook,
 } = require('../webhookHandlers');
@@ -39,9 +39,10 @@ router.post(
     const { webhook_type: webhookType } = req.body;
     const { io } = req;
     const type = webhookType.toLowerCase();
-    // There are five types of webhooks: AUTH, TRANSACTIONS, ITEM, INCOME, and ASSETS.
+    // There are six types of webhooks: AUTH, TRANSACTIONS, ITEM, INCOME, TRANSFER, and ASSETS.
     const webhookHandlerMap = {
       item: handleItemWebhook,
+      transfer: handleTransferWebhook,
     };
     const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
     webhookHandler(req.body, io);

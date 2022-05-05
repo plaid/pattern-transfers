@@ -9,29 +9,6 @@ const {
 } = require('../db/queries');
 
 /**
- * Handles Item errors received from item webhooks. When an error is received
- * different operations are needed to update an item based on the the error_code
- * that is encountered.
- *
- * @param {string} plaidItemId the Plaid ID of an item.
- * @param {Object} error the error received from the webhook.
- */
-const itemErrorHandler = async (plaidItemId, error) => {
-  const { error_code: errorCode } = error;
-  switch (errorCode) {
-    case 'ITEM_LOGIN_REQUIRED': {
-      const { id: itemId } = await retrieveItemByPlaidItemId(plaidItemId);
-      await updateItemStatus(itemId, 'bad');
-      break;
-    }
-    default:
-      console.log(
-        `WEBHOOK: ITEMS: Plaid item id ${plaidItemId}: unhandled ITEM error`
-      );
-  }
-};
-
-/**
  * Handles all Item webhook events.
  *
  * @param {Object} requestBody the request body of an incoming webhook event.

@@ -20,6 +20,7 @@ import {
   useLink,
   useTransfers,
   usePayments,
+  useCurrentUser,
 } from '../services';
 
 import {
@@ -49,13 +50,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
+  const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const {
-    generateTransferIntentId,
-    getTransfersByUser,
-    transfersByUser,
-  } = useTransfers();
+  const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
+    useTransfers();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -133,6 +132,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
     }
   }, [transfersByUser, userId]);
 
+  useEffect(() => {
+    if (user.username != null) {
+      setCurrentUser(user.username);
+    }
+  }, [setCurrentUser, user, userId]);
+
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
   const initiateLink = async () => {
@@ -171,6 +176,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         username={user.username}
         isLedgerView={isLedgerView}
         setIsLedgerView={setIsLedgerView}
+        userId={userId}
+        setTransfers={setTransfers}
       />
       <div className="user-page-container">
         {!isLedgerView && (
@@ -255,7 +262,11 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           </div>
         )}
         {isLedgerView && (
-          <Ledger transfers={transfers} setIsLedgerView={setIsLedgerView} />
+          <Ledger
+            userId={userId}
+            transfers={transfers}
+            setIsLedgerView={setIsLedgerView}
+          />
         )}
       </div>
     </div>

@@ -2,20 +2,26 @@ import React from 'react';
 import Button from 'plaid-threads/Button';
 
 import { TransferType } from './types';
-import { simulateTransferEvent, simulateSweep } from '../services/api';
+import {
+  simulateTransferEvent,
+  simulateSweep,
+  fireTransferWebhook,
+} from '../services/api';
 
 interface Props {
   transfers: TransferType[] | null;
   setIsLedgerView: (arg: boolean) => void;
+  userId: number;
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
-      const sweepResponse = await simulateSweep();
+      await simulateSweep();
     } else {
-      const eventResponse = await simulateTransferEvent(transferId, event);
+      await simulateTransferEvent(transferId, event);
     }
+    await fireTransferWebhook();
   };
 
   const tableRows =

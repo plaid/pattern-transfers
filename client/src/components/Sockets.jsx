@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
-import { useAccounts, useItems } from '../services';
+import { useItems, useTransfers, useCurrentUser } from '../services';
+import { getTransfersByUser as apiGetTransfersByUser } from '../services/api';
 const io = require('socket.io-client');
 const { REACT_APP_SERVER_PORT } = process.env;
 
 const Sockets = () => {
   const socket = useRef();
-  const { getAccountsByItem } = useAccounts();
   const { getItemById } = useItems();
+  const { getTransfersByUser } = useTransfers();
+  const { userState } = useCurrentUser();
 
   useEffect(() => {
     socket.current = io(`http://localhost:${REACT_APP_SERVER_PORT}`);
@@ -27,11 +29,18 @@ const Sockets = () => {
       getItemById(itemId, true);
     });
 
+    socket.current.on('TRANSFER_EVENTS_UPDATE', async () => {
+      const msg = `New Webhook Event: Transfer Events Update`;
+      console.log(msg);
+      await toast(msg);
+      getTransfersByUser(userState.currentUser.id);
+    });
+
     return () => {
       socket.current.removeAllListeners();
       socket.current.close();
     };
-  }, [getAccountsByItem, getItemById]);
+  }, [getItemById, getTransfersByUser, userState.currentUser.id]);
 
   return <div />;
 };

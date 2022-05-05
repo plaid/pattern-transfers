@@ -75,37 +75,6 @@ AS
     items_table;
 
 
--- APP_FUNDS
--- This table is used to store the app funds balance associated with each user. The view returns the same data
--- as the table, we're just using both to maintain consistency with our other tables.
-
-CREATE TABLE app_funds_table
-(
-  id SERIAL PRIMARY KEY,
-  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
-  balance numeric NOT NULL,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-
-CREATE TRIGGER app_funds_updated_at_timestamp
-BEFORE UPDATE ON app_funds_table
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-CREATE VIEW app_funds
-AS
-  SELECT
-    id,
-    user_id,
-    balance,
-    created_at,
-    updated_at
-  FROM
-    app_funds_table;
-
-
-
 -- ACCOUNTS
 -- This table is used to store the accounts associated with each item. The view returns all the
 -- data from the accounts table and some data from the items view. For more info on the Plaid
@@ -161,6 +130,7 @@ CREATE TABLE transfers_table
   transfer_id text,
   amount numeric,
   status text,
+  type text,
   sweep_status text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -183,11 +153,60 @@ AS
     transfer_id,
     amount,
     status,
+    type,
     sweep_status,
     created_at,
     updated_at
   FROM
     transfers_table;
+
+    -- EVENTS
+-- This table is used to store the events associated with each transfer.  The view returns the same data
+-- as the table, we're just using both to maintain consistency with our other tables. For more info on the Plaid
+-- Events schema, see the docs page:  https://plaid.com/docs/products/transfer/#transfereventsync
+
+CREATE TABLE events_table
+(
+  id SERIAL PRIMARY KEY,
+  plaid_event_id integer UNIQUE,
+  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
+  plaid_account_id text,
+  transfer_type text,
+  event_type text,
+  transfer_id text,
+  amount numeric,
+  sweep_amount numeric,
+  failure_reason text,
+  sweep_id text,
+  timestamp text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+CREATE TRIGGER events_updated_at_timestamp
+BEFORE UPDATE ON events_table
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE VIEW events
+AS
+  SELECT
+    id,
+    plaid_event_id,
+    user_id,
+    plaid_account_id,
+    transfer_type,
+    event_type,
+    transfer_id,
+    amount,
+    sweep_amount,
+    failure_reason,
+    sweep_id,
+    timestamp,
+    created_at,
+    updated_at
+  FROM
+    events_table;
 
 -- Payments
 -- This table is used to store the payments associated with each user.  The view returns the same data

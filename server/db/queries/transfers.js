@@ -28,6 +28,7 @@ const createTransfer = async (
   transferId,
   amount,
   status,
+  type,
   sweepStatus
 ) => {
   const query = {
@@ -43,12 +44,13 @@ const createTransfer = async (
             transfer_id,
             amount,
             status,
+            type,
             sweep_status
           )
         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING
-          *
+          *;
       `,
     values: [
       itemId,
@@ -59,6 +61,7 @@ const createTransfer = async (
       transferId,
       amount,
       status,
+      type,
       sweepStatus,
     ],
   };
@@ -86,12 +89,13 @@ const addTransferInfo = async (
   accountId,
   sweepStatus,
   itemId,
+  type,
   transferIntentId
 ) => {
   const query = {
     // RETURNING is a Postgres-specific clause that returns a list of the inserted items.
     text: `
-        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, sweep_status = $4, item_id = $5 WHERE transfer_intent_id = $6
+        UPDATE transfers SET status = $1, transfer_id = $2, plaid_account_id = $3, sweep_status = $4, item_id = $5, type = $6 WHERE transfer_intent_id = $7;
       `,
     values: [
       status,
@@ -99,6 +103,7 @@ const addTransferInfo = async (
       accountId,
       sweepStatus,
       itemId,
+      type,
       transferIntentId,
     ],
   };
@@ -148,11 +153,11 @@ const retrieveTransfersByItemId = async itemId => {
  */
 const retrieveTransferByPlaidTransferId = async transferId => {
   const query = {
-    text: 'SELECT * FROM transfers WHERE transfer_id = $1 ORDER BY id',
+    text: 'SELECT * FROM transfers WHERE transfer_id = $1',
     values: [transferId],
   };
-  const { rows: transfers } = await db.query(query);
-  return transfers[0];
+  const { rows } = await db.query(query);
+  return rows[0];
 };
 
 /**
@@ -170,6 +175,19 @@ const retrieveTransfersByUserId = async userId => {
   return transfers;
 };
 
+/**
+ * Retrieves all transfers.
+ *
+ * @returns {Object[]} an array of transfers.
+ */
+const retrieveAllTransfers = async () => {
+  const query = {
+    text: 'SELECT * FROM transfers ORDER BY id',
+  };
+  const { rows: transfers } = await db.query(query);
+  return transfers;
+};
+
 module.exports = {
   createTransfer,
   retrieveTransfersByItemId,
@@ -177,4 +195,5 @@ module.exports = {
   addTransferInfo,
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
+  retrieveAllTransfers,
 };

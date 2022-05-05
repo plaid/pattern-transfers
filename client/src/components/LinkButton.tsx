@@ -55,13 +55,9 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       transferUIDataResponse.data.transfer_intent.transfer_id,
       true
     );
-    const {
-      account_id,
-      id,
-      status,
-      sweep_status,
-      amount,
-    } = transferDataResponse.data.transfer;
+
+    const { account_id, id, status, sweep_status, amount, type } =
+      transferDataResponse.data.transfer;
     // update database with information regarding the transfer
     await addTransferInfo(
       transferResponse.data[0].transfer_intent_id,
@@ -69,7 +65,8 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       id,
       status,
       sweep_status,
-      itemId
+      itemId,
+      type
     );
 
     const response = await addPayment(props.userId, Number(amount));

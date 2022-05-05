@@ -42,7 +42,7 @@ interface TransfersContextShape extends TransfersState {
   transfersByUser: {
     [userId: number]: TransferType[];
   };
-  getTransfersByUser: (userId: number) => void;
+  getTransfersByUser: (userId: number) => string;
   generateTransferIntentId: (
     userId: number,
     subscriptionAmount: number
