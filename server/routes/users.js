@@ -112,9 +112,15 @@ router.get(
 router.get(
   '/:userId/transfers',
   asyncWrapper(async (req, res) => {
-    const { userId } = req.params;
-    const transfers = await retrieveTransfersByUserId(userId);
-    res.json(transfers);
+    try {
+      const { userId } = req.params;
+      const transfers = await retrieveTransfersByUserId(userId);
+      return res.json(transfers);
+
+      res.json({});
+    } catch (err) {
+      console.log(err);
+    }
   })
 );
 

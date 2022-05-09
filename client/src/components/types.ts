@@ -62,3 +62,11 @@ export interface PaymentType {
   created_at: string;
   updated_at: string;
 }
+
+export interface AppStatusType {
+  id: number;
+  number_of_events: number;
+  app_account_balance: number;
+  created_at: string;
+  updated_at: string;
+}

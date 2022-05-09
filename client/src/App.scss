@@ -383,6 +383,15 @@ user list
   width: 100%;
   position: relative;
 }
+
+.ledger-header {
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    font-weight: bold;
+  }
+}
 .ledger_table_row {
   width: 100%;
   display: grid;

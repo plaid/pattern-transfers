@@ -1,23 +1,54 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
+import { toast } from 'react-toastify';
 
-import { TransferType } from './types';
-import { simulateTransferEvent, simulateSweep } from '../services/api';
+import { TransferType, AppStatusType } from './types';
+import {
+  simulateTransferEvent,
+  simulateSweep,
+  fireTransferWebhook,
+} from '../services/api';
+import { useUsers, useCurrentUser } from '../services';
 
 interface Props {
   transfers: TransferType[] | null;
   setIsLedgerView: (arg: boolean) => void;
+  userId: number;
+  appStatus: AppStatusType | null;
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
+  const { usersById } = useUsers();
+  const { setCurrentUser } = useCurrentUser();
   const simulateEvent = async (transferId: string, event: string) => {
     if (event === 'sweep') {
-      const sweepResponse = await simulateSweep();
+      try {
+        await simulateSweep();
+        await fireTransferWebhook();
+      } catch (err) {
+        console.log(err);
+      }
     } else {
-      const eventResponse = await simulateTransferEvent(transferId, event);
+      try {
+        await simulateTransferEvent(transferId, event);
+        await fireTransferWebhook();
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log('error response', err);
+          toast.error(err.message);
+        }
+      }
     }
   };
+  const user = usersById[props.userId];
+  useEffect(() => {
+    if (user.username != null) {
+      setCurrentUser(user.username);
+    }
+  }, [setCurrentUser, user]);
 
+  const account_balance =
+    props.appStatus != null ? props.appStatus.app_account_balance : 0;
   const tableRows =
     props.transfers == null
       ? null
@@ -78,7 +109,13 @@ const Ledger: React.FC<Props> = (props: Props) => {
   return (
     <div className="ledger-container">
       {' '}
-      <h4>PlatyFlix Transfer Ledger</h4>
+      <div className="ledger-header">
+        <h4>PlatyFlix Transfer Ledger</h4>
+        <h4>
+          PlatyFlix Business Checking Account balance:{' '}
+          <span>${account_balance.toFixed(2)}</span>
+        </h4>
+      </div>
       <Button
         secondary
         centered

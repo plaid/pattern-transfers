@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NumberInput } from 'plaid-threads/NumberInput';
 import { Button } from 'plaid-threads/Button';
-import { currencyFilter } from '../util';
+import { Callout } from 'plaid-threads/Callout';
 import { setMonthlyPayment, createTransfer, addPayment } from '../services/api';
 import { PaymentType, ItemType, TransferType } from './types';
 
@@ -16,6 +16,7 @@ interface Props {
 }
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
+  const [error, setError] = useState<null | string>(null);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -24,14 +25,10 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       Number(transferAmount)
     );
     if (props.setPayments != null) {
-      props.setPayments(response.data.updatedPayments[0]);
+      props.setPayments(response.data[0]);
     }
 
-    await setTransferAmount(
-      `$${Number(transferAmount)
-        .toFixed(2)
-        .toString()}`
-    );
+    await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);
   };
 
   const itemId = props.item != null ? props.item.id : 0;
@@ -40,23 +37,25 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     props.payments != null ? props.payments.monthly_payment : 0;
 
   const initiateTransfer = async () => {
-    const transfersResponse = await createTransfer(
-      props.userId,
-      itemId,
-      monthlyPayment
-    );
-    props.setTransfers(transfersResponse.data);
-    const paymentsResponse = await addPayment(props.userId, monthlyPayment);
-    props.setPayments(paymentsResponse.data[0]);
+    try {
+      const transfersResponse = await createTransfer(
+        props.userId,
+        itemId,
+        monthlyPayment
+      );
+      props.setTransfers(transfersResponse.data);
+      const paymentsResponse = await addPayment(props.userId, monthlyPayment);
+      props.setPayments(paymentsResponse.data[0]);
+      setError(null);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(`$${monthlyPayment.toFixed(2)} ${err.message}.`);
+      }
+    }
   };
 
   const numberOfPayments =
     props.payments != null ? props.payments.number_of_payments : 0;
-
-  const amt =
-    parseFloat(transferAmount) > 0
-      ? currencyFilter(parseFloat(transferAmount))
-      : '';
 
   return (
     <>
@@ -107,6 +106,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
             >
               Initiate month {numberOfPayments + 1} payment
             </Button>
+            {error != null && <Callout>{error}</Callout>}
           </div>
         )}
       </div>

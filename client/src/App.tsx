@@ -14,6 +14,7 @@ import { UsersProvider } from './services/users';
 import { CurrentUserProvider } from './services/currentUser';
 import { ErrorsProvider } from './services/errors';
 import { PaymentsProvider } from './services/payments';
+import { AppStatusProvider } from './services/appStatus';
 
 import './App.scss';
 
@@ -28,31 +29,33 @@ function App() {
 
   return (
     <div className="App">
-      <InstitutionsProvider>
-        <ItemsProvider>
-          <TransfersProvider>
-            <PaymentsProvider>
-              <LinkProvider>
-                <AccountsProvider>
-                  <ErrorsProvider>
-                    <UsersProvider>
-                      <CurrentUserProvider>
-                        <Sockets />
-                        <Switch>
-                          <Route exact path="/" component={Landing} />
-                          <Route path="/user/:userId" component={UserPage} />
-                          <Route path="/oauth-link" component={OAuthLink} />
-                          <Route path="/userlist" component={UserList} />
-                        </Switch>
-                      </CurrentUserProvider>
-                    </UsersProvider>
-                  </ErrorsProvider>
-                </AccountsProvider>
-              </LinkProvider>
-            </PaymentsProvider>
-          </TransfersProvider>
-        </ItemsProvider>
-      </InstitutionsProvider>
+      <AppStatusProvider>
+        <InstitutionsProvider>
+          <ItemsProvider>
+            <TransfersProvider>
+              <PaymentsProvider>
+                <LinkProvider>
+                  <AccountsProvider>
+                    <ErrorsProvider>
+                      <UsersProvider>
+                        <CurrentUserProvider>
+                          <Sockets />
+                          <Switch>
+                            <Route exact path="/" component={Landing} />
+                            <Route path="/user/:userId" component={UserPage} />
+                            <Route path="/oauth-link" component={OAuthLink} />
+                            <Route path="/userlist" component={UserList} />
+                          </Switch>
+                        </CurrentUserProvider>
+                      </UsersProvider>
+                    </ErrorsProvider>
+                  </AccountsProvider>
+                </LinkProvider>
+              </PaymentsProvider>
+            </TransfersProvider>
+          </ItemsProvider>
+        </InstitutionsProvider>
+      </AppStatusProvider>
     </div>
   );
 }

@@ -13,6 +13,8 @@ const unhandledRouter = require('./unhandled');
 const linkTokensRouter = require('./linkTokens');
 const transfersRouter = require('./transfers');
 const paymentsRouter = require('./payments');
+const eventsRouter = require('./events');
+const appStatusRouter = require('./appStatus');
 
 module.exports = {
   usersRouter,
@@ -26,4 +28,6 @@ module.exports = {
   sessionsRouter,
   transfersRouter,
   paymentsRouter,
+  eventsRouter,
+  appStatusRouter,
 };

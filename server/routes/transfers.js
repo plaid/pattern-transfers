@@ -3,7 +3,6 @@
  */
 
 const express = require('express');
-const axios = require('axios');
 const {
   createTransfer,
   addTransferInfo,
@@ -52,8 +51,8 @@ router.post(
       );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
 
-      createTransfer(
-        null, //item_id
+      const newTransfer = await createTransfer(
+        null, // item_id
         userId,
         null, // plaid_account_id
         transferIntentId,
@@ -61,6 +60,7 @@ router.post(
         null, // transfer_id
         subscriptionAmount.toFixed(2),
         null, // status
+        'debit',
         null // sweep_status
       );
       res.json(transferIntentCreateResponse.data);
@@ -108,6 +108,16 @@ router.post(
       const transferAuthorizationCreateResponse = await plaid.transferAuthorizationCreate(
         transferAuthorizationCreateRequest
       );
+      if (
+        transferAuthorizationCreateResponse.data.authorization.decision !==
+        'approved'
+      ) {
+        return res.status(400).json({
+          message:
+            transferAuthorizationCreateResponse.data.authorization
+              .decision_rationale.description,
+        });
+      }
 
       const authorizationId =
         transferAuthorizationCreateResponse.data.authorization.id;
@@ -135,6 +145,7 @@ router.post(
         account_id,
         amount,
         status,
+        type,
       } = transferCreateResponse.data.transfer;
 
       await createTransfer(
@@ -146,11 +157,12 @@ router.post(
         id, // transfer_id
         Number(amount).toFixed(2),
         status,
-        null // sweep_status
+        'debit',
+        'unswept'
       );
 
       const transfers = await retrieveTransfersByUserId(userId);
-      res.json(transfers);
+      return res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
       return res.json(err.response.data);
@@ -213,6 +225,7 @@ router.post(
         transferGetResponse.data.transfer.sweep_status,
         transferId
       );
+
       const updatedTransfer = await retrieveTransferByPlaidTransferId(
         transferId
       );
@@ -243,15 +256,25 @@ router.put(
   asyncWrapper(async (req, res) => {
     try {
       const { transferIntentId } = req.params;
-      const { accountId, transferId, status, sweepStatus, itemId } = req.body;
+      const {
+        accountId,
+        transferId,
+        status,
+        sweepStatus,
+        itemId,
+        type,
+      } = req.body;
+
       const transfer = await addTransferInfo(
         status,
         transferId,
         accountId,
         sweepStatus,
         itemId,
+        type,
         transferIntentId
       );
+
       res.json(transfer);
     } catch (err) {
       console.log('error while adding info', err.response.data);
@@ -296,7 +319,10 @@ router.post(
       res.json(transferSimulateResponse.data);
     } catch (err) {
       console.log('error while simulating event', err.response.data);
-      return res.json(err.response.data);
+      // handle if user tries to simulate an event that does not jibe with current transfer status.
+      // for example if status is posted and user clicks on "fail"
+
+      return res.status(400).json({ message: err.response.data.error_message });
     }
   })
 );

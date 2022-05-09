@@ -1,14 +1,16 @@
-# Plaid Pattern
+# Plaid Pattern Transfer
 
 ![Plaid Pattern client][client-img]
 
-This is a sample Account Funding application demonstrating an end-to-end [Plaid][plaid] integration, focused on using the auth (or working with a Plaid partner using processor tokens), identity and balance endpoints to safely transfer funds.
+This is a sample Transfer application demonstrating an end-to-end [Plaid][plaid] integration, focused on using the transfer endpoint to transfer funds.
 
 The full Plaid Pattern collection of sample apps includes:
 
 [Plaid Pattern Personal Finance Manager](https://github.com/plaid/pattern/) - Demonstrates the Plaid Transactions API
 
-[Plaid Pattern Account Funding App](https://github.com/plaid/pattern-account-funding) (you are here) - Demonstrates the Plaid Auth, Balance, and Identity APIs
+[Plaid Pattern Account Funding App](https://github.com/plaid/pattern-account-funding) - Demonstrates the Plaid Auth, Balance, and Identity APIs
+
+[Plaid Pattern Transfer App](https://github.com/plaid/pattern-transfers) - Demonstrates the Transfer API
 
 Plaid Pattern apps are provided for illustrative purposes and are not meant to be run as production applications.
 
@@ -23,16 +25,20 @@ Note: We recommend running these commands in a unix terminal. Windows users can 
 
 1. Clone the repo.
     ```shell
-    git clone https://github.com/plaid/pattern-account-funding.git
-    cd pattern
+    git clone https://github.com/plaid/pattern-transfers.git
+    cd pattern-transfers
     ```
+1. Follow the instructions for [Transfer UI](https://plaid.com/docs/transfer/using-transfer-ui/#prerequisites-for-using-transfer-ui) to set up your link customization on the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
+
 1. Create the `.env` file.
     ```shell
     cp .env.template .env
     ```
-1. Update the `.env` file with your [Plaid API keys][plaid-keys] and OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>).
+1. Update the `.env` file with your [Plaid API keys][plaid-keys] and OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>) and link customization name.
 
 1. You will also need to configure an allowed redirect URI for your client ID through the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
+
+1. Finally, contact your Plaid Account Executive or Account Manager to make sure that your clientId is enabled for the Transfer product.
 
 1. Start the services. The first run may take a few minutes as Docker images are pulled/built for the first time.
     ```shell
@@ -65,9 +71,9 @@ We use [Docker Compose][docker-compose] to orchestrate these services. As such, 
 
 More information about the individual services is given below.
 
-# Plaid Pattern - Client
+# Plaid Pattern transfer - Client
 
-The Pattern web client is written in JavaScript using [React]. It presents a basic [Link][plaid-link] workflow to the user, including an implementation of [OAuth][plaid-oauth] as well as a demonstration of [Link update mode][plaid-link-update-mode]. The sample app allows you to choose to use identification mode, where an enduser must input the name and email associated with their financial institution. The app runs on port 3002 by default, although you can modify this in [docker-compose.yml](../docker-compose.yml).
+The Pattern web client is written in JavaScript using [React]. It presents the [Transfer UI][transfer-ui] workflow to the user, including an implementation of [OAuth][plaid-oauth]. The app runs on port 3002 by default, although you can modify this in [docker-compose.yml](../docker-compose.yml). It includes an administration ledger view where you can simulate different transfer events.
 
 ## Key concepts
 
@@ -77,29 +83,25 @@ Aside from websocket listeners (see below), all HTTP calls to the Pattern server
 
 ### Webhooks and Websockets
 
-The Pattern server is configured to send a message over a websocket whenever it receives a webhook from Plaid. On the client side have websocket listeners defined in `src/components/Sockets.jsx` that wait for these messages and update data in real time accordingly.
+The Pattern server is configured to send a message over a websocket whenever it receives a webhook from Plaid. On the client side websocket listeners are defined in `src/components/Sockets.jsx` that wait for these messages and update data in real time accordingly.
 
-Both PENDING_EXPIRATION and ITEM_LOGIN_REQUIRED are item webhooks demonstrated in this sample app in the [items webhook handler][items-handler].
+The TRANSFER_EVENTS_UPDATE webhook is demonstrated in this sample app in the [transfer webhook handler][transfers-handler].
 
 ### Admin
 
-A view of all users is provided to developers on `http://localhost:3002/admin`. Developers have the ability to remove a user here.
+A view of all users is provided to developers on `http://localhost:3002/userlist`. Developers have the ability to remove a user here.
 
-# Plaid Pattern - Server
+# Plaid Pattern Transfer - Server
 
 The application server is written in JavaScript using [Node.js][nodejs] and [Express][expressjs]. It interacts with the Plaid API via the [Plaid Node SDK][plaid-node], and with the [database][database-readme] using [`node-postgres`][node-pg]. While we've used Node for the reference implementation, the concepts shown here will apply no matter what language your backend is written in.
 
 ## Key Concepts
 
-### Associating users with Plaid items and access tokens
+### Using transfer events webhook.
 
-Plaid does not have a user data object for tying multiple items together, so it is up to application developers to define that relationship. For an example of this, see the [root items route][items-routes] (used to store new items) and the [users routes][users-routes].
+Plaid uses [webhooks][transfer-webhooks] to notify you whenever a new transfer event has occured. This sample app demonstrates the use of the sandbox transfer fire_webhook endpoint to test this webhook. For an example of this, see the [transfer webhook handler][transfers-handler]. Upon receipt of this webhook, a call will be made to the transfer [event sync endpoint](https://plaid.com/docs/api/products/transfer/#transfereventsync) to request the latest transfer events. For each event, the [transfer get endpooint](https://plaid.com/docs/api/products/transfer/#transferget) is called in order to get the current status of the transfer, and then the event is saved to the database.
 
-### Using webhook to test update mode in Link.
-
-Plaid uses [webhooks][error-webhooks] to notify you whenever an item enters an error state. If a user needs to update their login information at their financial institution, an item will display an ITEM_LOGIN_REQUIRED error. This sample app demonstrates the use of the sandboxItemResetLogin endpoint to test this webhook. For an example of this, see the [items webhook handler][items-handler].
-
-For webhooks to work, the server must be publicly accessible on the internet. For development purposes, this application uses [ngrok][ngrok-readme] to accomplish that. Therefore, if the server is re-started, any items created in this sample app previous to the current session will have a different webhook address attached to it. As a result, webhooks are only valid during the session in which an item is created; for previously created items no webhook will be received from the call to sandboxItemResetLogin.
+For webhooks to work, the server must be publicly accessible on the internet. For development purposes, this application uses [ngrok][ngrok-readme] to accomplish that. The ngrok session is only valid for 2 hours and the server must be re-started after that.
 
 ### Testing OAuth
 
@@ -186,14 +188,6 @@ while [ "$(curl -s -o /dev/null -w "%{http_code}" -m 1 https://localhost:3002)" 
 
 After starting up the Pattern sample app, you can now view it at https://localhost:3002. Your browser will alert you with an invalid certificate warning; click on "advanced" and proceed.
 
-### Working with Plaid Partners
-
-This sample app can also demonstrate the creation of a processor token for use with Plaid partners. While still initializing Link with the Auth product, instead of of using Plaid Auth endpoints, an example of the creation of a processor token is included in the [root items route][items-routes].
-
-### Verifying and transferring funds
-
-This sample app demonstrates how to get the available balance in order to verify funds. It does not actually conduct a transfer of funds. Therefore, the balance in the linked account (whether in sandbox or development) will not decrement when a transfer is made in this app.
-
 ## Debugging
 
 The node debugging port (9229) is exposed locally on port 9229.
@@ -233,6 +227,10 @@ The `*.sql` scripts in the `init` directory are used to initialize the database 
 See the [create.sql][create-script] initialization script to see some brief notes for and the schemas of the tables used in this application.
 While most of them are fairly self-explanitory, we've added some additional notes for some of the tables below.
 
+### transfer_events_table
+
+This table stores all events received from the transfer/event/sync endpoint. It stores the plaid_event_id,related transfer_id, type of event, timestamp and sweep_amount and sweep_id, if applicable.  Transfer events can be mapped to either their associated transfer or a specific userId.
+
 ### link_events_table
 
 This table stores responses from the Plaid API for client requests to the Plaid Link client.
@@ -257,7 +255,7 @@ If the request returned an error, the error_type and error_code columns will be 
 
 -   [PostgreSQL documentation][postgres-docs]
 
-# Plaid Pattern - ngrok
+# Plaid Pattern Transfer - ngrok
 
 This demo includes [ngrok](https://ngrok.com/), a utility that creates a secure tunnel between your local machine and the outside world. We're using it here to expose the local webhooks endpoint to the internet.
 
@@ -267,7 +265,7 @@ Browse to [localhost:4040](http://localhost:4040/inspect/http) to see the ngrok 
 
 Don’t want to use ngrok? As long as you serve the app with an endpoint that is publicly exposed, all the Plaid webhooks will work.
 
-ngrok's free account has a session limit of 8 hours. To fully test out some of the transaction webhook workflows, you will need to get a more persistent endpoint as noted above when using the development environment.
+ngrok's free account has a session limit of 2 hours. To fully test out some of the transaction webhook workflows, you will need to get a more persistent endpoint as noted above when using the development environment.
 
 ## Source
 
@@ -285,7 +283,7 @@ See [`docs/troubleshooting.md`][troubleshooting].
 ## Additional Resources
 
 -   For an overview of the Plaid platform and products, refer to this [Quickstart guide][plaid-quickstart].
--   Check out this high-level [introduction to Plaid Link](https://blog.plaid.com/plaid-link/).
+-   Check out this [introduction to Transfer](https://plaid.com/docs/transfer/).
 -   Find comprehensive information on Plaid API endpoints in the [API documentation][plaid-docs].
 -   Questions? Please head to the [Help Center][plaid-help] or [open a Support ticket][plaid-support-ticket].
 
@@ -312,10 +310,12 @@ Plaid Pattern is a demo app that is intended to be used only for the purpose of 
 [nodejs]: https://nodejs.org/en/
 [plaid-node]: https://github.com/plaid/plaid-node
 [items-handler]: /server/webhookHandlers/handleItemWebhook.js
+[transfers-handler]: /server/webhookHandlers/handleTransferWebhook.js
 [error-webhooks]: https://plaid.com/docs/api/webhooks/#item-error
+[transfer-webhooks]: https://plaid.com/docs/transfer/webhooks/
 [users-routes]: /server/routes/users.js
 [vscode-debugging]: https://code.visualstudio.com/docs/editor/debugging
-[client-img]: docs/account_funding_screenshot.jpg
+[client-img]: docs/transfer_screenshot.jpg
 [client-readme]: #plaid-pattern---client
 [docker]: https://docs.docker.com/
 [docker-compose]: https://docs.docker.com/compose/
@@ -332,6 +332,7 @@ Plaid Pattern is a demo app that is intended to be used only for the purpose of 
 [plaid-support-ticket]: https://dashboard.plaid.com/support/new
 [plaid-redirect-uri]: https://plaid.com/docs/link/oauth/#redirect-uri-configuration
 [postgres]: https://www.postgresql.org/
+[transfer-ui]: https://plaid.com/docs/transfer/using-transfer-ui/
 [react]: http://reactjs.org/
 [server-readme]: #plaid-pattern---server
 [troubleshooting]: docs/troubleshooting.md

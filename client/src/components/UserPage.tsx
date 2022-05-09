@@ -12,6 +12,7 @@ import {
   UserType,
   TransferType,
   PaymentType,
+  AppStatusType,
 } from './types';
 import {
   useItems,
@@ -20,6 +21,8 @@ import {
   useLink,
   useTransfers,
   usePayments,
+  useCurrentUser,
+  useAppStatus,
 } from '../services';
 
 import {
@@ -43,19 +46,21 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const [item, setItem] = useState<ItemType | null>(null);
   const [numOfItems, setNumOfItems] = useState(0);
   const [account, setAccount] = useState<AccountType | null>(null);
+  const [applicationStatus, setApplicationStatus] =
+    useState<AppStatusType | null>(null);
 
   const [token, setToken] = useState<string | null>('');
   const [payments, setPayments] = useState<null | PaymentType>(null);
   const { getAccountsByUser, accountsByUser } = useAccounts();
   const { getPaymentsByUser, paymentsByUser } = usePayments();
   const { usersById, getUserById } = useUsers();
+  const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const {
-    generateTransferIntentId,
-    getTransfersByUser,
-    transfersByUser,
-  } = useTransfers();
+  const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
+    useTransfers();
+
+  const { getAppStatus, appStatus } = useAppStatus();
   const userId = Number(match.params.userId);
 
   useEffect(() => {
@@ -121,7 +126,9 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   // update data store with the user's transfers
   useEffect(() => {
-    getTransfersByUser(userId);
+    if (userId != null) {
+      getTransfersByUser(userId);
+    }
   }, [getTransfersByUser, userId]);
 
   // update state transfers from data store
@@ -132,6 +139,22 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       setTransfers(null);
     }
   }, [transfersByUser, userId]);
+
+  useEffect(() => {
+    if (user.username != null) {
+      setCurrentUser(user.username);
+    }
+  }, [setCurrentUser, user, userId]);
+
+  useEffect(() => {
+    getAppStatus();
+  }, [getAppStatus, userId]);
+
+  useEffect(() => {
+    if (appStatus != null) {
+      setApplicationStatus(appStatus[1]);
+    }
+  }, [setApplicationStatus, appStatus]);
 
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
@@ -171,6 +194,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         username={user.username}
         isLedgerView={isLedgerView}
         setIsLedgerView={setIsLedgerView}
+        userId={userId}
+        setTransfers={setTransfers}
       />
       <div className="user-page-container">
         {!isLedgerView && (
@@ -255,7 +280,12 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
           </div>
         )}
         {isLedgerView && (
-          <Ledger transfers={transfers} setIsLedgerView={setIsLedgerView} />
+          <Ledger
+            userId={userId}
+            transfers={transfers}
+            setIsLedgerView={setIsLedgerView}
+            appStatus={applicationStatus}
+          />
         )}
       </div>
     </div>
