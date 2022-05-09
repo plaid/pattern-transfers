@@ -11,7 +11,7 @@ const UserTransfers: React.FC<Props> = (props: Props) => {
       ? null
       : props.transfers.map((transfer, index) => {
           return (
-            <div className="transfers-table__row">
+            <div key={index} className="transfers-table__row">
               {' '}
               <div className=" transfers-table__data column1">{index + 1}</div>
               <div className=" transfers-table__data column2">

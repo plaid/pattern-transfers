@@ -6,6 +6,7 @@ import { useCurrentUser } from '../services';
 import { Login, Banner, AddUserForm } from '.';
 
 import { useBoolean } from '../hooks';
+import { setAppStatus } from '../services/api';
 
 const Landing: React.FC = () => {
   const { userState, setCurrentUser } = useCurrentUser();
@@ -16,6 +17,10 @@ const Landing: React.FC = () => {
     if (userState.newUser != null) {
       setCurrentUser(userState.newUser);
     }
+  }, [setCurrentUser, userState.newUser]);
+
+  useEffect(() => {
+    setAppStatus();
   }, [setCurrentUser, userState.newUser]);
 
   const returnToCurrentUser = () => {

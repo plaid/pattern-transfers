@@ -17,7 +17,7 @@ const api = axios.create({
 api.interceptors.response.use(
   response => response,
   error => {
-    if (error?.response?.data?.message) {
+    if (error?.response?.data?.message && error.response.status === 400) {
       throw new Error(error.response.data.message);
     }
     throw error;
@@ -25,6 +25,10 @@ api.interceptors.response.use(
 );
 
 export default api;
+// appStatus
+export const setAppStatus = () => api.get('/appStatus/initial');
+export const getAppStatus = () => api.get('/appStatus/status');
+
 // currentUser
 export const getLoginUser = (username: string) =>
   api.post('/sessions', { username });
@@ -58,7 +62,7 @@ export const createTransfer = (
   subscriptionAmount: number
 ) => api.post(`/transfers/transfer`, { userId, itemId, subscriptionAmount });
 
-export const getTransfersByUser = (userId: number) =>
+export const getTransfersByUserId = (userId: number) =>
   api.get(`/users/${userId}/transfers`);
 
 export const getTransferUIStatus = (intentId: string) =>

@@ -17,7 +17,7 @@ import {
   getTransferUIStatus,
   getTransferStatus,
   addTransferInfo,
-  getTransfersByUser as apiGetTransfersByUser,
+  getTransfersByUserId as apiGetTransfersByUserId,
   addPayment,
   getPaymentsByUser,
 } from '../services/api';
@@ -45,7 +45,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const updateInitalTransfer = async (itemId: number) => {
     // need to get transfer_intent_id directly from database because context
     // is wiped out with Oauth
-    const transferResponse = await apiGetTransfersByUser(props.userId);
+    const transferResponse = await apiGetTransfersByUserId(props.userId);
     // use transfer_intent_id to obtain transfer_id from transferUI status
     const transferUIDataResponse = await getTransferUIStatus(
       transferResponse.data[0].transfer_intent_id

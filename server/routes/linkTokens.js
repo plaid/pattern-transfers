@@ -59,7 +59,7 @@ router.post(
         transfer: {
           intent_id: transferIntentId,
         },
-        link_customization_name: LINK_CUSTOMIZATION_NAME || 'transfer_ui_woo',
+        link_customization_name: LINK_CUSTOMIZATION_NAME,
       };
 
       // If user has entered a redirect uri in the .env file

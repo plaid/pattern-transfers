@@ -40,7 +40,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
                 className="input_field"
                 value={firstName}
                 placeholder="First name"
-                label="FirstName"
+                label="First Name"
                 onChange={e => setFirstName(e.target.value)}
               />
               <TextInput
@@ -51,7 +51,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
                 className="input_field"
                 value={lastName}
                 placeholder="Last name"
-                label="LastName"
+                label="Last Name"
                 onChange={e => setLastName(e.target.value)}
               />
             </div>
