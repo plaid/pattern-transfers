@@ -25,10 +25,12 @@ router.post(
       const fireWebhookRequest = {
         webhook: `${httpTunnel.public_url}/services/webhook`,
       };
+
+      console.log(httpTunnel);
       const webhookResponse = await plaid.sandboxTransferFireWebhook(
         fireWebhookRequest
       );
-      console.log('firewebhook response', webhookResponse.data);
+
       res.json(webhookResponse.data);
     } catch (err) {
       console.log(err);

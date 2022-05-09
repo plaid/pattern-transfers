@@ -229,7 +229,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                   <p className="nacha-compliant-note">
                     IMPORTANT NOTE: You will need to include appropriate legal
                     authorization language here to capture NACHA-compliant
-                    authorzation prior to initiating a transfer.
+                    authorization prior to initiating a transfer.
                   </p>
                   <div className="item__callouts">
                     {linkTokens.error.error_code != null && (
