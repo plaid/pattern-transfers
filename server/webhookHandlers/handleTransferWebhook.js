@@ -22,18 +22,22 @@ const plaid = require('../plaid');
  */
 const transfersHandler = async (requestBody, io) => {
   const { webhook_code: webhookCode } = requestBody;
-  const serverLogAndEmitSocket = async webhookCode => {
+  const serverLogAndEmitSocket = async (webhookCode, status) => {
     try {
-      console.log(
-        `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`
-      );
-      // use websocket to notify the client that a webhook has been received and handled
-      if (webhookCode) {
-        try {
-          await io.emit(webhookCode);
-          console.log('done!');
-        } catch (err) {
-          console.log('error', err);
+      if (status === 'no events') {
+        await io.emit('NO_NEW_EVENTS');
+      } else {
+        console.log(
+          `WEBHOOK: TRANSFERS: ${webhookCode}: transfer webhook received}`
+        );
+        // use websocket to notify the client that a webhook has been received and handled
+        if (webhookCode != null) {
+          try {
+            await io.emit(webhookCode);
+            console.log('done!');
+          } catch (err) {
+            console.log('error', err);
+          }
         }
       }
     } catch (err) {
@@ -56,6 +60,7 @@ const transfersHandler = async (requestBody, io) => {
         const allNewPlaidEvents = syncResponse.data.transfer_events;
         if (allNewPlaidEvents.length === 0) {
           console.log('no new events');
+          await serverLogAndEmitSocket(webhookCode, 'no events');
           break;
         }
         // to update app's business checking account balance, track sweep amount totals from new events
@@ -105,7 +110,7 @@ const transfersHandler = async (requestBody, io) => {
         await updateAppStatus(newAccountBalance, newNumberOfEvents);
         const newStatus = await retrieveAppStatus();
 
-        await serverLogAndEmitSocket(webhookCode);
+        await serverLogAndEmitSocket(webhookCode, null);
 
         break;
       } catch (err) {

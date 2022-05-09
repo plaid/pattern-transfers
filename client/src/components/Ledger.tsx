@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 import { toast } from 'react-toastify';
 
-import { TransferType, AppStatusType } from './types';
+import { TransferType, AppStatusType, ColorType } from './types';
 import {
   simulateTransferEvent,
   simulateSweep,
@@ -47,6 +47,14 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
   }, [setCurrentUser, user]);
 
+  const color: ColorType = {
+    posted: 'posted',
+    failed: 'failed',
+    reversed: 'reversed',
+    swept: 'swept',
+    reverse_swept: 'reverse_swept',
+  };
+
   const account_balance =
     props.appStatus != null ? props.appStatus.app_account_balance : 0;
   const tableRows =
@@ -60,10 +68,10 @@ const Ledger: React.FC<Props> = (props: Props) => {
               <div className=" ledger_table_data ledger2">
                 ${transfer.amount.toFixed(2)}
               </div>
-              <div className=" ledger_table_data ledger3">
-                {transfer.status}
-              </div>
-              <div className=" ledger_table_data ledger3">
+              {/* @ts-ignore */}
+              <div className={color[transfer.status]}>{transfer.status}</div>
+              {/* @ts-ignore */}
+              <div className={color[transfer.sweep_status]}>
                 {transfer.sweep_status}
               </div>
               <div className="ledger4">

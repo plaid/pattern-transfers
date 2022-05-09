@@ -45,6 +45,14 @@ const Sockets = () => {
       }
     });
 
+    socket.current.on('NO_NEW_EVENTS', async () => {
+      try {
+        await toast.error(`New Webhook Event: No new events`);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
     return () => {
       socket.current.removeAllListeners();
       socket.current.close();
