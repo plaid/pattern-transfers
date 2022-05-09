@@ -71,10 +71,6 @@ export interface AppStatusType {
   updated_at: string;
 }
 
-export interface ColorType {
-  posted: string;
-  failed: string;
-  reversed: string;
-  swept: string;
-  reverse_swept: string;
+export interface StatusType {
+  [key: string]: string;
 }
