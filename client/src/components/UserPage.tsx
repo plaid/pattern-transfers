@@ -3,6 +3,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
 import Callout from 'plaid-threads/Callout';
+import { toast } from 'react-toastify';
 import { LinkButton } from '.';
 
 import {
@@ -161,13 +162,17 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const initiateLink = async () => {
     try {
       // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
-      const transfer_intent_id = await generateTransferIntentId(
-        userId,
-        monthlyPayment
-      );
-      // only generate a link token upon a click from enduser to add a bank;
-      // if done earlier, it may expire before enduser actually activates Link to add a bank.
-      await generateLinkToken(userId, null, transfer_intent_id);
+      if (monthlyPayment > 0) {
+        const transfer_intent_id = await generateTransferIntentId(
+          userId,
+          monthlyPayment
+        );
+        // only generate a link token upon a click from enduser to add a bank;
+        // if done earlier, it may expire before enduser actually activates Link to add a bank.
+        await generateLinkToken(userId, null, transfer_intent_id);
+      } else {
+        toast.error('Please enter a subscription amount');
+      }
     } catch (err) {
       console.error(err);
     }

@@ -16,6 +16,7 @@ import { TransferType } from '../components/types';
 import {
   getTransferIntentId,
   getTransfersByUserId as apiGetTransfersByUserId,
+  deleteTransfersByUserId as apiDeleteTransfersByUserId,
 } from './api';
 
 interface TransfersState {
@@ -85,7 +86,6 @@ export function TransfersProvider(props: any) {
    */
   const getTransfersByUser = useCallback(async userId => {
     if (userId != null) {
-      console.log('in context');
       const { data: transfers } = await apiGetTransfersByUserId(userId);
       dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
     } else {
@@ -96,8 +96,9 @@ export function TransfersProvider(props: any) {
   /**
    * @desc Will delete all transfers that belong to an individual User.
    */
-  const deleteTransfersByUserId = useCallback(userId => {
-    dispatch({ type: 'DELETE_BY_USER', payload: userId });
+  const deleteTransfersByUserId = useCallback(async userId => {
+    await apiDeleteTransfersByUserId(userId);
+    await dispatch({ type: 'DELETE_BY_USER', payload: userId });
   }, []);
 
   const value = useMemo(() => {

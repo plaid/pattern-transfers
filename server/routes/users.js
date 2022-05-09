@@ -141,6 +141,7 @@ router.get(
       const { userId } = req.params;
       if (userId !== 'undefined') {
         const transfers = await retrieveTransfersByUserId(userId);
+        console.log('transfers', transfers);
         return res.json(transfers);
       }
       res.json({});

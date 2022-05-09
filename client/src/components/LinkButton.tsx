@@ -39,7 +39,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
-  const { getTransfersByUser } = useTransfers();
+  const { getTransfersByUser, deleteTransfersByUserId } = useTransfers();
   const { setError, resetError } = useErrors();
 
   const updateInitalTransfer = async (itemId: number) => {
@@ -87,13 +87,11 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   ) => {
     // log and save metatdata
     logSuccess(metadata, props.userId);
-    if (props.itemId != null) {
-      // update mode: no need to exchange public token
-      await setItemState(props.itemId, 'good');
-      getItemById(props.itemId, true);
-
-      // regular link mode: exchange public token for access token
+    if (metadata.transfer_status === 'INCOMPLETE') {
+      await deleteTransfersByUserId(props.userId);
+      console.log('deleted');
     } else {
+      // exchange public token for access token
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
       try {
         const data = await exchangeToken(

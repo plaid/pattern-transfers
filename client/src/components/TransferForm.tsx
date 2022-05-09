@@ -66,7 +66,15 @@ const TransferForm: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="box developer-configs">
-        <h4 className="subheading">Developer Configs</h4>{' '}
+        <h4 className="configHeading">
+          Developer Configs
+          <span>
+            {' '}
+            <p className="admin-note">
+              Set amounts, view the ledger or initiate payments
+            </p>
+          </span>
+        </h4>{' '}
         <form className="developer-configs__form" onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"

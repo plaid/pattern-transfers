@@ -93,6 +93,9 @@ export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);
 export const simulateTransferEvent = (transferId: string, event: string) =>
   api.post(`/transfers/simulate_event`, { transferId, event });
 
+export const deleteTransfersByUserId = (userId: string) =>
+  api.delete(`/transfers/${userId}`);
+
 // events
 
 export const fireTransferWebhook = () =>
