@@ -13,11 +13,9 @@ const UserTransfers: React.FC<Props> = (props: Props) => {
           return (
             <div key={index} className="transfers-table__row">
               {' '}
-              <div className=" transfers-table__data column1">{index + 1}</div>
-              <div className=" transfers-table__data column2">
-                {transfer.status}
-              </div>
-              <div className=" transfers-table__data column3">
+              <div className=" transfers-table__data month ">{index + 1}</div>
+              <div className=" transfers-table__data ">{transfer.status}</div>
+              <div className=" transfers-table__data">
                 ${transfer.amount.toFixed(2)}
               </div>
             </div>
@@ -30,9 +28,9 @@ const UserTransfers: React.FC<Props> = (props: Props) => {
       <h4>Payment History</h4>
       <div className="transfers-table">
         <div className="transfers-table__row">
-          <div className="transfers-table__header column1">Month</div>
-          <div className="transfers-table__header column2">Status</div>
-          <div className="transfers-table__header column3">Amount</div>
+          <div className="transfers-table__header ">Month</div>
+          <div className="transfers-table__header ">Status</div>
+          <div className="transfers-table__header ">Amount</div>
         </div>
         {tableRows}
       </div>
