@@ -36,11 +36,21 @@ const Sockets = () => {
     });
 
     socket.current.on('TRANSFER_EVENTS_UPDATE', async () => {
-      const msg = `New Webhook Event: Transfer Events Update`;
-      console.log(msg);
-      await toast(msg);
-      await getTransfersByUser(userState.currentUser.id);
-      await getAppStatus();
+      try {
+        await toast(`New Webhook Event: Transfer Events Update`);
+        await getTransfersByUser(userState.currentUser.id);
+        await getAppStatus();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    socket.current.on('NO_NEW_EVENTS', async () => {
+      try {
+        await toast.error(`New Webhook Event: No new events`);
+      } catch (err) {
+        console.error(err);
+      }
     });
 
     return () => {

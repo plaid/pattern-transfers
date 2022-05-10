@@ -30,7 +30,6 @@ type PaymentsAction =
 
 interface PaymentsContextShape extends PaymentsState {
   dispatch: Dispatch<PaymentsAction>;
-  deletePaymentById: (id: number, userId: number) => void;
   getPaymentsByUser: (userId: number) => void;
   paymentsById: { [paymentId: number]: PaymentType[] };
   paymentsByUser: { [userId: number]: PaymentType[] };
@@ -55,18 +54,6 @@ export function PaymentsProvider(props: any) {
   }, []);
 
   /**
-   * @desc Will deletes Payment by paymentId.
-   */
-  const deletePaymentById = useCallback(async (id, userId) => {
-    // will add this function in later
-    // await apiDeletePaymentById(id);
-    // dispatch({ type: 'SUCCESSFUL_DELETE', payload: id });
-    // // Update payments list after deletion.
-    // await getPaymentsByUser(userId);
-    // delete hasRequested.current.byId[id];
-  }, []);
-
-  /**
    * @desc Will delete all payments that belong to an individual User.
    * There is no api request as apiDeletePaymentById in payments delete all related transactions
    */
@@ -86,15 +73,9 @@ export function PaymentsProvider(props: any) {
       paymentsById,
       paymentsByUser: groupBy(allPayments, 'user_id'),
       getPaymentsByUser,
-      deletePaymentById,
       deletePaymentsByUserId,
     };
-  }, [
-    getPaymentsByUser,
-    deletePaymentById,
-    paymentsById,
-    deletePaymentsByUserId,
-  ]);
+  }, [getPaymentsByUser, paymentsById, deletePaymentsByUserId]);
 
   return <PaymentsContext.Provider value={value} {...props} />;
 }

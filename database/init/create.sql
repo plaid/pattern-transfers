@@ -198,7 +198,7 @@ CREATE TABLE transfer_events_table
 (
   id SERIAL PRIMARY KEY,
   plaid_event_id integer UNIQUE,
-  user_id integer REFERENCES users_table(id) ON DELETE CASCADE,
+  user_id integer,
   plaid_account_id text,
   transfer_type text,
   event_type text,

@@ -3,6 +3,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import NavigationLink from 'plaid-threads/NavigationLink';
 import Button from 'plaid-threads/Button';
 import Callout from 'plaid-threads/Callout';
+import { toast } from 'react-toastify';
 import { LinkButton } from '.';
 
 import {
@@ -159,15 +160,22 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
   const initiateLink = async () => {
-    // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
-
-    const transfer_intent_id = await generateTransferIntentId(
-      userId,
-      monthlyPayment
-    );
-    // only generate a link token upon a click from enduser to add a bank;
-    // if done earlier, it may expire before enduser actually activates Link to add a bank.
-    await generateLinkToken(userId, null, transfer_intent_id);
+    try {
+      // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
+      if (monthlyPayment > 0) {
+        const transfer_intent_id = await generateTransferIntentId(
+          userId,
+          monthlyPayment
+        );
+        // only generate a link token upon a click from enduser to add a bank;
+        // if done earlier, it may expire before enduser actually activates Link to add a bank.
+        await generateLinkToken(userId, null, transfer_intent_id);
+      } else {
+        toast.error('Please enter a subscription amount');
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
   const accountName = account != null ? `${account.name}` : '';
   const myAccountMessage =
@@ -226,7 +234,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                   <p className="nacha-compliant-note">
                     IMPORTANT NOTE: You will need to include appropriate legal
                     authorization language here to capture NACHA-compliant
-                    authorzation prior to initiating a transfer.
+                    authorization prior to initiating a transfer.
                   </p>
                   <div className="item__callouts">
                     {linkTokens.error.error_code != null && (

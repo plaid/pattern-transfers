@@ -24,8 +24,7 @@ const Banner: React.FC<Props> = (props: Props) => {
   const initialText =
     'This is an example transfers app that outlines an end-to-end integration with Plaid.';
 
-  const successText =
-    "This page shows a user's payment settings page and allows them to link a bank account with Plaid to complete their subscription payments";
+  const successText = 'Link a bank account and view your payment history.';
 
   const ledgerText =
     'This page demonstrates one way to visualize your Transfer ledger for your internal tools.';
@@ -37,13 +36,17 @@ const Banner: React.FC<Props> = (props: Props) => {
     : successText;
 
   const returnToPayments = async () => {
-    if (props.userId != null && props.setTransfers != null) {
-      const transfers = await getTransfersByUserId(props.userId);
-      await props.setTransfers(transfers.data);
-    }
+    try {
+      if (props.userId != null && props.setTransfers != null) {
+        const transfers = await getTransfersByUserId(props.userId);
+        await props.setTransfers(transfers.data);
+      }
 
-    if (props.setIsLedgerView != null) {
-      props.setIsLedgerView(false);
+      if (props.setIsLedgerView != null) {
+        props.setIsLedgerView(false);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 

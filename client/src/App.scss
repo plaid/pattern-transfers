@@ -268,6 +268,10 @@ Transfers
 .developer-configs {
   padding: 0 3 * $unit 3 * $unit 3 * $unit;
 
+  // .configHeading {
+  //   margin: $unit 0;
+  // }
+
   .developer-configs__form {
     border-bottom: 1px solid black;
   }
@@ -357,6 +361,10 @@ user list
   grid-template-columns: 33% 33% 33%;
   grid-gap: 3 * $unit;
   justify-content: space-between;
+
+  .month {
+    padding-left: 2 * $unit;
+  }
 }
 .transfers-table__header {
   text-align: left;
@@ -404,6 +412,9 @@ user list
   vertical-align: middle;
 }
 
+.ledger1_data {
+  padding-left: 2 * $unit;
+}
 .ledger4 {
   display: flex;
   flex-direction: row;
@@ -429,4 +440,24 @@ user list
     left: 2 * $unit;
     z-index: 1;
   }
+}
+
+.posted {
+  color: green;
+}
+
+.failed {
+  color: red;
+}
+
+.reversed {
+  color: orange;
+}
+
+.swept {
+  color: green;
+}
+
+.reverse_swept {
+  color: orange;
 }

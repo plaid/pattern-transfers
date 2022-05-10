@@ -9,13 +9,14 @@ import React, {
 
 import keyBy from 'lodash/keyBy';
 import groupBy from 'lodash/groupBy';
+import omitBy from 'lodash/omitBy';
 
 import { TransferType } from '../components/types';
 
 import {
   getTransferIntentId,
   getTransfersByUserId as apiGetTransfersByUserId,
-  getTransferStatus as apiGetTransferStatus,
+  deleteTransfersByUserId as apiDeleteTransfersByUserId,
 } from './api';
 
 interface TransfersState {
@@ -34,7 +35,8 @@ type TransfersAction =
       type: 'SET_TRANSFER_INTENT_ID';
       transfer_intent_id: string;
     }
-  | { type: 'SUCCESSFUL_GET'; id: number; transfers: TransferType[] };
+  | { type: 'SUCCESSFUL_GET'; id: number; transfers: TransferType[] }
+  | { type: 'DELETE_BY_USER'; payload: number };
 
 interface TransfersContextShape extends TransfersState {
   dispatch: Dispatch<TransfersAction>;
@@ -47,6 +49,7 @@ interface TransfersContextShape extends TransfersState {
     userId: number,
     subscriptionAmount: number
   ) => string;
+  deleteTransfersByUserId: (userId: number) => void;
 }
 const TransfersContext = createContext<TransfersContextShape>(
   initialState as TransfersContextShape
@@ -88,6 +91,14 @@ export function TransfersProvider(props: any) {
     }
   }, []);
 
+  /**
+   * @desc Will delete all transfers that belong to an individual User.
+   */
+  const deleteTransfersByUserId = useCallback(async userId => {
+    await apiDeleteTransfersByUserId(userId);
+    await dispatch({ type: 'DELETE_BY_USER', payload: userId });
+  }, []);
+
   const value = useMemo(() => {
     const allTransfers = Object.values(transfersData.transfersById);
     return {
@@ -96,8 +107,14 @@ export function TransfersProvider(props: any) {
       transfersByUser: groupBy(allTransfers, 'user_id'),
       generateTransferIntentId,
       getTransfersByUser,
+      deleteTransfersByUserId,
     };
-  }, [transfersData, getTransfersByUser, generateTransferIntentId]);
+  }, [
+    transfersData,
+    getTransfersByUser,
+    generateTransferIntentId,
+    deleteTransfersByUserId,
+  ]);
 
   return <TransfersContext.Provider value={value} {...props} />;
 }
@@ -122,6 +139,15 @@ function reducer(state: any, action: TransfersAction) {
           ...state.transfersById,
           ...keyBy(action.transfers, 'id'),
         },
+      };
+    case 'DELETE_BY_USER':
+      const transfers = state.transfersById;
+      return {
+        ...state,
+        transfersById: omitBy(
+          transfers,
+          transfer => transfer.user_id === action.payload
+        ),
       };
     default:
       console.warn('unknown action');

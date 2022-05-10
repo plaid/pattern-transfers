@@ -28,15 +28,15 @@ Note: We recommend running these commands in a unix terminal. Windows users can 
     git clone https://github.com/plaid/pattern-transfers.git
     cd pattern-transfers
     ```
-1. Follow the instructions for [Transfer UI](https://plaid.com/docs/transfer/using-transfer-ui/#prerequisites-for-using-transfer-ui) to set up your link customization on the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
+1. Set up your link customization: To use Transfer UI, your Plaid integration must support Account Select v2 ("ASv2"). On the [Plaid developer dashboard](https://dashboard.plaid.com/team/api), create a new customization for Transfer UI with the view behavior set to "Enabled for one account". This is the only view behavior supported by Transfer UI.
 
 1. Create the `.env` file.
     ```shell
     cp .env.template .env
     ```
-1. Update the `.env` file with your [Plaid API keys][plaid-keys] and OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>) and link customization name.
+1. Update the `.env` file with your [Plaid API keys][plaid-keys] and, if you are testing OAuth, OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>) and link customization name.
 
-1. You will also need to configure an allowed redirect URI for your client ID through the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
+1. If you have entered an OAuth redirect uri in the .env file, you will also need to configure an allowed redirect URI for your client ID through the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
 
 1. Finally, contact your Plaid Account Executive or Account Manager to make sure that your clientId is enabled for the Transfer product.
 
@@ -74,6 +74,13 @@ More information about the individual services is given below.
 # Plaid Pattern transfer - Client
 
 The Pattern web client is written in JavaScript using [React]. It presents the [Transfer UI][transfer-ui] workflow to the user, including an implementation of [OAuth][plaid-oauth]. The app runs on port 3002 by default, although you can modify this in [docker-compose.yml](../docker-compose.yml). It includes an administration ledger view where you can simulate different transfer events.
+
+For Transfer UI, the sandbox credentials are:
+
+```bash
+Username: user_good
+Password: pass_good
+```
 
 ## Key concepts
 
@@ -200,6 +207,12 @@ The database is a [PostgreSQL][postgres] instance running inside a Docker contai
 
 Port 5432 is exposed to the Docker host, so you can connect to the DB using the tool of your choice.
 Username and password can be found in [docker-compose.yml][docker-compose].
+
+To clear all the data in the database, enter into the terminal:
+
+```bash
+make clear-db
+```
 
 ## Key Concepts
 

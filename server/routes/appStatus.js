@@ -4,7 +4,7 @@
 
 const express = require('express');
 const { createInitialStatus, retrieveAppStatus } = require('../db/queries');
-const { asyncWrapper } = require('../middleware');
+const { asyncWrapper, errorHandler } = require('../middleware');
 const plaid = require('../plaid');
 
 const router = express.Router();
@@ -36,7 +36,9 @@ router.get(
 
       res.json(status);
     } catch (err) {
-      res.json(err);
+
+      errorHandler(err);
+
     }
   })
 );
@@ -48,7 +50,7 @@ router.get(
       const status = await retrieveAppStatus();
       res.json(status);
     } catch (err) {
-      console.log(err);
+      errorHandler(err);
     }
   })
 );

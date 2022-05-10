@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
 import { toast } from 'react-toastify';
 
-import { TransferType, AppStatusType } from './types';
+import { TransferType, AppStatusType, StatusType } from './types';
 import {
   simulateTransferEvent,
   simulateSweep,
@@ -47,6 +47,14 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
   }, [setCurrentUser, user]);
 
+  const statusClassName: StatusType = {
+    posted: 'posted',
+    failed: 'failed',
+    reversed: 'reversed',
+    swept: 'swept',
+    reverse_swept: 'reverse_swept',
+  };
+
   const account_balance =
     props.appStatus != null ? props.appStatus.app_account_balance : 0;
   const tableRows =
@@ -56,17 +64,14 @@ const Ledger: React.FC<Props> = (props: Props) => {
           return (
             <div className="ledger_table_row" key={index}>
               {' '}
-              <div className=" ledger_table_data ledger1">
-                {/* last 5 digits of transfer_id */}
-                {transfer.transfer_id.slice(transfer.transfer_id.length - 4)}
-              </div>
+              <div className=" ledger_table_data ledger1_data">{index + 1}</div>
               <div className=" ledger_table_data ledger2">
                 ${transfer.amount.toFixed(2)}
               </div>
-              <div className=" ledger_table_data ledger3">
+              <div className={statusClassName[transfer.status]}>
                 {transfer.status}
               </div>
-              <div className=" ledger_table_data ledger3">
+              <div className={statusClassName[transfer.sweep_status]}>
                 {transfer.sweep_status}
               </div>
               <div className="ledger4">
@@ -128,7 +133,7 @@ const Ledger: React.FC<Props> = (props: Props) => {
       </Button>
       <div className="ledger_table">
         <div className="ledger_table_row">
-          <div className="transfers_table_header ledger1">ID</div>
+          <div className="transfers_table_header ledger1">Month</div>
           <div className="transfers_table_header ledger2">Amount</div>
           <div className="transfers_table_header ledger3">Status</div>
           <div className="transfers_table_header ledger3">Sweep</div>

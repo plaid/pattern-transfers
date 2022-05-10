@@ -28,7 +28,7 @@ const asyncWrapper = fn => (req, res, next) => {
  */
 const errorHandler = (err, req, res, next) => {
   let error = err;
-
+  console.log(error);
   // handle errors from the Plaid api.
   if (error.name === 'PlaidError')
     error = new Boom(error.error_message, { statusCode: error.status_code });
