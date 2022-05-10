@@ -14,10 +14,14 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
   const { addNewUser, getUsers } = useUsers();
   const { setNewUser } = useCurrentUser();
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    await addNewUser(`${firstName} ${lastName}`);
-    setNewUser(`${firstName} ${lastName}`);
-    props.hideForm();
+    try {
+      e.preventDefault();
+      await addNewUser(`${firstName} ${lastName}`);
+      setNewUser(`${firstName} ${lastName}`);
+      props.hideForm();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {

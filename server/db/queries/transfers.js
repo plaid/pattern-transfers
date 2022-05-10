@@ -188,6 +188,21 @@ const retrieveAllTransfers = async () => {
   return transfers;
 };
 
+/**
+ * Removes transfers by userId.
+ *
+ *
+ * @param {string[]} userId the id of the user.
+ */
+
+const deleteTransfersByUserId = async userId => {
+  const query = {
+    text: 'DELETE FROM transfers_table WHERE user_id = $1;',
+    values: [userId],
+  };
+  await db.query(query);
+};
+
 module.exports = {
   createTransfer,
   retrieveTransfersByItemId,
@@ -196,4 +211,5 @@ module.exports = {
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
   retrieveAllTransfers,
+  deleteTransfersByUserId,
 };

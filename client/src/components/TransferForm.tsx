@@ -17,18 +17,25 @@ interface Props {
 const TransferForm: React.FC<Props> = (props: Props) => {
   const [transferAmount, setTransferAmount] = useState('');
   const [error, setError] = useState<null | string>(null);
+  const [isInitiating, setIsInitiating] = useState(false);
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const response = await setMonthlyPayment(
-      props.userId,
-      Number(transferAmount)
-    );
-    if (props.setPayments != null) {
-      props.setPayments(response.data[0]);
-    }
+    try {
+      e.preventDefault();
+      const response = await setMonthlyPayment(
+        props.userId,
+        Number(transferAmount)
+      );
+      if (props.setPayments != null) {
+        props.setPayments(response.data[0]);
+      }
 
-    await setTransferAmount(`$${Number(transferAmount).toFixed(2).toString()}`);
+      await setTransferAmount(
+        `${Number(transferAmount).toFixed(2).toString()}`
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const itemId = props.item != null ? props.item.id : 0;
@@ -38,6 +45,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
 
   const initiateTransfer = async () => {
     try {
+      setIsInitiating(true);
       const transfersResponse = await createTransfer(
         props.userId,
         itemId,
@@ -47,9 +55,11 @@ const TransferForm: React.FC<Props> = (props: Props) => {
       const paymentsResponse = await addPayment(props.userId, monthlyPayment);
       props.setPayments(paymentsResponse.data[0]);
       setError(null);
+      setIsInitiating(false);
     } catch (err) {
       if (err instanceof Error) {
         setError(`$${monthlyPayment.toFixed(2)} ${err.message}.`);
+        setIsInitiating(false);
       }
     }
   };
@@ -60,7 +70,15 @@ const TransferForm: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="box developer-configs">
-        <h4 className="subheading">Developer Configs</h4>{' '}
+        <h4 className="configHeading">
+          Developer Configs
+          <span>
+            {' '}
+            <p className="admin-note">
+              Set amounts, view the ledger or initiate payments
+            </p>
+          </span>
+        </h4>{' '}
         <form className="developer-configs__form" onSubmit={handleSubmit}>
           <NumberInput
             id="transferAmount"
@@ -99,12 +117,15 @@ const TransferForm: React.FC<Props> = (props: Props) => {
         {props.numOfItems > 0 && (
           <div className="dev-configs-bottom-buttons__container">
             <Button
+              disabled={isInitiating}
               className="initiate-payment__button"
               centered
               type="button"
               onClick={initiateTransfer}
             >
-              Initiate month {numberOfPayments + 1} payment
+              {isInitiating
+                ? 'Initiating...'
+                : `Initiate month ${numberOfPayments + 1} payment`}
             </Button>
             {error != null && <Callout>{error}</Callout>}
           </div>

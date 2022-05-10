@@ -12,6 +12,7 @@ const {
   retrieveTransfersByUserId,
   updateTransferStatus,
   retrieveTransferByPlaidTransferId,
+  deleteTransfersByUserId,
 } = require('../db/queries');
 const { asyncWrapper } = require('../middleware');
 const plaid = require('../plaid');
@@ -165,6 +166,12 @@ router.post(
       return res.json(transfers);
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
+      if (err.response.data.error_type === 'RATE_LIMIT_EXCEEDED') {
+        return res.status(400).json({
+          message:
+            'You have exceeded the transfer-create rate limit for this item. Try again later',
+        });
+      }
       return res.json(err.response.data);
     }
   })
@@ -323,6 +330,25 @@ router.post(
       // for example if status is posted and user clicks on "fail"
 
       return res.status(400).json({ message: err.response.data.error_message });
+    }
+  })
+);
+
+/**
+ * Deletes transfers by user
+ *
+ * @param {string} userId the ID of the user.
+ */
+router.delete(
+  '/:userId',
+  asyncWrapper(async (req, res) => {
+    try {
+      const { userId } = req.params;
+      await deleteTransfersByUserId(userId);
+      const transfers = await retrieveAccountsByUserId(userId);
+      return res.json(transfers);
+    } catch (err) {
+      console.lot(err);
     }
   })
 );

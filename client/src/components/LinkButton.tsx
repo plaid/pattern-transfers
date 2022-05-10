@@ -39,40 +39,44 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser, getItemById } = useItems();
   const { generateLinkToken } = useLink();
-  const { getTransfersByUser } = useTransfers();
+  const { getTransfersByUser, deleteTransfersByUserId } = useTransfers();
   const { setError, resetError } = useErrors();
 
   const updateInitalTransfer = async (itemId: number) => {
-    // need to get transfer_intent_id directly from database because context
-    // is wiped out with Oauth
-    const transferResponse = await apiGetTransfersByUserId(props.userId);
-    // use transfer_intent_id to obtain transfer_id from transferUI status
-    const transferUIDataResponse = await getTransferUIStatus(
-      transferResponse.data[0].transfer_intent_id
-    );
-    // use transfer_id to obtain information about the transfer and add info to existing transfer in database
-    const transferDataResponse = await getTransferStatus(
-      transferUIDataResponse.data.transfer_intent.transfer_id,
-      true
-    );
+    try {
+      // need to get transfer_intent_id directly from database because context
+      // is wiped out with Oauth
+      const transferResponse = await apiGetTransfersByUserId(props.userId);
+      // use transfer_intent_id to obtain transfer_id from transferUI status
+      const transferUIDataResponse = await getTransferUIStatus(
+        transferResponse.data[0].transfer_intent_id
+      );
+      // use transfer_id to obtain information about the transfer and add info to existing transfer in database
+      const transferDataResponse = await getTransferStatus(
+        transferUIDataResponse.data.transfer_intent.transfer_id,
+        true
+      );
 
-    const { account_id, id, status, sweep_status, amount, type } =
-      transferDataResponse.data.transfer;
-    // update database with information regarding the transfer
-    await addTransferInfo(
-      transferResponse.data[0].transfer_intent_id,
-      account_id,
-      id,
-      status,
-      sweep_status,
-      itemId,
-      type
-    );
+      const { account_id, id, status, sweep_status, amount, type } =
+        transferDataResponse.data.transfer;
+      // update database with information regarding the transfer
+      await addTransferInfo(
+        transferResponse.data[0].transfer_intent_id,
+        account_id,
+        id,
+        status,
+        sweep_status,
+        itemId,
+        type
+      );
 
-    const response = await addPayment(props.userId, Number(amount));
+      const response = await addPayment(props.userId, Number(amount));
 
-    if (props.setPayments != null) {
-      props.setPayments(response.data[0]);
+      if (props.setPayments != null) {
+        props.setPayments(response.data[0]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -83,12 +87,8 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   ) => {
     // log and save metatdata
     logSuccess(metadata, props.userId);
-    if (props.itemId != null) {
-      // update mode: no need to exchange public token
-      await setItemState(props.itemId, 'good');
-      getItemById(props.itemId, true);
-
-      // regular link mode: exchange public token for access token
+    if (metadata.transfer_status === 'INCOMPLETE') {
+      await deleteTransfersByUserId(props.userId);
     } else {
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
       try {
@@ -117,17 +117,27 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     error: PlaidLinkError | null,
     metadata: PlaidLinkOnExitMetadata
   ) => {
-    // log and save error and metatdata
-    logExit(error, metadata, props.userId);
-    if (error != null) {
-      if (error.error_code === 'INVALID_LINK_TOKEN') {
-        await generateLinkToken(props.userId, props.itemId, ''); // will fix later
-      } else {
-        setError(
-          error.error_code,
-          error.display_message || error.error_message
-        );
+    try {
+      // log and save error and metatdata
+      logExit(error, metadata, props.userId);
+      await deleteTransfersByUserId(props.userId);
+      if (error != null) {
+        if (error.error_code === 'INVALID_LINK_TOKEN') {
+          const transferResponse = await apiGetTransfersByUserId(props.userId);
+          await generateLinkToken(
+            props.userId,
+            props.itemId,
+            transferResponse.data[0].transfer_intent_id
+          );
+        } else {
+          setError(
+            error.error_code,
+            error.display_message || error.error_message
+          );
+        }
       }
+    } catch (err) {
+      console.error(err);
     }
     // to handle other error codes, see https://plaid.com/docs/errors/
   };

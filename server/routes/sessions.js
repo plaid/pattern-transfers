@@ -18,12 +18,16 @@ const router = express.Router();
 router.post(
   '/',
   asyncWrapper(async (req, res) => {
-    const { username } = req.body;
-    const user = await retrieveUserByUsername(username);
-    if (user != null) {
-      res.json(sanitizeUsers(user));
-    } else {
-      res.json(null);
+    try {
+      const { username } = req.body;
+      const user = await retrieveUserByUsername(username);
+      if (user != null) {
+        res.json(sanitizeUsers(user));
+      } else {
+        res.json(null);
+      }
+    } catch (err) {
+      errorHandler(err);
     }
   })
 );
