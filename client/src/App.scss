@@ -142,52 +142,6 @@ Landing overview
 
 /*
 
-Item
-
-*/
-.item-container {
-  padding-left: 2 * $unit;
-}
-
-.item__button {
-  padding-left: 3 * $unit;
-  flex: 1;
-}
-
-.add-account__button {
-  font-size: 2 * $unit;
-  width: 100%;
-}
-
-.item__callouts {
-  margin-bottom: 3 * $unit;
-}
-
-.item-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.update-mode__note {
-  margin-top: $unit;
-}
-
-.actions-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.action__button {
-  margin-top: $unit;
-  padding-left: 0;
-}
-
-.remove-bank {
-  margin-top: 0;
-}
-
-/*
-
 Add User Form
 
 */
@@ -230,6 +184,54 @@ Add User Form
 
 /*
 
+Item
+
+*/
+
+.item-container {
+  padding-left: 2 * $unit;
+}
+
+.item-info {
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr;
+}
+
+.subscription-amount {
+  font-weight: bold;
+}
+
+/*
+
+user page
+
+*/
+
+.user-page-container {
+  width: 100%;
+}
+
+.user-view-container {
+  display: grid;
+  grid-template-columns: 67% 33%;
+}
+
+.user-page-left {
+  margin-right: 6 * $unit;
+  flex: 15;
+}
+
+.user-page-right {
+  flex: 4;
+}
+
+.nacha-compliant-note {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/*
+
 ErrorMessage
 
 */
@@ -247,7 +249,7 @@ ErrorMessage
 
 /*
 
-Transfers
+Dev configs
 
 */
 
@@ -267,10 +269,6 @@ Transfers
 
 .developer-configs {
   padding: 0 3 * $unit 3 * $unit 3 * $unit;
-
-  // .configHeading {
-  //   margin: $unit 0;
-  // }
 
   .developer-configs__form {
     border-bottom: 1px solid black;
@@ -299,57 +297,9 @@ Transfers
 
 /*
 
-user list
+Payment History Table
 
 */
-
-.user-list {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 2 * $unit;
-  border: $border;
-  border-radius: $border-radius;
-  margin-bottom: 3 * $unit;
-  box-shadow: $shadow-xsmall;
-  padding: 2 * $unit;
-  width: 50 * $unit;
-
-  .user-list__touchable {
-    width: 30 * $unit;
-  }
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.subscription-amount {
-  font-weight: bold;
-}
-
-.user-page-container {
-  width: 100%;
-}
-
-.user-view-container {
-  display: grid;
-  grid-template-columns: 67% 33%;
-}
-
-.user-page-left {
-  margin-right: 6 * $unit;
-  flex: 15;
-}
-
-.user-page-right {
-  flex: 4;
-}
-
-.nacha-compliant-note {
-  font-style: italic;
-  font-weight: 400;
-}
-
-// transfers table
 
 .transfers-table {
   width: 90%;
@@ -371,21 +321,11 @@ user list
   font-weight: bold;
 }
 
-.transfers-table__data {
-  text-align: left;
-}
+/*
 
-.column2 {
-  justify-self: start;
-  padding-left: 6 * $unit;
-}
+Ledger
 
-.column3 {
-  justify-self: end;
-  padding-right: $unit;
-}
-
-//ledger
+*/
 
 .ledger-container {
   width: 100%;
@@ -442,22 +382,50 @@ user list
   }
 }
 
-.posted {
-  color: green;
+/*
+
+Status colors
+
+*/
+
+.posted,
+.swept {
+  color: $green900;
+  font-weight: bold;
 }
 
 .failed {
-  color: red;
+  color: $red1000;
+  font-weight: bold;
 }
 
-.reversed {
-  color: orange;
-}
-
-.swept {
-  color: green;
-}
-
+.reversed,
 .reverse_swept {
-  color: orange;
+  color: $purple900;
+  font-weight: bold;
+}
+
+/*
+
+user list
+
+*/
+
+.user-list {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2 * $unit;
+  border: $border;
+  border-radius: $border-radius;
+  margin-bottom: 3 * $unit;
+  box-shadow: $shadow-xsmall;
+  padding: 2 * $unit;
+  width: 50 * $unit;
+
+  .user-list__touchable {
+    width: 30 * $unit;
+  }
+  &:hover {
+    cursor: pointer;
+  }
 }
