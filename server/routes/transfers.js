@@ -40,7 +40,7 @@ router.post(
         mode: 'PAYMENT',
         amount: subscriptionAmount.toFixed(2),
         ach_class: 'ppd',
-        description: 'foobar',
+        description: 'initial monthly payment',
         user: {
           legal_name: username,
         },
@@ -51,7 +51,8 @@ router.post(
         transIntentCreateRequest
       );
       transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
-
+      // create new Transfer now so that you can reference its transferIntentId upon link success
+      // because the link success metadata does not pass back any data about the transfer except for transfer_status
       const newTransfer = await createTransfer(
         null, // item_id
         userId,
@@ -178,7 +179,7 @@ router.post(
 );
 
 /**
- * gets the status of the transfer_ui intent and obtains the transfer_id from the TransferUI process.
+ * gets the status of the transfer_ui intent and obtains the transfer_id in order to get status of transfer.
  *
  * @param {string} intentId the transfer intent id of the transfer.
  * @returns {Object} status response
