@@ -88,8 +88,6 @@ export function TransfersProvider(props: any) {
     if (userId != null) {
       const { data: transfers } = await apiGetTransfersByUserId(userId);
       dispatch({ type: 'SUCCESSFUL_GET', id: userId, transfers: transfers });
-    } else {
-      console.log('in context - no userID');
     }
   }, []);
 

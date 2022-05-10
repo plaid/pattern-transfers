@@ -137,11 +137,9 @@ router.get(
   asyncWrapper(async (req, res) => {
     console.log(req.params);
     try {
-      console.log(req.params);
       const { userId } = req.params;
       if (userId !== 'undefined') {
         const transfers = await retrieveTransfersByUserId(userId);
-        console.log('transfers', transfers);
         return res.json(transfers);
       }
       res.json({});

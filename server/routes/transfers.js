@@ -346,7 +346,6 @@ router.delete(
       const { userId } = req.params;
       await deleteTransfersByUserId(userId);
       const transfers = await retrieveAccountsByUserId(userId);
-      console.log('transfers', transfers);
       return res.json(transfers);
     } catch (err) {
       console.lot(err);

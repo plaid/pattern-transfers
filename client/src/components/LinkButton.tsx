@@ -89,9 +89,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     logSuccess(metadata, props.userId);
     if (metadata.transfer_status === 'INCOMPLETE') {
       await deleteTransfersByUserId(props.userId);
-      console.log('deleted');
     } else {
-      // exchange public token for access token
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
       try {
         const data = await exchangeToken(

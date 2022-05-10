@@ -34,7 +34,6 @@ const transfersHandler = async (requestBody, io) => {
         if (webhookCode != null) {
           try {
             await io.emit(webhookCode);
-            console.log('done!');
           } catch (err) {
             console.log('error', err);
           }
@@ -49,7 +48,6 @@ const transfersHandler = async (requestBody, io) => {
     case 'TRANSFER_EVENTS_UPDATE': {
       try {
         const appStatus = await retrieveAppStatus();
-        console.log(appStatus);
         // get newest events
         const sycnRequest = {
           after_id: appStatus[0].number_of_events,
