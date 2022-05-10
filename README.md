@@ -106,7 +106,7 @@ The application server is written in JavaScript using [Node.js][nodejs] and [Exp
 
 ### Using transfer events webhook.
 
-Plaid uses [webhooks][transfer-webhooks] to notify you whenever a new transfer event has occured. This sample app demonstrates the use of the sandbox transfer fire_webhook endpoint to test this webhook. For an example of this, see the [transfer webhook handler][transfers-handler]. Upon receipt of this webhook, a call will be made to the transfer [event sync endpoint](https://plaid.com/docs/api/products/transfer/#transfereventsync) to request the latest transfer events. For each event, the [transfer get endpooint](https://plaid.com/docs/api/products/transfer/#transferget) is called in order to get the current status of the transfer, and then the event is saved to the database.
+Plaid uses [webhooks][transfer-webhooks] to notify you whenever a new transfer event has occured. This sample app demonstrates the use of the sandbox transfer fire_webhook endpoint to test this webhook. For an example of this, see the [transfer webhook handler][transfers-handler]. Upon receipt of this webhook, a call will be made to the transfer [event sync endpoint](https://plaid.com/docs/api/products/transfer/#transfereventsync) to request the latest transfer events. For each event, the [transfer get endpoint](https://plaid.com/docs/api/products/transfer/#transferget) is called in order to get the current status of the transfer, and then the event is saved to the database.
 
 For webhooks to work, the server must be publicly accessible on the internet. For development purposes, this application uses [ngrok][ngrok-readme] to accomplish that. The ngrok session is only valid for 2 hours and the server must be re-started after that.
 

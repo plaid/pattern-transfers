@@ -138,10 +138,9 @@ router.get(
     console.log(req.params);
     try {
       const { userId } = req.params;
-      if (userId !== 'undefined') {
-        const transfers = await retrieveTransfersByUserId(userId);
-        return res.json(transfers);
-      }
+      const transfers = await retrieveTransfersByUserId(userId);
+      return res.json(transfers);
+
       res.json({});
     } catch (err) {
       errorHandler(err);

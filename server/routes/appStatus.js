@@ -1,5 +1,5 @@
 /**
- * @file Defines all routes for the App Funds route.
+ * @file Defines all routes for the App Status route.
  */
 
 const express = require('express');
@@ -36,7 +36,9 @@ router.get(
 
       res.json(status);
     } catch (err) {
+
       errorHandler(err);
+
     }
   })
 );
