@@ -208,6 +208,12 @@ The database is a [PostgreSQL][postgres] instance running inside a Docker contai
 Port 5432 is exposed to the Docker host, so you can connect to the DB using the tool of your choice.
 Username and password can be found in [docker-compose.yml][docker-compose].
 
+To clear all the data in the database, enter into the terminal:
+
+```bash
+make clear-db
+```
+
 ## Key Concepts
 
 ### Plaid API & Link Identifiers
