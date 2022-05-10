@@ -120,6 +120,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     try {
       // log and save error and metatdata
       logExit(error, metadata, props.userId);
+      await deleteTransfersByUserId(props.userId);
       if (error != null) {
         if (error.error_code === 'INVALID_LINK_TOKEN') {
           const transferResponse = await apiGetTransfersByUserId(props.userId);
