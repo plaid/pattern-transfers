@@ -111,8 +111,7 @@ const TransferForm: React.FC<Props> = (props: Props) => {
           View Admin Ledger
         </Button>
         <p className="admin-note">
-          {' '}
-          Note: visit the admin page to simulate Transfer events.
+          Visit the admin page to simulate Transfer events
         </p>
         {props.numOfItems > 0 && (
           <div className="dev-configs-bottom-buttons__container">

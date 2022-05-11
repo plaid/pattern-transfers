@@ -40,7 +40,7 @@ router.post(
         mode: 'PAYMENT',
         amount: subscriptionAmount.toFixed(2),
         ach_class: 'ppd',
-        description: 'initial monthly payment',
+        description: 'payment', // cannot be longer than 8 characters
         user: {
           legal_name: username,
         },
@@ -168,7 +168,7 @@ router.post(
     } catch (err) {
       console.log('error while creating transfer', err.response.data);
       if (err.response.data.error_type === 'RATE_LIMIT_EXCEEDED') {
-        return res.status(400).json({
+        return res.status(429).json({
           message:
             'You have exceeded the transfer-create rate limit for this item. Try again later',
         });

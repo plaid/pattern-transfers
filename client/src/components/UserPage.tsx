@@ -203,7 +203,6 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         isLedgerView={isLedgerView}
         setIsLedgerView={setIsLedgerView}
         userId={userId}
-        setTransfers={setTransfers}
       />
       <div className="user-page-container">
         {!isLedgerView && (
@@ -293,6 +292,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
             transfers={transfers}
             setIsLedgerView={setIsLedgerView}
             appStatus={applicationStatus}
+            setTransfers={setTransfers}
           />
         )}
       </div>

@@ -1,17 +1,11 @@
 import React from 'react';
 import Button from 'plaid-threads/Button';
-import ChevronS2Left from 'plaid-threads/Icons/ChevronS2Left';
-
-import { TransferType } from './types';
-import { getTransfersByUserId } from '../services/api';
-
 interface Props {
   initialSubheading?: boolean;
   username?: string | null;
   isLedgerView: boolean;
   setIsLedgerView?: (arg: boolean) => void;
   userId?: number;
-  setTransfers?: (transfers: TransferType[]) => void;
 }
 
 const Banner: React.FC<Props> = (props: Props) => {
@@ -35,21 +29,6 @@ const Banner: React.FC<Props> = (props: Props) => {
     ? initialText
     : successText;
 
-  const returnToPayments = async () => {
-    try {
-      if (props.userId != null && props.setTransfers != null) {
-        const transfers = await getTransfersByUserId(props.userId);
-        await props.setTransfers(transfers.data);
-      }
-
-      if (props.setIsLedgerView != null) {
-        props.setIsLedgerView(false);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
     <div id="banner" className="bottom-border-content">
       {!props.initialSubheading && <h4>username: {props.username} </h4>}
@@ -69,14 +48,6 @@ const Banner: React.FC<Props> = (props: Props) => {
       <p id="intro" className="everpresent-content__subheading">
         {subheadingText}
       </p>
-      {props.isLedgerView && (
-        <div className="return-to-payments">
-          <ChevronS2Left className="chevron" />
-          <Button tertiary onClick={returnToPayments}>
-            Return to payments page
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

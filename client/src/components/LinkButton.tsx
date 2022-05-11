@@ -32,8 +32,7 @@ interface Props {
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
-// The link token passed to usePlaidLink cannot be null.  It must be generated outside of this component.  In this sample app, the link token
-// is generated in the link context in client/src/services/link.js.
+// In this sample app, the link token is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser } = useItems();
