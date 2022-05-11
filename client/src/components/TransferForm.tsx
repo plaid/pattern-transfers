@@ -44,6 +44,8 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     props.payments != null ? props.payments.monthly_payment : 0;
 
   const initiateTransfer = async () => {
+    // In a real monthly automatic subscriptions payment app, this function happens automatically
+    // every month.  But in this sample app we use this button to simulate a month passing by.
     try {
       setIsInitiating(true);
       const transfersResponse = await createTransfer(
@@ -122,10 +124,11 @@ const TransferForm: React.FC<Props> = (props: Props) => {
               type="button"
               onClick={initiateTransfer}
             >
-              {isInitiating
-                ? 'Initiating...'
-                : `Initiate month ${numberOfPayments + 1} payment`}
+              {isInitiating ? 'Time traveling ...' : `Simulate a month passing`}
             </Button>
+            <p className="admin-note">
+              This would happen automatically every month in a real app
+            </p>
             {error != null && <Callout>{error}</Callout>}
           </div>
         )}
