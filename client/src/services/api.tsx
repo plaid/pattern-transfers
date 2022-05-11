@@ -18,7 +18,8 @@ api.interceptors.response.use(
   error => {
     if (
       error?.response?.data?.message &&
-      (error.response.status === 400 || error.response.status === 429)
+      error.response.status >= 400 &&
+      error.response.status < 500
     ) {
       throw new Error(error.response.data.message);
     }
