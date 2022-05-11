@@ -123,14 +123,9 @@ export const setItemState = (itemId: number, status: string) =>
 export const setItemToBadState = (itemId: number) =>
   api.post('/items/sandbox/item/reset_login', { itemId });
 
-export const getLinkToken = (
-  userId: number,
-  itemId: number,
-  transferIntentId: string
-) =>
+export const getLinkToken = (userId: number, transferIntentId: string) =>
   api.post(`/link-token`, {
     userId,
-    itemId,
     transferIntentId,
   });
 export const makeTransfer = (

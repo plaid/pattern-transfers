@@ -161,7 +161,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   const initiateLink = async () => {
     try {
-      // make call to transfer/intent/create to get transfer_intent_id to pass to link token creation for Transfer UI
+      // make call to transfer/intent/create to get transfer_intent_id to pass to
+      // link token creation for Transfer UI
       if (monthlyPayment > 0) {
         const transfer_intent_id = await generateTransferIntentId(
           userId,
@@ -169,7 +170,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         );
         // only generate a link token upon a click from enduser to add a bank;
         // if done earlier, it may expire before enduser actually activates Link to add a bank.
-        await generateLinkToken(userId, null, transfer_intent_id);
+        await generateLinkToken(userId, transfer_intent_id);
       } else {
         toast.error('Please enter a subscription amount');
       }

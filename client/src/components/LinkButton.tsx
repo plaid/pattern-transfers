@@ -126,7 +126,6 @@ const LinkButton: React.FC<Props> = (props: Props) => {
           const transferResponse = await apiGetTransfersByUserId(props.userId);
           await generateLinkToken(
             props.userId,
-            props.itemId,
             transferResponse.data[0].transfer_intent_id
           );
         } else {
