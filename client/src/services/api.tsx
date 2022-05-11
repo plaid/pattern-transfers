@@ -16,7 +16,11 @@ const api = axios.create({
 api.interceptors.response.use(
   response => response,
   error => {
-    if (error?.response?.data?.message && error.response.status === 400) {
+    if (
+      error?.response?.data?.message &&
+      error.response.status >= 400 &&
+      error.response.status < 500
+    ) {
       throw new Error(error.response.data.message);
     }
     throw error;
@@ -120,14 +124,9 @@ export const setItemState = (itemId: number, status: string) =>
 export const setItemToBadState = (itemId: number) =>
   api.post('/items/sandbox/item/reset_login', { itemId });
 
-export const getLinkToken = (
-  userId: number,
-  itemId: number,
-  transferIntentId: string
-) =>
+export const getLinkToken = (userId: number, transferIntentId: string) =>
   api.post(`/link-token`, {
     userId,
-    itemId,
     transferIntentId,
   });
 export const makeTransfer = (

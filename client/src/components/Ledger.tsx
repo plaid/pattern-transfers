@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Button from 'plaid-threads/Button';
+import ChevronS2Left from 'plaid-threads/Icons/ChevronS2Left';
 import { toast } from 'react-toastify';
 
 import { TransferType, AppStatusType, StatusType } from './types';
@@ -7,6 +8,7 @@ import {
   simulateTransferEvent,
   simulateSweep,
   fireTransferWebhook,
+  getTransfersByUserId,
 } from '../services/api';
 import { useUsers, useCurrentUser } from '../services';
 
@@ -15,6 +17,7 @@ interface Props {
   setIsLedgerView: (arg: boolean) => void;
   userId: number;
   appStatus: AppStatusType | null;
+  setTransfers?: (transfers: TransferType[]) => void;
 }
 
 const Ledger: React.FC<Props> = (props: Props) => {
@@ -47,6 +50,20 @@ const Ledger: React.FC<Props> = (props: Props) => {
     }
   }, [setCurrentUser, user]);
 
+  const returnToPayments = async () => {
+    try {
+      if (props.userId != null && props.setTransfers != null) {
+        const transfers = await getTransfersByUserId(props.userId);
+        await props.setTransfers(transfers.data);
+      }
+
+      if (props.setIsLedgerView != null) {
+        props.setIsLedgerView(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const statusClassName: StatusType = {
     posted: 'posted',
     failed: 'failed',
@@ -140,6 +157,12 @@ const Ledger: React.FC<Props> = (props: Props) => {
           <div className="transfers_table_header ledger4">Actions</div>
         </div>
         {tableRows}
+      </div>
+      <div className="return-to-payments">
+        <ChevronS2Left className="chevron" />
+        <Button tertiary onClick={returnToPayments}>
+          Return to payments page
+        </Button>
       </div>
     </div>
   );

@@ -13,7 +13,6 @@ import { useHistory } from 'react-router-dom';
 import { logEvent, logSuccess, logExit } from '../util'; // functions to log and save errors and metadata from Link events.
 import {
   exchangeToken,
-  setItemState,
   getTransferUIStatus,
   getTransferStatus,
   addTransferInfo,
@@ -33,11 +32,10 @@ interface Props {
 }
 
 // Uses the usePlaidLink hook to manage the Plaid Link creation.  See https://github.com/plaid/react-plaid-link for full usage instructions.
-// The link token passed to usePlaidLink cannot be null.  It must be generated outside of this component.  In this sample app, the link token
-// is generated in the link context in client/src/services/link.js.
+// In this sample app, the link token is generated in the link context in client/src/services/link.js.
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
-  const { getItemsByUser, getItemById } = useItems();
+  const { getItemsByUser } = useItems();
   const { generateLinkToken } = useLink();
   const { getTransfersByUser, deleteTransfersByUserId } = useTransfers();
   const { setError, resetError } = useErrors();
@@ -70,8 +68,9 @@ const LinkButton: React.FC<Props> = (props: Props) => {
         type
       );
 
+      // update the user's payment data
       const response = await addPayment(props.userId, Number(amount));
-
+      // set payments state on user page to re-render with updated payment information
       if (props.setPayments != null) {
         props.setPayments(response.data[0]);
       }
@@ -120,13 +119,13 @@ const LinkButton: React.FC<Props> = (props: Props) => {
     try {
       // log and save error and metatdata
       logExit(error, metadata, props.userId);
+      // delete the incompleted transfer om the database that was created when transfer_intent request was made
       await deleteTransfersByUserId(props.userId);
       if (error != null) {
         if (error.error_code === 'INVALID_LINK_TOKEN') {
           const transferResponse = await apiGetTransfersByUserId(props.userId);
           await generateLinkToken(
             props.userId,
-            props.itemId,
             transferResponse.data[0].transfer_intent_id
           );
         } else {

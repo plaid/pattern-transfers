@@ -28,18 +28,8 @@ router.post(
   '/',
   asyncWrapper(async (req, res) => {
     try {
-      const { userId, itemId, transferIntentId } = req.body;
-      let accessToken = null;
+      const { userId, transferIntentId } = req.body;
       let products = ['transfer'];
-
-      if (itemId != null) {
-        // for the link update mode, include access token and an empty products array
-        // ask transfers team what to do with TransferUI and update mode...do i remove the transfer
-        // intent id and link customization name if we are in update mode?
-        const itemIdResponse = await retrieveItemById(itemId);
-        accessToken = itemIdResponse.plaid_access_token;
-        products = [];
-      }
       const response = await fetch('http://ngrok:4040/api/tunnels');
       const { tunnels } = await response.json();
       const httpTunnel = tunnels.find(t => t.proto === 'http');
@@ -55,7 +45,6 @@ router.post(
         country_codes: ['US'],
         language: 'en',
         webhook: httpTunnel.public_url + '/services/webhook',
-        access_token: accessToken,
         transfer: {
           intent_id: transferIntentId,
         },
