@@ -1,9 +1,4 @@
-import { PlaidLinkOnSuccessMetadata } from 'react-plaid-link';
-
 // reserved for types
-export interface TransferSuccessMetadata extends PlaidLinkOnSuccessMetadata {
-  transfer_status: string;
-}
 export interface RouteInfo {
   userId: string;
 }

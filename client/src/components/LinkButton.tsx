@@ -21,7 +21,7 @@ import {
   getPaymentsByUser,
 } from '../services/api';
 import { useItems, useLink, useErrors, useTransfers } from '../services';
-import { TransferSuccessMetadata, PaymentType } from './types';
+import { PaymentType } from './types';
 interface Props {
   isOauth?: boolean;
   token: string;
@@ -82,11 +82,14 @@ const LinkButton: React.FC<Props> = (props: Props) => {
   // define onSuccess, onExit and onEvent functions as configs for Plaid Link creation
   const onSuccess = async (
     publicToken: string,
-    metadata: TransferSuccessMetadata
+    metadata: PlaidLinkOnSuccessMetadata
   ) => {
     // log and save metatdata
     logSuccess(metadata, props.userId);
-    if (metadata.transfer_status === 'INCOMPLETE') {
+    if (
+      metadata.transfer_status != null &&
+      metadata.transfer_status === 'INCOMPLETE'
+    ) {
       await deleteTransfersByUserId(props.userId);
     } else {
       // call to Plaid api endpoint: /item/public_token/exchange in order to obtain access_token which is then stored with the created item
