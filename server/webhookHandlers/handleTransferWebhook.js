@@ -49,17 +49,17 @@ const transfersHandler = async (requestBody, io) => {
       try {
         const appStatus = await retrieveAppStatus();
         let afterId = appStatus[0].number_of_events;
-        let eventsToFetch = true;
-        let firstCall = true;
+        let hasEventsToFetch = true;
+        let isFirstCall = true;
         const batchSize = 25; // 25 is the maximum number of events returned
-        while (eventsToFetch) {
+        while (hasEventsToFetch) {
           const sycnRequest = {
             after_id: afterId,
             count: batchSize,
           };
           const syncResponse = await plaid.transferEventSync(sycnRequest);
           const allNewPlaidEvents = syncResponse.data.transfer_events;
-          if (allNewPlaidEvents.length === 0 && firstCall) {
+          if (allNewPlaidEvents.length === 0 && isFirstCall) {
             console.log('no new events');
             await serverLogAndEmitSocket(webhookCode, 'no events');
             break;
@@ -114,9 +114,9 @@ const transfersHandler = async (requestBody, io) => {
           await updateAppStatus(newAccountBalance, newNumberOfEvents);
           if (allNewPlaidEvents.length === batchSize) {
             afterId = newNumberOfEvents;
-            firstCall = false;
+            isFirstCall = false;
           } else {
-            eventsToFetch = false;
+            hasEventsToFetch = false;
           }
         }
         const newStatus = await retrieveAppStatus();
