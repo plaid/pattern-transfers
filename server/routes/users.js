@@ -135,7 +135,6 @@ router.get(
 router.get(
   '/:userId/transfers',
   asyncWrapper(async (req, res) => {
-    console.log(req.params);
     try {
       const { userId } = req.params;
       const transfers = await retrieveTransfersByUserId(userId);
