@@ -25,6 +25,7 @@ import {
   useCurrentUser,
   useAppStatus,
 } from '../services';
+import { getTransferIntentId } from '../services/api';
 
 import {
   Banner,
@@ -58,8 +59,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const { generateTransferIntentId, getTransfersByUser, transfersByUser } =
-    useTransfers();
+  const { getTransfersByUser, transfersByUser } = useTransfers();
 
   const { getAppStatus, appStatus } = useAppStatus();
   const userId = Number(match.params.userId);
@@ -164,10 +164,14 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       // make call to transfer/intent/create to get transfer_intent_id to pass to
       // link token creation for Transfer UI
       if (monthlyPayment > 0) {
-        const transfer_intent_id = await generateTransferIntentId(
+        const transferIntentResponse = await getTransferIntentId(
           userId,
           monthlyPayment
         );
+        const transfer_intent_id =
+          transferIntentResponse.data.transfer_intent.id;
+
+        await getTransfersByUser(userId);
         // only generate a link token upon a click from enduser to add a bank;
         // if done earlier, it may expire before enduser actually activates Link to add a bank.
         await generateLinkToken(userId, transfer_intent_id);
