@@ -14,41 +14,26 @@ import omitBy from 'lodash/omitBy';
 import { TransferType } from '../components/types';
 
 import {
-  getTransferIntentId,
   getTransfersByUserId as apiGetTransfersByUserId,
   deleteTransfersByUserId as apiDeleteTransfersByUserId,
 } from './api';
 
 interface TransfersState {
-  transfer_intent_id: string;
-  transfersById: {
-    [transferId: number]: TransferType;
-  };
+  [transferId: number]: TransferType;
 }
 
-const initialState = {
-  transfer_intent_id: '',
-  transfersById: {},
-};
+const initialState = {};
 type TransfersAction =
-  | {
-      type: 'SET_TRANSFER_INTENT_ID';
-      transfer_intent_id: string;
-    }
   | { type: 'SUCCESSFUL_GET'; id: number; transfers: TransferType[] }
   | { type: 'DELETE_BY_USER'; payload: number };
 
 interface TransfersContextShape extends TransfersState {
   dispatch: Dispatch<TransfersAction>;
-  transfersData: TransfersState;
+  transfersById: { [transferId: number]: TransferType[] };
   transfersByUser: {
     [userId: number]: TransferType[];
   };
   getTransfersByUser: (userId: number) => TransferType[];
-  generateTransferIntentId: (
-    userId: number,
-    subscriptionAmount: number
-  ) => string;
   deleteTransfersByUserId: (userId: number) => void;
 }
 const TransfersContext = createContext<TransfersContextShape>(
@@ -59,27 +44,7 @@ const TransfersContext = createContext<TransfersContextShape>(
  * @desc Maintains the Transfers context state.
  */
 export function TransfersProvider(props: any) {
-  const [transfersData, dispatch] = useReducer(reducer, initialState);
-
-  /**
-   * @desc generates a new transferIntentId to use in link token creation for Transfer UI
-   */
-
-  const generateTransferIntentId = useCallback(
-    async (userId, subscriptionAmount) => {
-      const transferIntentResponse = await getTransferIntentId(
-        userId,
-        subscriptionAmount
-      );
-      const transfer_intent_id = transferIntentResponse.data.transfer_intent.id;
-      dispatch({
-        type: 'SET_TRANSFER_INTENT_ID',
-        transfer_intent_id: transfer_intent_id,
-      });
-      return transfer_intent_id;
-    },
-    []
-  );
+  const [transfersById, dispatch] = useReducer(reducer, initialState);
 
   /**
    * @desc Requests all Transfers that belong to an individual User.
@@ -100,21 +65,16 @@ export function TransfersProvider(props: any) {
   }, []);
 
   const value = useMemo(() => {
-    const allTransfers = Object.values(transfersData.transfersById);
+    const allTransfers = Object.values(transfersById);
     return {
       allTransfers,
-      transfersData,
+      transfersById,
       transfersByUser: groupBy(allTransfers, 'user_id'),
-      generateTransferIntentId,
+
       getTransfersByUser,
       deleteTransfersByUserId,
     };
-  }, [
-    transfersData,
-    getTransfersByUser,
-    generateTransferIntentId,
-    deleteTransfersByUserId,
-  ]);
+  }, [transfersById, getTransfersByUser, deleteTransfersByUserId]);
 
   return <TransfersContext.Provider value={value} {...props} />;
 }
@@ -124,21 +84,13 @@ export function TransfersProvider(props: any) {
  */
 function reducer(state: any, action: TransfersAction) {
   switch (action.type) {
-    case 'SET_TRANSFER_INTENT_ID':
-      return {
-        ...state,
-        transfer_intent_id: action.transfer_intent_id,
-      };
     case 'SUCCESSFUL_GET':
       if (!action.transfers.length) {
         return state;
       }
       return {
         ...state,
-        transfersById: {
-          ...state.transfersById,
-          ...keyBy(action.transfers, 'id'),
-        },
+        ...keyBy(action.transfers, 'id'),
       };
     case 'DELETE_BY_USER':
       const transfers = state.transfersById;
