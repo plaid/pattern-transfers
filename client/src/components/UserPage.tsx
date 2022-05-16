@@ -59,7 +59,8 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
   const { generateLinkToken, linkTokens } = useLink();
-  const { getTransfersByUser, transfersByUser } = useTransfers();
+  const { getTransfersByUser, transfersByUser, deleteTransfersByUserId } =
+    useTransfers();
 
   const { getAppStatus, appStatus } = useAppStatus();
   const userId = Number(match.params.userId);
@@ -171,10 +172,15 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
         const transfer_intent_id =
           transferIntentResponse.data.transfer_intent.id;
 
-        await getTransfersByUser(userId);
         // only generate a link token upon a click from enduser to add a bank;
         // if done earlier, it may expire before enduser actually activates Link to add a bank.
-        await generateLinkToken(userId, transfer_intent_id);
+        const token = await generateLinkToken(userId, transfer_intent_id);
+        if (token != null) {
+          await getTransfersByUser(userId);
+          return;
+        }
+        await deleteTransfersByUserId(userId);
+        await getTransfersByUser(userId);
       } else {
         toast.error('Please enter a subscription amount');
       }
