@@ -28,7 +28,7 @@ router.get(
       const httpTunnel = tunnels.find(t => t.proto === 'http');
       res.json({ url: httpTunnel.public_url });
     } catch (err) {
-      errorHandler(err);
+      console.log(err);
     }
   })
 );
@@ -54,7 +54,7 @@ router.post(
       console.log('finished!');
       res.json({ status: 'ok' });
     } catch (err) {
-      errorHandler(err);
+      console.log(err);
     }
   })
 );

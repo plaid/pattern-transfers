@@ -38,7 +38,7 @@ type LinkAction =
 
 interface LinkContextShape extends LinkState {
   dispatch: Dispatch<LinkAction>;
-  generateLinkToken: (userId: number, transferIntentId: string) => void;
+  generateLinkToken: (userId: number, transferIntentId: string) => string;
   deleteLinkToken: (userId: number) => void;
   linkTokens: LinkState;
 }
@@ -62,6 +62,7 @@ export function LinkProvider(props: any) {
       const token = await linkTokenResponse.data.link_token;
       console.log('success', linkTokenResponse.data);
       dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
+      return token;
     } else {
       dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
       console.log('error', linkTokenResponse.data);
