@@ -66,9 +66,6 @@ const TransferForm: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const numberOfPayments =
-    props.payments != null ? props.payments.number_of_payments : 0;
-
   return (
     <>
       <div className="box developer-configs">
