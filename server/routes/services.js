@@ -46,7 +46,6 @@ router.post(
       const type = webhookType.toLowerCase();
       // There are six types of webhooks: AUTH, TRANSACTIONS, ITEM, INCOME, TRANSFER, and ASSETS.
       const webhookHandlerMap = {
-        item: handleItemWebhook,
         transfer: handleTransferWebhook,
       };
       const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
