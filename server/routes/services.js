@@ -50,7 +50,6 @@ router.post(
       };
       const webhookHandler = webhookHandlerMap[type] || unhandledWebhook;
       await webhookHandler(req.body, io);
-      console.log('finished!');
       res.json({ status: 'ok' });
     } catch (err) {
       console.log(err);
