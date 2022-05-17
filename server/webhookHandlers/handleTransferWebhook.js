@@ -51,14 +51,14 @@ const transfersHandler = async (requestBody, io) => {
         let afterId = appStatus[0].number_of_events;
         let hasEventsToFetch = true;
         const batchSize = 2; // 25 is the maximum number of events returned
-        let allNewPlaidEvents;
+        let allNewPlaidEvents = [];
         while (hasEventsToFetch) {
           const sycnRequest = {
             after_id: afterId,
             count: batchSize,
           };
           const syncResponse = await plaid.transferEventSync(sycnRequest);
-          allNewPlaidEvents = allNewPlaidEvents.concat(
+          allNewPlaidEvents = await allNewPlaidEvents.concat(
             syncResponse.data.transfer_events
           );
           if (allNewPlaidEvents.length === batchSize) {
