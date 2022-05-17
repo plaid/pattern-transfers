@@ -13,6 +13,7 @@ const {
   updateAppStatus,
 } = require('../db/queries');
 const plaid = require('../plaid');
+const { all } = require('../routes/users');
 
 /**
  * Handles all Transfers webhook events.
@@ -61,8 +62,8 @@ const transfersHandler = async (requestBody, io) => {
           allNewPlaidEvents = await allNewPlaidEvents.concat(
             syncResponse.data.transfer_events
           );
-          if (allNewPlaidEvents.length === batchSize) {
-            afterId += syncResponse.data.transfer_events.length();
+          if (syncResponse.data.transfer_events.length === batchSize) {
+            afterId += syncResponse.data.transfer_events.length;
           } else {
             hasEventsToFetch = false;
           }
@@ -115,8 +116,8 @@ const transfersHandler = async (requestBody, io) => {
 
         const oldAccountBalance = appStatus[0].app_account_balance;
         const newAccountBalance = oldAccountBalance + newSweepAmountToAdd;
-        const newNumberOfEvents = (appStatus[0].number_of_events +=
-          allNewPlaidEvents.length);
+        const newNumberOfEvents =
+          appStatus[0].number_of_events + allNewPlaidEvents.length;
         await updateAppStatus(newAccountBalance, newNumberOfEvents);
 
         const newStatus = await retrieveAppStatus();
