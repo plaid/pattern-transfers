@@ -50,75 +50,75 @@ const transfersHandler = async (requestBody, io) => {
         const appStatus = await retrieveAppStatus();
         let afterId = appStatus[0].number_of_events;
         let hasEventsToFetch = true;
-        let isFirstCall = true;
-        const batchSize = 25; // 25 is the maximum number of events returned
+        const batchSize = 2; // 25 is the maximum number of events returned
+        let allNewPlaidEvents;
         while (hasEventsToFetch) {
           const sycnRequest = {
             after_id: afterId,
             count: batchSize,
           };
           const syncResponse = await plaid.transferEventSync(sycnRequest);
-          const allNewPlaidEvents = syncResponse.data.transfer_events;
-          if (allNewPlaidEvents.length === 0 && isFirstCall) {
-            console.log('no new events');
-            await serverLogAndEmitSocket(webhookCode, 'no events');
-            break;
-          }
-          // to update app's business checking account balance, track sweep amount totals from new events
-          let newSweepAmountToAdd = 0;
-
-          const newEventsAddedToDatabase = allNewPlaidEvents.map(
-            async event => {
-              const transfer = await retrieveTransferByPlaidTransferId(
-                event.transfer_id
-              );
-              if (transfer != null) {
-                const newEvent = await createEvent(
-                  event.event_id,
-                  transfer.user_id,
-                  event.account_id,
-                  event.transfer_id,
-                  event.transfer_type,
-                  event.event_type,
-                  event.transfer_amount,
-                  event.sweep_amount,
-                  event.sweep_id,
-                  event.failure_reason,
-                  event.timepstamp
-                );
-
-                if (event.sweep_amount != null) {
-                  newSweepAmountToAdd += Number(event.sweep_amount);
-                }
-
-                const transferGetResponse = await plaid.transferGet({
-                  transfer_id: newEvent.transfer_id,
-                });
-
-                await updateTransferStatus(
-                  transferGetResponse.data.transfer.status,
-                  transferGetResponse.data.transfer.sweep_status,
-                  newEvent.transfer_id
-                );
-                return newEvent;
-              }
-            }
+          allNewPlaidEvents = allNewPlaidEvents.concat(
+            syncResponse.data.transfer_events
           );
-
-          await Promise.all(newEventsAddedToDatabase);
-
-          const oldAccountBalance = appStatus[0].app_account_balance;
-          const newAccountBalance = oldAccountBalance + newSweepAmountToAdd;
-          const newNumberOfEvents = (appStatus[0].number_of_events +=
-            allNewPlaidEvents.length);
-          await updateAppStatus(newAccountBalance, newNumberOfEvents);
           if (allNewPlaidEvents.length === batchSize) {
-            afterId = newNumberOfEvents;
-            isFirstCall = false;
+            afterId += allNewPlaidEvents.length;
           } else {
             hasEventsToFetch = false;
           }
         }
+        if (allNewPlaidEvents.length === 0) {
+          console.log('no new events');
+          await serverLogAndEmitSocket(webhookCode, 'no events');
+          break;
+        }
+        // to update app's business checking account balance, track sweep amount totals from new events
+        let newSweepAmountToAdd = 0;
+
+        const newEventsAddedToDatabase = allNewPlaidEvents.map(async event => {
+          const transfer = await retrieveTransferByPlaidTransferId(
+            event.transfer_id
+          );
+          if (transfer != null) {
+            const newEvent = await createEvent(
+              event.event_id,
+              transfer.user_id,
+              event.account_id,
+              event.transfer_id,
+              event.transfer_type,
+              event.event_type,
+              event.transfer_amount,
+              event.sweep_amount,
+              event.sweep_id,
+              event.failure_reason,
+              event.timepstamp
+            );
+
+            if (event.sweep_amount != null) {
+              newSweepAmountToAdd += Number(event.sweep_amount);
+            }
+
+            const transferGetResponse = await plaid.transferGet({
+              transfer_id: newEvent.transfer_id,
+            });
+
+            await updateTransferStatus(
+              transferGetResponse.data.transfer.status,
+              transferGetResponse.data.transfer.sweep_status,
+              newEvent.transfer_id
+            );
+            return newEvent;
+          }
+        });
+
+        await Promise.all(newEventsAddedToDatabase);
+
+        const oldAccountBalance = appStatus[0].app_account_balance;
+        const newAccountBalance = oldAccountBalance + newSweepAmountToAdd;
+        const newNumberOfEvents = (appStatus[0].number_of_events +=
+          allNewPlaidEvents.length);
+        await updateAppStatus(newAccountBalance, newNumberOfEvents);
+
         const newStatus = await retrieveAppStatus();
 
         await serverLogAndEmitSocket(webhookCode, null);
