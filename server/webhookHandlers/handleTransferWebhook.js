@@ -13,7 +13,6 @@ const {
   updateAppStatus,
 } = require('../db/queries');
 const plaid = require('../plaid');
-const { all } = require('../routes/users');
 
 /**
  * Handles all Transfers webhook events.
