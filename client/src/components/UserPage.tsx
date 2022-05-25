@@ -25,7 +25,6 @@ import {
   useCurrentUser,
   useAppStatus,
 } from '../services';
-import { getTransferIntentId } from '../services/api';
 
 import {
   Banner,

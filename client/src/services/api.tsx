@@ -53,12 +53,6 @@ export const updateUserInfo = (
 export const deleteUserById = (userId: number) =>
   api.delete(`/users/${userId}`);
 
-// transfers
-export const getTransferIntentId = (
-  userId: number,
-  subscriptionAmount: number
-) => api.post(`/transfers/transfer_ui`, { userId, subscriptionAmount });
-
 export const createTransfer = (
   userId: number,
   itemId: number,
@@ -124,10 +118,10 @@ export const setItemState = (itemId: number, status: string) =>
 export const setItemToBadState = (itemId: number) =>
   api.post('/items/sandbox/item/reset_login', { itemId });
 
-export const getLinkToken = (userId: number, transferIntentId: string) =>
+export const getLinkToken = (userId: number, subscriptionAmount: number) =>
   api.post(`/link-token`, {
     userId,
-    transferIntentId,
+    subscriptionAmount,
   });
 export const makeTransfer = (
   fundingSourceUrl: string,

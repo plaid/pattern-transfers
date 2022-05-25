@@ -8,7 +8,7 @@ const express = require('express');
 const axios = require('axios');
 const plaid = require('../plaid');
 const fetch = require('node-fetch');
-const { retrieveItemById } = require('../db/queries');
+const { retrieveUserById, createTransfer } = require('../db/queries');
 const {
   PLAID_SANDBOX_REDIRECT_URI,
   PLAID_DEVELOPMENT_REDIRECT_URI,
@@ -28,7 +28,40 @@ router.post(
   '/',
   asyncWrapper(async (req, res) => {
     try {
-      const { userId, transferIntentId } = req.body;
+      const { userId, subscriptionAmount } = req.body;
+      const { username: username } = await retrieveUserById(userId);
+      const transIntentCreateRequest = {
+        client_id: PLAID_CLIENT_ID,
+        secret: PLAID_SECRET_SANDBOX,
+        mode: 'PAYMENT',
+        amount: subscriptionAmount.toFixed(2),
+        ach_class: 'ppd',
+        description: 'payment', // cannot be longer than 8 characters
+        user: {
+          legal_name: username,
+        },
+      };
+      let transferIntentId;
+
+      const transferIntentCreateResponse = await plaid.transferIntentCreate(
+        transIntentCreateRequest
+      );
+      transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
+      // create new Transfer now so that you can reference its transferIntentId upon link success
+      // because the link success metadata does not pass back any data about the transfer except for transfer_status
+      const newTransfer = await createTransfer(
+        null, // item_id
+        userId,
+        null, // plaid_account_id
+        transferIntentId,
+        null, // authorization_id - for TransferUI transfers
+        null, // transfer_id
+        subscriptionAmount.toFixed(2),
+        null, // status
+        'debit',
+        null // sweep_status
+      );
+
       let products = ['transfer'];
       const response = await fetch('http://ngrok:4040/api/tunnels');
       const { tunnels } = await response.json();

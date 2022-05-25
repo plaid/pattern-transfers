@@ -7,7 +7,7 @@ import React, {
   createContext,
 } from 'react';
 
-import { getLinkToken, getTransferIntentId } from './api';
+import { getLinkToken } from './api';
 
 import { PlaidLinkError } from 'react-plaid-link';
 
@@ -38,7 +38,7 @@ type LinkAction =
 
 interface LinkContextShape extends LinkState {
   dispatch: Dispatch<LinkAction>;
-  generateLinkToken: (userId: number, monthlyPayment: number) => string;
+  generateLinkToken: (userId: number, subscriptionAmount: number) => string;
   deleteLinkToken: (userId: number) => void;
   linkTokens: LinkState;
 }
@@ -56,14 +56,8 @@ export function LinkProvider(props: any) {
    * @desc Creates a new link token for a given User or Item.
    */
 
-  const generateLinkToken = useCallback(async (userId, monthlyPayment) => {
-    const transferIntentResponse = await getTransferIntentId(
-      userId,
-      monthlyPayment
-    );
-    const transfer_intent_id = transferIntentResponse.data.transfer_intent.id;
-
-    const linkTokenResponse = await getLinkToken(userId, transfer_intent_id);
+  const generateLinkToken = useCallback(async (userId, subscriptionAmount) => {
+    const linkTokenResponse = await getLinkToken(userId, subscriptionAmount);
     if (linkTokenResponse.data.link_token) {
       const token = await linkTokenResponse.data.link_token;
       console.log('success', linkTokenResponse.data);
