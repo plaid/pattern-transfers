@@ -30,6 +30,8 @@ router.post(
   asyncWrapper(async (req, res) => {
     try {
       const { userId, subscriptionAmount } = req.body;
+
+      // get transfer intent id to pass to create/link/token
       const createTransferIntent = async () => {
         const { username: username } = await retrieveUserById(userId);
         const transIntentCreateRequest = {
@@ -66,6 +68,7 @@ router.post(
         return transferIntentId;
       };
 
+      // create link token using transfer intent id
       const createLinkTokenForTransfer = async () => {
         let products = ['transfer'];
         const response = await fetch('http://ngrok:4040/api/tunnels');
@@ -102,7 +105,6 @@ router.post(
       res.json(createLinkTokenResponse.data);
     } catch (err) {
       console.log('error while fetching client token', err.response.data);
-      console.log(err.response.data);
       return res.json(err);
     }
   })
