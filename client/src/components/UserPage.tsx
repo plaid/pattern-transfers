@@ -57,7 +57,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { usersById, getUserById } = useUsers();
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
-  const { generateLinkToken, linkTokens } = useLink();
+  const { generateLinkTokenForTransfer, linkTokens } = useLink();
   const { getTransfersByUser, transfersByUser, deleteTransfersByUserId } =
     useTransfers();
 
@@ -164,7 +164,10 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
       if (monthlyPayment > 0) {
         // only generate a link token upon a click from enduser to add a bank;
         // if done earlier, it may expire before enduser actually activates Link to add a bank.
-        const token = await generateLinkToken(userId, monthlyPayment);
+        const token = await generateLinkTokenForTransfer(
+          userId,
+          monthlyPayment
+        );
         if (token != null) {
           await getTransfersByUser(userId);
           return;

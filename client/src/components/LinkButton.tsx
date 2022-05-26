@@ -36,7 +36,7 @@ interface Props {
 const LinkButton: React.FC<Props> = (props: Props) => {
   const history = useHistory();
   const { getItemsByUser } = useItems();
-  const { generateLinkToken } = useLink();
+  const { generateLinkTokenForTransfer } = useLink();
   const { getTransfersByUser, deleteTransfersByUserId } = useTransfers();
   const { setError, resetError } = useErrors();
 
@@ -127,7 +127,7 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       if (error != null) {
         if (error.error_code === 'INVALID_LINK_TOKEN') {
           const transferResponse = await apiGetTransfersByUserId(props.userId);
-          await generateLinkToken(
+          await generateLinkTokenForTransfer(
             props.userId,
             transferResponse.data[0].transfer_intent_id
           );
