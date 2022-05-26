@@ -9,7 +9,7 @@ const axios = require('axios');
 const plaid = require('../plaid');
 const fetch = require('node-fetch');
 const { retrieveUserById, createTransfer } = require('../db/queries');
-const { create } = require('lodash');
+
 const {
   PLAID_SANDBOX_REDIRECT_URI,
   PLAID_DEVELOPMENT_REDIRECT_URI,
