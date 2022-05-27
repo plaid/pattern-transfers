@@ -14,8 +14,6 @@ import { logEvent, logSuccess, logExit } from '../util'; // functions to log and
 import {
   exchangeToken,
   getTransferUIStatus,
-  getTransferStatus,
-  addTransferInfo,
   getTransfersByUserId as apiGetTransfersByUserId,
   addPayment,
   getPaymentsByUser,
@@ -45,28 +43,13 @@ const LinkButton: React.FC<Props> = (props: Props) => {
       // need to get transfer_intent_id directly from database because context
       // is wiped out with Oauth
       const transferResponse = await apiGetTransfersByUserId(props.userId);
-      // use transfer_intent_id to obtain transfer_id from transferUI status
+      // use transfer_intent_id to obtain and update transfer status
       const transferUIDataResponse = await getTransferUIStatus(
-        transferResponse.data[0].transfer_intent_id
-      );
-      // use transfer_id to obtain information about the transfer and add info to existing transfer in database
-      const transferDataResponse = await getTransferStatus(
-        transferUIDataResponse.data.transfer_intent.transfer_id,
-        true
+        transferResponse.data[0].transfer_intent_id,
+        itemId
       );
 
-      const { account_id, id, status, sweep_status, amount, type } =
-        transferDataResponse.data.transfer;
-      // update database with information regarding the transfer
-      await addTransferInfo(
-        transferResponse.data[0].transfer_intent_id,
-        account_id,
-        id,
-        status,
-        sweep_status,
-        itemId,
-        type
-      );
+      const { amount } = transferUIDataResponse.data.transfer;
 
       // update the user's payment data
       const response = await addPayment(props.userId, Number(amount));

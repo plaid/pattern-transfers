@@ -137,18 +137,45 @@ router.post(
   '/transfer_ui/status',
   asyncWrapper(async (req, res) => {
     try {
-      const { intentId } = req.body;
+      const { intentId, itemId } = req.body;
       const transIntentGetRequest = {
         client_id: PLAID_CLIENT_ID,
         secret: PLAID_SECRET_SANDBOX,
         transfer_intent_id: intentId,
       };
-
+      // get the transfer_id to pass to the transfer/get call
       const transferIntentGetResponse = await plaid.transferIntentGet(
         transIntentGetRequest
       );
 
-      res.json(transferIntentGetResponse.data);
+      const transferGetRequest = {
+        transfer_id: transferIntentGetResponse.data.transfer_intent.transfer_id,
+      };
+
+      const transferGetResponse = await plaid.transferGet(transferGetRequest);
+
+      const {
+        account_id,
+        id,
+        status,
+        sweep_status,
+        type,
+      } = transferGetResponse.data.transfer;
+
+      // adds information to a transfer after getting status (because the inital creation of the transfer
+      // with TransferUI does not provide this information)
+
+      await addTransferInfo(
+        status,
+        id,
+        account_id,
+        sweep_status,
+        itemId,
+        type,
+        intentId
+      );
+
+      res.json(transferGetResponse.data);
     } catch (err) {
       console.log('error while getting status', err.response.data);
       return res.json(err.response.data);
@@ -167,15 +194,12 @@ router.post(
   '/transfer/status',
   asyncWrapper(async (req, res) => {
     try {
-      const { transferId, isTransferUI } = req.body;
+      const { transferId } = req.body;
       const transferGetRequest = {
         transfer_id: transferId,
       };
 
       const transferGetResponse = await plaid.transferGet(transferGetRequest);
-      if (isTransferUI) {
-        return res.json(transferGetResponse.data);
-      }
       await updateTransferStatus(
         transferGetResponse.data.transfer.status,
         transferGetResponse.data.transfer.sweep_status,
@@ -188,52 +212,6 @@ router.post(
       res.json(updatedTransfer);
     } catch (err) {
       console.log('error while getting status', err.response.data);
-      return res.json(err.response.data);
-    }
-  })
-);
-
-/**
- * adds information to a transfer after getting status (because the inital creation of the transfer
- * with TransferUI does not provide this information)
- *
- * @param {string} transferIntentId the transfer_intent_id of the transfer.
- * @param {string} destinationId the destination account id for the transfer.
- * @param {string} transferId the transfer id of the transfer.
- * @param {string} originationId the origination account id for the transfer.
- * @param {string} status the status of the transfer.
- * @param {string} sweepStatus the sweep status of the transfer.
- * @param {string} itemId the item id associated with the transfer.
- * @returns {Object[]} an array of transfers
- */
-
-router.put(
-  '/:transferIntentId/add_info',
-  asyncWrapper(async (req, res) => {
-    try {
-      const { transferIntentId } = req.params;
-      const {
-        accountId,
-        transferId,
-        status,
-        sweepStatus,
-        itemId,
-        type,
-      } = req.body;
-
-      const transfer = await addTransferInfo(
-        status,
-        transferId,
-        accountId,
-        sweepStatus,
-        itemId,
-        type,
-        transferIntentId
-      );
-
-      res.json(transfer);
-    } catch (err) {
-      console.log('error while adding info', err.response.data);
       return res.json(err.response.data);
     }
   })
