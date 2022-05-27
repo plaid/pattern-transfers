@@ -69,7 +69,7 @@ router.post(
       };
 
       // create link token using transfer intent id
-      const createLinkTokenForTransfer = async () => {
+      const createLinkTokenForTransfer = async intentId => {
         let products = ['transfer'];
         const response = await fetch('http://ngrok:4040/api/tunnels');
         const { tunnels } = await response.json();
@@ -87,7 +87,7 @@ router.post(
           language: 'en',
           webhook: httpTunnel.public_url + '/services/webhook',
           transfer: {
-            intent_id: transferIntentId,
+            intent_id: intentId,
           },
           link_customization_name: LINK_CUSTOMIZATION_NAME,
         };
@@ -100,7 +100,9 @@ router.post(
       };
 
       const transferIntentId = await createTransferIntent();
-      const createLinkTokenResponse = await createLinkTokenForTransfer();
+      const createLinkTokenResponse = await createLinkTokenForTransfer(
+        transferIntentId
+      );
 
       res.json(createLinkTokenResponse.data);
     } catch (err) {
