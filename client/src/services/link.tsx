@@ -7,7 +7,7 @@ import React, {
   createContext,
 } from 'react';
 
-import { getLinkToken } from './api';
+import { getLinkTokenForTransfer } from './api';
 
 import { PlaidLinkError } from 'react-plaid-link';
 
@@ -38,7 +38,10 @@ type LinkAction =
 
 interface LinkContextShape extends LinkState {
   dispatch: Dispatch<LinkAction>;
-  generateLinkToken: (userId: number, transferIntentId: string) => string;
+  generateLinkTokenForTransfer: (
+    userId: number,
+    subscriptionAmount: number
+  ) => string;
   deleteLinkToken: (userId: number) => void;
   linkTokens: LinkState;
 }
@@ -56,18 +59,24 @@ export function LinkProvider(props: any) {
    * @desc Creates a new link token for a given User or Item.
    */
 
-  const generateLinkToken = useCallback(async (userId, transferIntentId) => {
-    const linkTokenResponse = await getLinkToken(userId, transferIntentId);
-    if (linkTokenResponse.data.link_token) {
-      const token = await linkTokenResponse.data.link_token;
-      console.log('success', linkTokenResponse.data);
-      dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
-      return token;
-    } else {
-      dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
-      console.log('error', linkTokenResponse.data);
-    }
-  }, []);
+  const generateLinkTokenForTransfer = useCallback(
+    async (userId, subscriptionAmount) => {
+      const linkTokenResponse = await getLinkTokenForTransfer(
+        userId,
+        subscriptionAmount
+      );
+      if (linkTokenResponse.data.link_token) {
+        const token = await linkTokenResponse.data.link_token;
+        console.log('success', linkTokenResponse.data);
+        dispatch({ type: 'LINK_TOKEN_CREATED', id: userId, token: token });
+        return token;
+      } else {
+        dispatch({ type: 'LINK_TOKEN_ERROR', error: linkTokenResponse.data });
+        console.log('error', linkTokenResponse.data);
+      }
+    },
+    []
+  );
 
   const deleteLinkToken = useCallback(async userId => {
     dispatch({
@@ -78,11 +87,11 @@ export function LinkProvider(props: any) {
 
   const value = useMemo(
     () => ({
-      generateLinkToken,
+      generateLinkTokenForTransfer,
       deleteLinkToken,
       linkTokens,
     }),
-    [linkTokens, generateLinkToken, deleteLinkToken]
+    [linkTokens, generateLinkTokenForTransfer, deleteLinkToken]
   );
 
   return <LinkContext.Provider value={value} {...props} />;

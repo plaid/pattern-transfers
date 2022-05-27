@@ -22,58 +22,6 @@ const router = express.Router();
 const { PLAID_CLIENT_ID, PLAID_SECRET_SANDBOX } = process.env;
 
 /**
- * creates a transfer intent for Transfer UI and retrieves a transfer_intent_id
- *
- * @param {string} subscriptionAmount the amount of the transfer.
- * @returns {Object}  transfer intent response
- */
-
-router.post(
-  '/transfer_ui',
-  asyncWrapper(async (req, res) => {
-    try {
-      const { userId, subscriptionAmount } = req.body;
-      const { username: username } = await retrieveUserById(userId);
-      const transIntentCreateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
-        mode: 'PAYMENT',
-        amount: subscriptionAmount.toFixed(2),
-        ach_class: 'ppd',
-        description: 'payment', // cannot be longer than 8 characters
-        user: {
-          legal_name: username,
-        },
-      };
-      let transferIntentId;
-
-      const transferIntentCreateResponse = await plaid.transferIntentCreate(
-        transIntentCreateRequest
-      );
-      transferIntentId = transferIntentCreateResponse.data.transfer_intent.id;
-      // create new Transfer now so that you can reference its transferIntentId upon link success
-      // because the link success metadata does not pass back any data about the transfer except for transfer_status
-      const newTransfer = await createTransfer(
-        null, // item_id
-        userId,
-        null, // plaid_account_id
-        transferIntentId,
-        null, // authorization_id - for TransferUI transfers
-        null, // transfer_id
-        subscriptionAmount.toFixed(2),
-        null, // status
-        'debit',
-        null // sweep_status
-      );
-      res.json(transferIntentCreateResponse.data);
-    } catch (err) {
-      console.log('error while creating transfer intent id', err.response.data);
-      return res.json(err.response.data);
-    }
-  })
-);
-
-/**
  * creates a transfer authorization for Transfer, retrieves an authorization_id to use to
  * create a transfer.
  *
@@ -189,18 +137,45 @@ router.post(
   '/transfer_ui/status',
   asyncWrapper(async (req, res) => {
     try {
-      const { intentId } = req.body;
+      const { intentId, itemId } = req.body;
       const transIntentGetRequest = {
         client_id: PLAID_CLIENT_ID,
         secret: PLAID_SECRET_SANDBOX,
         transfer_intent_id: intentId,
       };
-
+      // get the transfer_id to pass to the transfer/get call
       const transferIntentGetResponse = await plaid.transferIntentGet(
         transIntentGetRequest
       );
 
-      res.json(transferIntentGetResponse.data);
+      const transferGetRequest = {
+        transfer_id: transferIntentGetResponse.data.transfer_intent.transfer_id,
+      };
+
+      const transferGetResponse = await plaid.transferGet(transferGetRequest);
+
+      const {
+        account_id,
+        id,
+        status,
+        sweep_status,
+        type,
+      } = transferGetResponse.data.transfer;
+
+      // adds information to a transfer after getting status (because the inital creation of the transfer
+      // with TransferUI does not provide this information)
+
+      await addTransferInfo(
+        status,
+        id,
+        account_id,
+        sweep_status,
+        itemId,
+        type,
+        intentId
+      );
+
+      res.json(transferGetResponse.data);
     } catch (err) {
       console.log('error while getting status', err.response.data);
       return res.json(err.response.data);
@@ -219,15 +194,12 @@ router.post(
   '/transfer/status',
   asyncWrapper(async (req, res) => {
     try {
-      const { transferId, isTransferUI } = req.body;
+      const { transferId } = req.body;
       const transferGetRequest = {
         transfer_id: transferId,
       };
 
       const transferGetResponse = await plaid.transferGet(transferGetRequest);
-      if (isTransferUI) {
-        return res.json(transferGetResponse.data);
-      }
       await updateTransferStatus(
         transferGetResponse.data.transfer.status,
         transferGetResponse.data.transfer.sweep_status,
@@ -240,52 +212,6 @@ router.post(
       res.json(updatedTransfer);
     } catch (err) {
       console.log('error while getting status', err.response.data);
-      return res.json(err.response.data);
-    }
-  })
-);
-
-/**
- * adds information to a transfer after getting status (because the inital creation of the transfer
- * with TransferUI does not provide this information)
- *
- * @param {string} transferIntentId the transfer_intent_id of the transfer.
- * @param {string} destinationId the destination account id for the transfer.
- * @param {string} transferId the transfer id of the transfer.
- * @param {string} originationId the origination account id for the transfer.
- * @param {string} status the status of the transfer.
- * @param {string} sweepStatus the sweep status of the transfer.
- * @param {string} itemId the item id associated with the transfer.
- * @returns {Object[]} an array of transfers
- */
-
-router.put(
-  '/:transferIntentId/add_info',
-  asyncWrapper(async (req, res) => {
-    try {
-      const { transferIntentId } = req.params;
-      const {
-        accountId,
-        transferId,
-        status,
-        sweepStatus,
-        itemId,
-        type,
-      } = req.body;
-
-      const transfer = await addTransferInfo(
-        status,
-        transferId,
-        accountId,
-        sweepStatus,
-        itemId,
-        type,
-        transferIntentId
-      );
-
-      res.json(transfer);
-    } catch (err) {
-      console.log('error while adding info', err.response.data);
       return res.json(err.response.data);
     }
   })

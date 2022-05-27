@@ -53,12 +53,6 @@ export const updateUserInfo = (
 export const deleteUserById = (userId: number) =>
   api.delete(`/users/${userId}`);
 
-// transfers
-export const getTransferIntentId = (
-  userId: number,
-  subscriptionAmount: number
-) => api.post(`/transfers/transfer_ui`, { userId, subscriptionAmount });
-
 export const createTransfer = (
   userId: number,
   itemId: number,
@@ -68,29 +62,11 @@ export const createTransfer = (
 export const getTransfersByUserId = (userId: number) =>
   api.get(`/users/${userId}/transfers`);
 
-export const getTransferUIStatus = (intentId: string) =>
-  api.post(`/transfers/transfer_ui/status`, { intentId });
+export const getTransferUIStatus = (intentId: string, itemId: number) =>
+  api.post(`/transfers/transfer_ui/status`, { intentId, itemId });
 
-export const getTransferStatus = (transferId: string, isTransferUI: boolean) =>
-  api.post(`/transfers/transfer/status`, { transferId, isTransferUI });
-
-export const addTransferInfo = (
-  transferIntentId: string,
-  accountId: string,
-  transferId: string,
-  status: string,
-  sweepStatus: string,
-  itemId: number,
-  type: string
-) =>
-  api.put(`/transfers/${transferIntentId}/add_info`, {
-    accountId,
-    transferId,
-    status,
-    sweepStatus,
-    itemId,
-    type,
-  });
+export const getTransferStatus = (transferId: string) =>
+  api.post(`/transfers/transfer/status`, { transferId });
 
 export const simulateSweep = () => api.post(`/transfers/simulate_sweep`);
 
@@ -124,10 +100,13 @@ export const setItemState = (itemId: number, status: string) =>
 export const setItemToBadState = (itemId: number) =>
   api.post('/items/sandbox/item/reset_login', { itemId });
 
-export const getLinkToken = (userId: number, transferIntentId: string) =>
-  api.post(`/link-token`, {
+export const getLinkTokenForTransfer = (
+  userId: number,
+  subscriptionAmount: number
+) =>
+  api.post(`/link-token/transfer_link_token`, {
     userId,
-    transferIntentId,
+    subscriptionAmount,
   });
 export const makeTransfer = (
   fundingSourceUrl: string,

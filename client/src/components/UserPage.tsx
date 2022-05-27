@@ -25,7 +25,6 @@ import {
   useCurrentUser,
   useAppStatus,
 } from '../services';
-import { getTransferIntentId } from '../services/api';
 
 import {
   Banner,
@@ -58,7 +57,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
   const { usersById, getUserById } = useUsers();
   const { setCurrentUser } = useCurrentUser();
   const { itemsByUser, getItemsByUser } = useItems();
-  const { generateLinkToken, linkTokens } = useLink();
+  const { generateLinkTokenForTransfer, linkTokens } = useLink();
   const { getTransfersByUser, transfersByUser, deleteTransfersByUserId } =
     useTransfers();
 
@@ -160,21 +159,15 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
 
   const monthlyPayment = payments != null ? payments.monthly_payment : 0;
 
-  const initiateLink = async () => {
+  const initiateLinkForTransferUI = async () => {
     try {
-      // make call to transfer/intent/create to get transfer_intent_id to pass to
-      // link token creation for Transfer UI
       if (monthlyPayment > 0) {
-        const transferIntentResponse = await getTransferIntentId(
+        // only generate a link token upon a click from enduser to add a bank;
+        // if done earlier, it may expire before enduser actually activates Link to add a bank.
+        const token = await generateLinkTokenForTransfer(
           userId,
           monthlyPayment
         );
-        const transfer_intent_id =
-          transferIntentResponse.data.transfer_intent.id;
-
-        // only generate a link token upon a click from enduser to add a bank;
-        // if done earlier, it may expire before enduser actually activates Link to add a bank.
-        const token = await generateLinkToken(userId, transfer_intent_id);
         if (token != null) {
           await getTransfersByUser(userId);
           return;
@@ -226,7 +219,7 @@ const UserPage = ({ match }: RouteComponentProps<RouteInfo>) => {
                   <Button
                     centered
                     className="add-account__button"
-                    onClick={initiateLink}
+                    onClick={initiateLinkForTransferUI}
                   >
                     Pay first month with bank account
                   </Button>
