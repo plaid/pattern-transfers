@@ -139,8 +139,6 @@ router.post(
     try {
       const { intentId, itemId } = req.body;
       const transIntentGetRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         transfer_intent_id: intentId,
       };
       // get the transfer_id to pass to the transfer/get call
@@ -242,8 +240,6 @@ router.post(
     try {
       const { transferId, event } = req.body;
       const transferSimulateRequest = {
-        client_id: PLAID_CLIENT_ID,
-        secret: PLAID_SECRET_SANDBOX,
         transfer_id: transferId,
         event_type: event,
       };
