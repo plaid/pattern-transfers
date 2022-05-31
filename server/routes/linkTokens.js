@@ -14,8 +14,6 @@ const {
   PLAID_SANDBOX_REDIRECT_URI,
   PLAID_DEVELOPMENT_REDIRECT_URI,
   PLAID_ENV,
-  PLAID_CLIENT_ID,
-  PLAID_SECRET_SANDBOX,
   LINK_CUSTOMIZATION_NAME,
 } = process.env;
 
@@ -35,8 +33,6 @@ router.post(
       const createTransferIntent = async () => {
         const { username: username } = await retrieveUserById(userId);
         const transIntentCreateRequest = {
-          client_id: PLAID_CLIENT_ID,
-          secret: PLAID_SECRET_SANDBOX,
           mode: 'PAYMENT',
           amount: subscriptionAmount.toFixed(2),
           ach_class: 'ppd',
@@ -75,8 +71,6 @@ router.post(
         const { tunnels } = await response.json();
         const httpTunnel = tunnels.find(t => t.proto === 'http');
         const linkTokenParams = {
-          client_id: PLAID_CLIENT_ID,
-          secret: PLAID_SECRET_SANDBOX,
           user: {
             // This should correspond to a unique id for the current user.
             client_user_id: 'uniqueId' + userId,
