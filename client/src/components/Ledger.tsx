@@ -118,7 +118,7 @@ const Ledger: React.FC<Props> = (props: Props) => {
                   inline
                   className="simulate_button"
                   onClick={() =>
-                    simulateEvent(transfer.transfer_id, 'reversed')
+                    simulateEvent(transfer.transfer_id, 'returned')
                   }
                 >
                   Simulate return
