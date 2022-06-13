@@ -67,9 +67,9 @@ const Ledger: React.FC<Props> = (props: Props) => {
   const statusClassName: StatusType = {
     posted: 'posted',
     failed: 'failed',
-    reversed: 'reversed',
+    returned: 'returned',
     swept: 'swept',
-    reverse_swept: 'reverse_swept',
+    return_swept: 'return_swept',
   };
 
   const account_balance =
