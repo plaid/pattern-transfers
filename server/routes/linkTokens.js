@@ -75,7 +75,7 @@ router.post(
             // This should correspond to a unique id for the current user.
             client_user_id: 'uniqueId' + userId,
           },
-          client_name: 'Pattern',
+          client_name: 'Platyflix',
           products,
           country_codes: ['US'],
           language: 'en',

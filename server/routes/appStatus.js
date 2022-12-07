@@ -31,14 +31,14 @@ router.get(
           transferEventListRequest
         );
 
+        console.log(response.data);
+
         await createInitialStatus(response.data.transfer_events[0].event_id);
       }
 
       res.json(status);
     } catch (err) {
-
       errorHandler(err);
-
     }
   })
 );
