@@ -36,9 +36,7 @@ router.get(
 
       res.json(status);
     } catch (err) {
-
       errorHandler(err);
-
     }
   })
 );

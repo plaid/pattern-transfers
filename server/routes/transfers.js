@@ -76,14 +76,8 @@ router.post(
         authorization_id: authorizationId,
         access_token: accessToken,
         account_id: accountId,
-        type: 'debit',
-        network: 'ach',
         amount: subscriptionAmount.toFixed(2),
         description: 'monthlyPMT',
-        ach_class: 'ppd',
-        user: {
-          legal_name: username,
-        },
       };
 
       const transferCreateResponse = await plaid.transferCreate(
