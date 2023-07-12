@@ -18,6 +18,7 @@ Plaid Pattern apps are provided for illustrative purposes and are not meant to b
 
 -   [Docker][docker] Version 2.0.0.3 (31259) or higher, installed, running, and signed in. If you're on **Windows**, check out [this link][wsl] to get set up in WSL.
 -   [Plaid API keys][plaid-keys] - [sign up][plaid-signup] for a free Sandbox account if you don't already have one
+- [Sign up for a free ngrok account](https://dashboard.ngrok.com/signup) if you don't already have one. You will need the ngrok authtoken to configure the app.
 
 ## Getting Started
 
@@ -35,6 +36,8 @@ Note: We recommend running these commands in a unix terminal. Windows users can 
     cp .env.template .env
     ```
 1. Update the `.env` file with your [Plaid API keys][plaid-keys] and, if you are testing OAuth, OAuth redirect uri (in sandbox this is 'http<span>://localhost:3002/oauth-link'</span>) and link customization name.
+
+1. Update the `/ngrok/ngrok.yml` file with your [ngrok authtoken](https://dashboard.ngrok.com/get-started/your-authtoken).
 
 1. If you have entered an OAuth redirect uri in the .env file, you will also need to configure an allowed redirect URI for your client ID through the [Plaid developer dashboard](https://dashboard.plaid.com/team/api).
 
