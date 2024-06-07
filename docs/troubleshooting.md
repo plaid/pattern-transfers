@@ -10,10 +10,6 @@ If you're experiencing oddities in the app, here are some common problems and th
 
 ## Common Issues
 
-## I can't access the Plaid Development environment API.\*\*
-
-Before you can access the Development environment, you will need to request access via the [Plaid Dashboard](https://dashboard.plaid.com/overview/development).
-
 ## My simulation buttons are not working
 
 For webhooks to work, the server must be publicly accessible on the internet. For development purposes, this application uses [ngrok][ngrok-readme] to accomplish that. The ngrok webhook addresses are only valid for 2 hours. If you are not receiving webhooks in this sample application, restart your server to reset the ngrok webhook address.

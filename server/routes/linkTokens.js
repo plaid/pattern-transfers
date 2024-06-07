@@ -12,7 +12,7 @@ const { retrieveUserById, createTransfer } = require('../db/queries');
 
 const {
   PLAID_SANDBOX_REDIRECT_URI,
-  PLAID_DEVELOPMENT_REDIRECT_URI,
+  PLAID_PRODUCTION_REDIRECT_URI,
   PLAID_ENV,
   LINK_CUSTOMIZATION_NAME,
 } = process.env;
@@ -20,7 +20,7 @@ const {
 const redirect_uri =
   PLAID_ENV == 'sandbox'
     ? PLAID_SANDBOX_REDIRECT_URI
-    : PLAID_DEVELOPMENT_REDIRECT_URI;
+    : PLAID_PRODUCTION_REDIRECT_URI;
 const router = express.Router();
 
 router.post(
