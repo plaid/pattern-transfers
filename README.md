@@ -1,8 +1,5 @@
-# Plaid Pattern Transfer
-
-[!WARNING] This app has been replaced by the [Transfer Quickstart](https://github.com/plaid/transfer-quickstart), a newer app that showcases more up to date Transfer functionality. Plaid Pattern Transfer is no longer maintained and contains deprecated patterns, such as the use of account funding ids instead of the Plaid Ledger.  
-
-![Plaid Pattern client][client-img]
+> [!WARNING]  
+As of August 2024, this app has been replaced by the [Transfer Quickstart](https://github.com/plaid/transfer-quickstart), a newer app that showcases more up to date Transfer functionality. The Plaid Pattern Transfer app is no longer maintained and contains deprecated patterns, such as the use of account funding ids instead of the Plaid Ledger.  
 
 This is a sample Transfer application demonstrating an end-to-end [Plaid][plaid] integration, focused on using the transfer endpoint to transfer funds.
 
