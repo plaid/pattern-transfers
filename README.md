@@ -1,6 +1,6 @@
 # Plaid Pattern Transfer
 
-> [!WARNING] This app has been replaced by the [Transfer Quickstart](https://github.com/plaid/transfer-quickstart), a newer app that showcases more up to date Transfer functionality. Plaid Pattern Transfer is no longer maintained and contains deprecated patterns, such as the use of account funding ids instead of the Plaid Ledger.  
+[!WARNING] This app has been replaced by the [Transfer Quickstart](https://github.com/plaid/transfer-quickstart), a newer app that showcases more up to date Transfer functionality. Plaid Pattern Transfer is no longer maintained and contains deprecated patterns, such as the use of account funding ids instead of the Plaid Ledger.  
 
 ![Plaid Pattern client][client-img]
 
